@@ -1,120 +1,111 @@
-﻿"use client";
-import { useState } from "react";
-
-const tiers = [
-  {
-    name: "Posterity Basic",
-    price: "$49",
-    period: "/year",
-    priceId: "price_1TcvdEBcdnR2VoDgGEYC3RtA",
-    description: "Schedule one message or memory per quarter, each with an optional handwritten note. Plus one video message per year. Keep your voice alive for the people you love.",
-    buttonText: "Get Started",
-    contact: false,
-  },
-  {
-    name: "Posterity Premium",
-    price: "$99",
-    period: "/year",
-    priceId: "price_1Tcvj2BcdnR2VoDgt4oZu8VA",
-    description: "Schedule one message or memory per month, each with an optional handwritten note. Plus a video message every quarter. Stay present in the lives of those who matter most.",
-    buttonText: "Get Started",
-    contact: false,
-  },
-  {
-    name: "Posterity Super Premium",
-    price: "$199",
-    period: "/year",
-    priceId: "price_1TcvjyBcdnR2VoDgq3uxVHRg",
-    description: "Schedule a message or memory every week, each with an optional handwritten note. Plus a monthly video message. The most complete way to leave your legacy.",
-    buttonText: "Get Started",
-    contact: false,
-  },
-  {
-    name: "Posterity Storage Only",
-    price: "$9.99",
-    period: "/year",
-    priceId: "price_1Tcvq1BcdnR2VoDgYustrs4G",
-    description: "The perfect way to start your Posterity journey.",
-    bullets: [
-      "Start building your legacy before committing to a full plan",
-      "Keep your account safely stored while your scheduled posts await future delivery",
-      "Content is not delivered until a plan is activated",
-      "Upgrade to any plan directly from your dashboard",
-    ],
-    buttonText: "Start Building",
-    contact: false,
-  },
-  {
-    name: "Build Your Own",
-    price: "Custom",
-    period: "",
-    priceId: null,
-    description: "Your legacy doesn't fit in a box and your plan shouldn't either. Work with a Posterity rep to build something as unique as the life you've lived.",
-    buttonText: "Contact Us",
-    contact: true,
-  },
-  {
-    name: "Financial Hardship",
-    price: "Custom",
-    period: "",
-    priceId: null,
-    description: "Everyone deserves to leave a message for the ones they love. Contact us to discuss a plan that works for your situation.",
-    buttonText: "Contact Us",
-    contact: true,
-  },
-];
-
-export default function PricingPage() {
-  const [loading, setLoading] = useState(null);
-
-  const handleCheckout = async (priceId, index) => {
-    setLoading(index);
-    const res = await fetch("/api/create-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ priceId }),
-    });
-    const { url } = await res.json();
-    window.location.href = url;
-  };
-
+﻿export default function Pricing() {
   return (
-    <main style={{ backgroundColor: "#000", minHeight: "100vh", padding: "60px 20px", fontFamily: "sans-serif" }}>
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-        <h1 style={{ color: "#fff", fontSize: "2.5rem", textAlign: "center", marginBottom: "16px" }}>
-          Choose Your Plan
-        </h1>
-        <p style={{ color: "#aaa", textAlign: "center", fontSize: "1.1rem", marginBottom: "60px" }}>
-          Your voice. Your legacy. Your terms.
-        </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px" }}>
-          {tiers.map((tier, i) => (
-            <div key={i} style={{ backgroundColor: "#111", border: "1px solid #222", borderRadius: "12px", padding: "32px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-              <div>
-                <h2 style={{ color: "#fff", fontSize: "1.3rem", marginBottom: "8px" }}>{tier.name}</h2>
-                <div style={{ marginBottom: "20px" }}>
-                  <span style={{ color: "#fff", fontSize: "2rem", fontWeight: "bold" }}>{tier.price}</span>
-                  <span style={{ color: "#aaa", fontSize: "1rem" }}>{tier.period}</span>
-                </div>
-                <p style={{ color: "#bbb", fontSize: "0.95rem", lineHeight: "1.6", marginBottom: "16px" }}>{tier.description}</p>
-                {tier.bullets && (
-                  <ul style={{ paddingLeft: "20px", color: "#fff", fontSize: "0.9rem", lineHeight: "1.8", listStyleType: "disc", listStyleType: "disc" }}>
-                    {tier.bullets.map((b, j) => <li key={j}>{b}</li>)}
-                  </ul>
-                )}
-              </div>
-              <button
-                onClick={() => tier.contact ? window.location.href = "mailto:support@posterity.app" : handleCheckout(tier.priceId, i)}
-                disabled={loading === i}
-                style={{ marginTop: "32px", padding: "14px", backgroundColor: tier.contact ? "transparent" : "#fff", color: tier.contact ? "#fff" : "#000", border: tier.contact ? "1px solid #fff" : "none", borderRadius: "8px", fontSize: "1rem", fontWeight: "bold", cursor: "pointer", width: "100%" }}
-              >
-                {loading === i ? "Loading..." : tier.buttonText}
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-    </main>
-  );
-}
+    <main className="min-h-screen bg-black text-white">
 
+      {/* Header */}
+      <section className="text-center px-6 py-16">
+        <a href="/" className="text-2xl font-bold tracking-widest">POSTERITY</a>
+        <h1 className="text-5xl font-bold mt-8">Plans</h1>
+        <p className="text-gray-500 text-sm mt-2">Start building your legacy today</p>
+      </section>
+
+      {/* Pricing Cards */}
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto px-8 pb-20">
+
+        {/* Horizon */}
+        <div className="bg-gray-950 rounded-2xl p-8 border border-gray-800 flex flex-col">
+          <h2 className="text-xl font-bold mb-1">Horizon</h2>
+          <p className="text-gray-500 text-xs mb-4">Storage Only</p>
+          <div className="mb-6">
+            <span className="text-4xl font-bold">$9.99</span>
+            <span className="text-gray-400 ml-2">/year</span>
+          </div>
+          <p className="text-gray-400 text-sm mb-6">Start building your legacy before any commitment. Your content is safely stored and waiting until you're ready to activate your plan.</p>
+          <ul className="flex flex-col gap-3 text-sm text-gray-300 mb-8">
+            <li>• Legacy builder — build your account now, activate later</li>
+            <li>• Reserve — your legacy held safely until you think the time is right</li>
+          </ul>
+          <a href="/signup" className="mt-auto text-center border border-gray-600 text-gray-300 px-6 py-3 rounded-full font-semibold hover:border-white hover:text-white transition">
+            Get Started
+          </a>
+        </div>
+
+        {/* Basic */}
+        <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700 flex flex-col">
+          <h2 className="text-xl font-bold mb-1">Basic</h2>
+          <div className="mb-6 mt-5">
+            <span className="text-4xl font-bold">$39</span>
+            <span className="text-gray-400 ml-2">/year</span>
+          </div>
+          <ul className="flex flex-col gap-3 text-sm text-gray-300 mb-8">
+            <li>• 4 messages, posts, or shares (quarterly) for each year of your plan, each with an optional handwritten note</li>
+            <li>• 1 video message per year</li>
+          </ul>
+          <a href="/signup" className="mt-auto text-center border border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition">
+            Get Started
+          </a>
+        </div>
+
+        {/* Premium */}
+        <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700 flex flex-col">
+          <h2 className="text-xl font-bold mb-1">Premium</h2>
+          <div className="mb-6 mt-5">
+            <span className="text-4xl font-bold">$99</span>
+            <span className="text-gray-400 ml-2">/year</span>
+          </div>
+          <ul className="flex flex-col gap-3 text-sm text-gray-300 mb-8">
+            <li>• 12 messages, posts, or shares (monthly) for each year of your plan, each with an optional handwritten note</li>
+            <li>• 4 video messages per year</li>
+          </ul>
+          <a href="/signup" className="mt-auto text-center border border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition">
+            Get Started
+          </a>
+        </div>
+
+        {/* Legacy */}
+        <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700 flex flex-col">
+          <h2 className="text-xl font-bold mb-1">Legacy</h2>
+          <div className="mb-6 mt-5">
+            <span className="text-4xl font-bold">$299</span>
+            <span className="text-gray-400 ml-2">/year</span>
+          </div>
+          <ul className="flex flex-col gap-3 text-sm text-gray-300 mb-8">
+            <li>• 52 messages, posts, or shares (weekly) for each year of your plan, each with an optional handwritten note</li>
+            <li>• 12 video messages per year</li>
+          </ul>
+          <a href="/signup" className="mt-auto text-center border border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition">
+            Get Started
+          </a>
+        </div>
+
+      </section>
+
+      {/* Custom & Financial Hardship */}
+      <section className="max-w-2xl mx-auto px-8 pb-20 flex flex-col gap-8 text-center">
+
+        <div className="bg-gray-900 rounded-2xl p-10 border border-gray-800">
+          <h2 className="text-2xl font-bold mb-3">Custom</h2>
+          <p className="text-gray-400 mb-6">Your legacy doesn't fit in a box — and your plan doesn't have to either. Work with a Posterity rep to build a custom plan that works for you.</p>
+          <a href="mailto:hello@posterity.app" className="border border-gray-600 text-gray-300 px-8 py-3 rounded-full font-semibold hover:border-white hover:text-white transition">
+            Contact Us
+          </a>
+        </div>
+
+        <div className="bg-gray-900 rounded-2xl p-10 border border-gray-800">
+          <h2 className="text-2xl font-bold mb-3">Financial Hardship</h2>
+          <p className="text-gray-400 mb-6">Everyone deserves a legacy. Contact us to start building yours.</p>
+          <a href="mailto:hello@posterity.app" className="border border-gray-600 text-gray-300 px-8 py-3 rounded-full font-semibold hover:border-white hover:text-white transition">
+            Contact Us
+          </a>
+        </div>
+
+      </section>
+
+      {/* Footer */}
+      <footer className="text-center text-gray-600 py-10 text-sm border-t border-gray-900">
+        © 2026 Posterity. All rights reserved.
+      </footer>
+
+    </main>
+  )
+}
