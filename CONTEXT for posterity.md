@@ -4,10 +4,12 @@
 A social media legacy app that allows users to schedule messages, memories, and content to be delivered to loved ones after death. Think of it as a digital time capsule with a subscription model.
 
 ## Business Model
-- Basic - Quarterly billing
-- Premium - Monthly billing
-- Super Premium - Weekly billing with quarterly special content uploads coordinated with a rep
-- Build Your Own Plan - Coordinated with a rep (prices TBD)
+- Horizon - $9.99/year (storage only, activate later)
+- Basic - $39/year (quarterly billing)
+- Premium - $99/year (monthly billing)
+- Legacy - $299/year (weekly billing)
+- Custom - Coordinated with a rep (prices TBD)
+- Financial Hardship - Contact us option
 
 ## Project Location
 - Local: C:\Users\jerth\posterity
@@ -21,18 +23,30 @@ A social media legacy app that allows users to schedule messages, memories, and 
 - Working Supabase authentication
 - PWA installed on Android
 - Live on Vercel
+- Pricing page with 4 subscription tiers + Custom and Financial Hardship sections
+- Stripe Checkout integration (create-checkout-session API route, price IDs wired up)
+- sync-context.js script — copies context MD to OneDrive and regenerates PDF in one command
+- npm run sync script added to package.json
+
+## Stripe Price IDs
+- Horizon: price_1Tcvq1BcdnR2VoDgYustrs4G
+- Basic: price_1TeTeyBcdnR2VoDgYhf7uym0
+- Premium: price_1Tcvj2BcdnR2VoDgt4oZu8VA
+- Legacy: price_1TeTj5BcdnR2VoDgtfA9O3z8
 
 ## Supabase Details
 - Project URL: https://vypytfmutmeyfwmkapjg.supabase.co
 - Auth: Email/password, email confirmation OFF
 
-## What's Next - Phase 3
-- Pricing page with 4 subscription tiers
-- Stripe payments integration
-- Connect Stripe to Supabase user accounts
+## What's Next - Phase 4
+- Connect Stripe webhooks to Supabase (update user plan on successful payment)
+- User dashboard showing current plan and billing status
+- Content upload / scheduling UI
+- Recipient management (who receives what and when)
 
 ## How To Resume
 1. Open Cursor
 2. cd posterity
 3. npm run dev
 4. Open http://localhost:3000
+5. To sync context docs: npm run sync

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync": "node sync-context.js"
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.7.0",
