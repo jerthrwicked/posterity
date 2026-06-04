@@ -27,6 +27,10 @@ A social media legacy app that allows users to schedule messages, memories, and 
 - Stripe Checkout integration (create-checkout-session API route, price IDs wired up)
 - sync-context.js script — copies context MD to OneDrive and regenerates PDF in one command
 - npm run sync script added to package.json
+- GlobalNav component (app/components/GlobalNav.js) — hamburger dropdown with Pricing, Login, Get Started; closes on outside click
+- Global nav added to app/layout.js so it appears on every page automatically
+- Homepage cleaned up for mobile: responsive hero text, feature cards match pricing page style (bg-gray-800 border border-gray-700)
+- Cursor shell allowlist configured at C:\Users\jerth\.cursor\permissions.json — npm, node, git, npx auto-approved
 
 ## Stripe Price IDs
 - Horizon: price_1Tcvq1BcdnR2VoDgYustrs4G
