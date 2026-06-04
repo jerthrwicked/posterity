@@ -19,9 +19,8 @@ export default function Pricing() {
     <main className="min-h-screen bg-black text-white">
 
       {/* Header */}
-      <section className="text-center px-6 py-16">
-        <a href="/" className="text-2xl font-bold tracking-widest">POSTERITY</a>
-        <h1 className="text-5xl font-bold mt-8">Plans</h1>
+      <section className="text-center px-6 pt-12 pb-10">
+        <h1 className="text-5xl font-bold">Plans</h1>
         <p className="text-gray-500 text-sm mt-2">Start building your legacy today</p>
       </section>
 

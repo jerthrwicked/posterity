@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 
-export default function HomeNav() {
+export default function GlobalNav() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -20,8 +20,8 @@ export default function HomeNav() {
   }, []);
 
   return (
-    <nav className="flex justify-between items-center px-8 py-6">
-      <a href="/" className="text-2xl font-bold tracking-widest">POSTERITY</a>
+    <nav className="flex justify-between items-center px-8 py-6 bg-black">
+      <a href="/" className="text-2xl font-bold tracking-widest text-white">POSTERITY</a>
 
       <div className="relative" ref={menuRef}>
         <button

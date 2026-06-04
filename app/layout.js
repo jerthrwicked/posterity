@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import GlobalNav from "./components/GlobalNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,7 +41,10 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-title" content="Posterity" />
         <meta name="theme-color" content="#000000" />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-black text-white">
+        <GlobalNav />
+        {children}
+      </body>
     </html>
   );
 }
