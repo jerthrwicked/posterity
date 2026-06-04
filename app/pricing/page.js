@@ -1,4 +1,20 @@
-﻿export default function Pricing() {
+﻿"use client";
+import { useState } from "react";
+
+export default function Pricing() {
+  const [loading, setLoading] = useState(null);
+
+  const handleCheckout = async (priceId, index) => {
+    setLoading(index);
+    const res = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ priceId }),
+    });
+    const { url } = await res.json();
+    window.location.href = url;
+  };
+
   return (
     <main className="min-h-screen bg-black text-white">
 
@@ -20,14 +36,18 @@
             <span className="text-4xl font-bold">$9.99</span>
             <span className="text-gray-400 ml-2">/year</span>
           </div>
-          <p className="text-gray-400 text-sm mb-6">Start building your legacy before any commitment. Your content is safely stored and waiting until you're ready to activate your plan.</p>
+          <p className="text-gray-400 text-sm mb-6">Start building your legacy before any commitment. Your content is safely stored and waiting until you are ready to activate your plan.</p>
           <ul className="flex flex-col gap-3 text-sm text-gray-300 mb-8">
             <li>• Legacy builder — build your account now, activate later</li>
             <li>• Reserve — your legacy held safely until you think the time is right</li>
           </ul>
-          <a href="/signup" className="mt-auto text-center border border-gray-600 text-gray-300 px-6 py-3 rounded-full font-semibold hover:border-white hover:text-white transition">
-            Get Started
-          </a>
+          <button
+            onClick={() => handleCheckout("price_1Tcvq1BcdnR2VoDgYustrs4G", 0)}
+            disabled={loading === 0}
+            className="mt-auto text-center border border-gray-600 text-gray-300 px-6 py-3 rounded-full font-semibold hover:border-white hover:text-white transition cursor-pointer"
+          >
+            {loading === 0 ? "Loading..." : "Get Started"}
+          </button>
         </div>
 
         {/* Basic */}
@@ -41,9 +61,13 @@
             <li>• 4 messages, posts, or shares (quarterly) for each year of your plan, each with an optional handwritten note</li>
             <li>• 1 video message per year</li>
           </ul>
-          <a href="/signup" className="mt-auto text-center border border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition">
-            Get Started
-          </a>
+          <button
+            onClick={() => handleCheckout("price_1TeTeyBcdnR2VoDgYhf7uym0", 1)}
+            disabled={loading === 1}
+            className="mt-auto text-center border border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition cursor-pointer"
+          >
+            {loading === 1 ? "Loading..." : "Get Started"}
+          </button>
         </div>
 
         {/* Premium */}
@@ -57,9 +81,13 @@
             <li>• 12 messages, posts, or shares (monthly) for each year of your plan, each with an optional handwritten note</li>
             <li>• 4 video messages per year</li>
           </ul>
-          <a href="/signup" className="mt-auto text-center border border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition">
-            Get Started
-          </a>
+          <button
+            onClick={() => handleCheckout("price_1Tcvj2BcdnR2VoDgt4oZu8VA", 2)}
+            disabled={loading === 2}
+            className="mt-auto text-center border border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition cursor-pointer"
+          >
+            {loading === 2 ? "Loading..." : "Get Started"}
+          </button>
         </div>
 
         {/* Legacy */}
@@ -73,9 +101,13 @@
             <li>• 52 messages, posts, or shares (weekly) for each year of your plan, each with an optional handwritten note</li>
             <li>• 12 video messages per year</li>
           </ul>
-          <a href="/signup" className="mt-auto text-center border border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition">
-            Get Started
-          </a>
+          <button
+            onClick={() => handleCheckout("price_1TeTj5BcdnR2VoDgtfA9O3z8", 3)}
+            disabled={loading === 3}
+            className="mt-auto text-center border border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition cursor-pointer"
+          >
+            {loading === 3 ? "Loading..." : "Get Started"}
+          </button>
         </div>
 
       </section>
@@ -107,5 +139,5 @@
       </footer>
 
     </main>
-  )
+  );
 }
