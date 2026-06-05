@@ -7,17 +7,33 @@ Full pricing analysis PDF: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchz
 ## What Is Posterity
 A social media legacy app that allows users to schedule messages, memories, and content to be delivered to loved ones after death. A digital time capsule with a subscription model. Posterity posts content on behalf of customers to their social media accounts after death is confirmed.
 
+## Core Values
+**Compassion over convenience**
+Content delivery begins January 1 of the year following death trigger activation — not immediately after passing. The bereaved deserve time to grieve before receiving scheduled content. Posterity prioritizes emotional readiness over technical immediacy.
+
+**Life chapters, not dates**
+Plans are organized by years of plan, not calendar dates. A customer's legacy begins when their story continues for others — not when they signed up.
+
+**Trust through transparency**
+No employee ever touches customer funds directly. All financial movements are automated with full audit trails. Customers can trust that their legacy investment is protected.
+
+**Accessibility without compromise**
+Financial hardship options ensure everyone can leave something behind regardless of means. A legacy should not be a luxury.
+
+**Control until the end**
+Customers can build, test, preview, and adjust their legacy content at any time before activation. Nothing is set in stone until they are ready.
+
 ## Core Differentiator
-Plans are organized by YEARS OF PLAN not calendar dates. The year counter does not start until the death trigger is activated. A customer can sign up in 2026, pay for Years 1-3, pass away in 2034, and Year 1 begins in 2034. Two timelines tracked: payment timeline and delivery timeline. Key marketing angle: life chapters not dates.
+Plans are organized by YEARS OF PLAN not calendar dates. The year counter does not start until the death trigger is activated. A customer can sign up in 2026, pay for Years 1-3, pass away in 2034, and Year 1 begins January 1 2035. Two timelines tracked: payment timeline and delivery timeline. Key marketing angle: life chapters not dates.
 
 ## Business Model
 - Annual upfront billing, one-off payment per year of plan
 - Multi-year upfront option (Phase 4)
 - Pre-loaded balance model: customer pays full amount upfront, Posterity withdraws only at start of each plan year, remaining balance untouched until each year activates
-- No employee ever touches customer funds directly — all financial movements automated via Stripe with audit logs
+- No employee ever touches customer funds directly — all financial movements automated with audit logs
 - 5 years guaranteed service from day customer starts building (Horizon signup date)
-- Beyond 5 years: best effort, no legal guarantee, up to 10 years optional
-- Unspent years refunded if company closes or delivery proves unfeasible
+- Beyond 5 years: unlimited years allowed, best effort only, no legal guarantee
+- Unspent years refunded ONLY if company closes OR delivery proves unfeasible AND customer met required standards of operation as outlined in contract
 - Formal Terms of Service required before launch (lawyer review + copyright application)
 - Pricing review at late stage build once time-per-post fully understood
 
@@ -34,6 +50,7 @@ Plans are organized by YEARS OF PLAN not calendar dates. The year counter does n
 All message tiers include optional handwritten note per message.
 Videos weighted at 2x a text message unit (operational cost rationale — do NOT display on pricing cards, include in user manual only).
 Legacy tier: add "Limited Availability" tag to plan card (Phase 3).
+Legacy customer cap: 10 customers at launch, configurable from admin dashboard (Phase 3).
 Stripe and live site prices still showing old prices ($39/$99/$299) — PENDING UPDATE next session.
 
 ## Stripe Products (PENDING PRICE UPDATE)
@@ -65,14 +82,33 @@ If Horizon account payment lapses:
 
 ## Plan Year System
 - Plans counted in years (Year 1, Year 2, Year 3) not calendar dates
-- Year 1 begins only when death trigger is activated
+- Year 1 begins January 1 of the calendar year following death trigger activation
 - Payment timeline and delivery timeline tracked separately
 - Storage fees (Horizon) cover gap between signup and activation
 - Customers can pay for multiple years upfront
-- Calendar in user profiles built around Year 1, Year 2 etc. not specific dates
+- Calendar in user profiles built around real calendar dates tied to plan years
 - Funds for Year 2 not accessed until Year 1 is complete
-- Year-by-year fund release automated via Stripe
-- Service limit: 5 years guaranteed from Horizon signup, up to 10 years optional — needs further discussion before building anything dependent on this
+- Year-by-year fund release automated via server-side cron job
+- Service limit: 5 years guaranteed from Horizon signup, unlimited years optional (best effort, no legal guarantee beyond 5)
+- Needs further discussion with lawyer before building anything dependent on long-term service obligations
+
+## Calendar System
+- Plan Year 1 begins January 1 of the calendar year following death trigger activation
+- Intentional grace period: gives bereaved time to process loss before receiving content
+- Uses real calendar dates — no relative day counting
+- Customers set real dates during setup (anniversaries, birthdays, custom dates)
+- Important Dates section in user profiles:
+  - Their own birthday
+  - Anniversary
+  - Partner's birthday
+  - Children's birthdays
+  - Any custom named dates
+- System auto-generates annual delivery schedule every January 1
+- Leap years handled automatically by real calendar
+- When plan activates, system takes most recent iteration of customer's calendar
+- Each calendar entry = Supabase record: plan year, delivery date, content attached, delivery status
+- Daily automated check triggers delivery when date matches
+- Full automation possible with this model
 
 ## Check-in System (Active Plan Users)
 - User confirms alive every 6 months via email/app
@@ -85,7 +121,7 @@ If Horizon account payment lapses:
 ## Death Trigger System
 - Option A: Check-in system failure (see above)
 - Option B: Trusted contact confirms passing via portal
-- Upon trigger: Year 1 of plan begins, content delivery schedule activates
+- Upon trigger: Year 1 of plan begins January 1 of following calendar year, content delivery schedule activates
 
 ## Trusted Contact System
 - Optional but strongly encouraged
@@ -97,7 +133,7 @@ If Horizon account payment lapses:
 ## Social Media Integration
 - Platforms: Facebook and Instagram to start, gauge interest and expand later
 - Meta Business API required for all scheduled posts
-- Backup login credentials strongly encouraged (stored securely in Supabase, activated when customer nears end of life)
+- Backup login credentials REQUIRED (stored securely in Supabase, activated when customer nears end of life)
 - Per-customer Posterity-generated passwords stored securely — customer responsible for changing their own passwords
 - Buffer as primary scheduling tool, direct login as fallback
 - Posterity team logs into customer social media via Buffer post-mortem and posts on their behalf
@@ -110,12 +146,14 @@ If Horizon account payment lapses:
   - Mitigation: backup direct login, manual override essential
 
 ## Video & Content Delivery
-- Not limited to social media — also delivered via text (MMS) and email
-- MMS via Twilio (25MB limit per message)
-- Email video delivery via link, not attachment
-- Full discussion needed before building video delivery system
-- Total allowed video length/size must cover ALL delivery methods
-- System must reject videos that do not meet requirements
+- Delivered via social media, text (MMS), and email
+- Hard limit: 25MB maximum, 720p minimum quality, 3-4 minutes maximum length
+- FFmpeg.wasm compresses automatically client-side at moment of upload within user profile
+- System rejects upload with clear error message if file exceeds 25MB after compression
+- MMS delivery via Twilio for videos under 25MB
+- Secure link fallback via SMS if MMS carrier delivery fails
+- Contract and user profile disclaimer: "If direct video delivery is not possible due to carrier limitations, a secure link to your video will be shared instead"
+- Email video delivery via link, not attachment (Phase 5)
 - Unused video slots can be used as message slots (flexible rollover)
 - Remaining messages/videos ticker in user profiles
 - Ability to process multiple posts simultaneously (Phase 5)
@@ -124,21 +162,36 @@ If Horizon account payment lapses:
 
 ## Video Storage & Compression
 - Storage via Supabase Storage (low cost at early scale)
-- Client-side compression via FFmpeg.wasm (Phase 4)
+- Client-side compression via FFmpeg.wasm at point of upload in user profile (Phase 4)
 - Upgrade path: Cloudflare Stream or Mux at scale
 - Storage limits per tier TBD
 - Video weight explanation (2x units) goes in user manual only, not pricing cards
 
-## Customer Contact & Communication
+## Customer Contact & Communication (Twilio)
 - Posterity phone number via Twilio with voicemail enabled
-- Used for: Build Your Own inquiries, general questions, Financial Hardship applications
+- Inbound: customer contact for Build Your Own inquiries, general questions, Financial Hardship applications
+- Outbound: automated SMS notifications to customers (check-ins, alerts, delivery confirmations)
+- MMS: video delivery under 25MB
+- Secure link fallback if MMS carrier delivery fails
 - No intermediary at launch, founder handles directly
-- Posterity email account needed for video/content delivery via email (Phase 5)
+- Posterity email account needed for email video delivery (Phase 5)
+
+## Financial Architecture
+- Customer pre-loads full balance upfront
+- Funds held in Posterity Trust Account (internal name) / Posterity Legacy Fund (customer-facing name)
+- Annual transfers from Trust Account to Posterity Operating Account triggered by server-side cron job at start of each plan year
+- Mercury Bank recommended: free business checking, API access, sub-accounts, built for startups
+- No employee ever accesses funds directly — fully automated with audit logs
+- Any automation failure triggers immediate admin dashboard alert: what failed, which customer, amount, timestamp, retry status
+- Full audit trail for every transfer: timestamp, amount, customer ID, plan year
+- Formal escrow deferred to Phase 6 — lawyer review required before Phase 5 financial build begins
+- Stripe fees: ~2.9% + $0.30 per transaction — not material at early scale
 
 ## User Profiles (Phase 4)
-- Calendar built around Year 1, Year 2 etc. (not calendar dates)
-- Social media connection (Meta API + backup credentials)
-- Video/photo/message upload
+- Calendar built around real dates tied to plan years
+- Important Dates section (birthday, anniversary, partner/children birthdays, custom dates)
+- Social media connection (Meta API + backup credentials — required)
+- Video/photo/message upload with FFmpeg compression
 - Total cost calculation
 - Payment setup (pre-loaded balance)
 - Trusted contact info (optional but encouraged)
@@ -164,9 +217,10 @@ If Horizon account payment lapses:
 - Operational dashboard: all tasks in priority order
 - Financial dashboard: completely separate from operational
 - No employee access to customer funds — audit logs only
-- Automated year-by-year fund release via Stripe
+- Automated year-by-year fund release via server-side cron job (Mercury Bank)
+- Admin dashboard alerts for any automation failures
 - Manual input panel for Build Your Own and Financial Hardship accounts
-- Manual override for API failures (Post Manually button)
+- Manual override Post Manually button for API failures
 - Ability to process multiple posts simultaneously
 - Twilio voicemail notifications
 - Test account option post-launch
@@ -200,20 +254,22 @@ Break-even (with part-time hire, $7,200/year total):
 
 Realistic mixed target: 25-35 customers covers all costs including part-time hire (12-18 month target)
 
-Stripe fees: ~2.9% + $0.30 per transaction — not material at early scale, factor into pricing review at growth stage
-
 ## Legal & Compliance
 - Formal Terms of Service before launch (lawyer review)
 - Copyright application
 - Liability FAQ: Posterity not responsible for customer failure to meet standards of operation
-- Standards of use FAQ
+- Standards of use FAQ required
+- Refund policy: unspent years refunded ONLY if company closes OR delivery proves unfeasible AND customer met required standards
 - Tax compliance (Phase 6)
-- Refund policy: unspent years refunded if company closes or delivery proves unfeasible
-- Service time limit legal documentation (5yr guaranteed, 10yr optional) — needs lawyer input
+- Service time limit legal documentation (5yr guaranteed, unlimited optional) — lawyer input needed
+- Formal escrow language — lawyer review Phase 6
+- Lawyer input required before Phase 5 financial build begins
 
 ## Marketing
 - Core angle: life chapters not dates
-- Tagline direction: "Your legacy delivered on your terms — not a calendar"
+- Hero line: "Your voice. Forever."
+- Supporting line: "Your legacy, on your terms"
+- January 1 delivery start is a marketing and trust-building point — Posterity is thoughtful about when content is delivered, not just that it is delivered. Content lands when recipients are ready to receive it, not in the immediate fog of grief.
 - Upgrade savings story: more messages/videos = lower cost per unit
   - Premium saves 24.5% vs Basic rate
   - Legacy saves 28.3% vs Basic rate
@@ -229,7 +285,6 @@ Stripe fees: ~2.9% + $0.30 per transaction — not material at early scale, fact
 
 ## Potential Late Add-Ons (Tabled — not concrete)
 - Application/approval process for all users
-- Legacy customer cap with application process
 - Additional social media platforms
 - Trusted contact payment authority
 - Facebook Memories feature
@@ -246,9 +301,10 @@ Stripe fees: ~2.9% + $0.30 per transaction — not material at early scale, fact
 | GitHub | Code storage |
 | Cursor | AI-assisted code editor |
 | Buffer | Social media scheduling |
-| Twilio | Phone number + voicemail |
+| Twilio | Phone number + voicemail + SMS/MMS |
 | FFmpeg.wasm | Video compression (Phase 4) |
 | Meta Business API | Facebook/Instagram (Phase 4/5) |
+| Mercury Bank | Business banking + automated transfers (Phase 5) |
 
 ## Project Location
 - Local: C:\Users\jerth\posterity
@@ -298,34 +354,38 @@ Set in both .env.local and Vercel:
 ### Phase 3 (Current)
 - Update Stripe prices to locked pricing ($99/$249/$899) + update Price IDs in code
 - Add Limited Availability tag to Legacy plan card
+- Legacy customer cap: 10 customers, configurable from admin dashboard
 - Connect Stripe to Supabase (record subscription on payment)
 - Horizon auto-cancel webhook when plan activates
 - Webhook for subscription status changes
 - Lock dashboard behind subscription tiers
 
 ### Phase 4
-- User profiles (Year-based calendar, content scheduling, social media setup)
+- User profiles (real-date calendar tied to plan years, Important Dates section, content scheduling, social media setup)
 - Onboarding walkthrough + AI chatbot + test/preview mode
 - Check-in system (6 month intervals, 3 month warning, 2x/month notifications)
 - Trusted contact system (optional, death confirmation portal)
-- Video upload + FFmpeg.wasm compression
-- Video size/length validation across all delivery methods
+- Video upload + FFmpeg.wasm compression (client-side at upload)
+- Video size/length validation (25MB max, 720p min, 3-4 min max)
 - Remaining messages/videos ticker
 - Video rollover to messages
 - Multi-year cart system with storage fee calculation
 - Meta Business API + Buffer integration
-- Per-customer backup credentials (Posterity-generated passwords)
+- Per-customer backup credentials (required, Posterity-generated passwords)
 
 ### Phase 5
 - Admin/operational dashboard (priority task list)
 - Separate financial dashboard
-- Automated year-by-year fund release via Stripe
+- Mercury Bank two-account setup (Trust Account + Operating Account)
+- Automated year-by-year fund release via server-side cron job
+- Admin dashboard alerts for automation failures
 - Manual input panel for Build Your Own and Financial Hardship
 - Manual override for API failures (Post Manually button)
 - Simultaneous post processing
 - Twilio voicemail + Posterity email account
 - Audit logs for all financial movements
 - Test account option
+- Lawyer review before financial build begins
 
 ### Phase 6
 - App appearance fine-tuning + logo design (Claude first, Canva backup)
@@ -333,6 +393,7 @@ Set in both .env.local and Vercel:
 - Terms of Service + lawyer review + copyright application
 - Liability FAQ + Standards of use FAQ
 - Refund policy finalization
+- Formal escrow language review
 - Testimonials section (after accruing content)
 - Sales sheet + investor materials + growth projections
 - Life insurance partnership exploration
