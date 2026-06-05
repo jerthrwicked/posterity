@@ -1,18 +1,15 @@
 ﻿# Posterity - Project Context
 Last Updated: June 2026
 
-## Pricing Analysis Document
-Full pricing analysis PDF: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchzJMzb5v-MCqJE/view?usp=sharing
-
 ## What Is Posterity
-A social media legacy app that allows users to schedule messages, memories, and content to be delivered to loved ones after death. A digital time capsule with a subscription model. Posterity posts content on behalf of customers to their social media accounts after death is confirmed.
+A social media legacy app that allows users to schedule messages, memories, and content to be delivered to loved ones after death. A digital time capsule with a subscription model. Posterity posts content on behalf of customers to their social media accounts after plan activation.
 
 ## Core Values
 **Compassion over convenience**
-Content delivery begins January 1 of the year following death trigger activation — not immediately after passing. The bereaved deserve time to grieve before receiving scheduled content. Posterity prioritizes emotional readiness over technical immediacy.
+Content delivery begins January 1 of the year following plan activation — not immediately after the non-response trigger fires. The bereaved deserve time to grieve before receiving scheduled content. Posterity prioritizes emotional readiness over technical immediacy.
 
 **Life chapters, not dates**
-Plans are organized by years of plan, not calendar dates. A customer's legacy begins when their story continues for others — not when they signed up.
+Most services think in calendar dates. Posterity thinks in life chapters. A plan's year counter does not start when a customer signs up — it starts when their legacy begins for others. A customer who signs up in 2026 and whose plan enters abeyance in 2034 gets a full Year 1 starting January 1 2035. Plans are organized by years of plan, not calendar dates. Two timelines are tracked: payment timeline and delivery timeline.
 
 **Trust through transparency**
 No employee ever touches customer funds directly. All financial movements are automated with full audit trails. Customers can trust that their legacy investment is protected.
@@ -23,20 +20,6 @@ Financial hardship options ensure everyone can leave something behind regardless
 **Control until the end**
 Customers can build, test, preview, and adjust their legacy content at any time before activation. Nothing is set in stone until they are ready.
 
-## Core Differentiator
-Plans are organized by YEARS OF PLAN not calendar dates. The year counter does not start until the death trigger is activated. A customer can sign up in 2026, pay for Years 1-3, pass away in 2034, and Year 1 begins January 1 2035. Two timelines tracked: payment timeline and delivery timeline. Key marketing angle: life chapters not dates.
-
-## Business Model
-- Annual upfront billing, one-off payment per year of plan
-- Multi-year upfront option (Phase 4)
-- Pre-loaded balance model: customer pays full amount upfront, Posterity withdraws only at start of each plan year, remaining balance untouched until each year activates
-- No employee ever touches customer funds directly — all financial movements automated with audit logs
-- 5 years guaranteed service from day customer starts building (Horizon signup date)
-- Beyond 5 years: unlimited years allowed, best effort only, no legal guarantee
-- Unspent years refunded ONLY if company closes OR delivery proves unfeasible AND customer met required standards of operation as outlined in contract
-- Formal Terms of Service required before launch (lawyer review + copyright application)
-- Pricing review at late stage build once time-per-post fully understood
-
 ## Subscription Tiers (LOCKED June 2026)
 | Tier | Price | Messages | Video |
 |------|-------|----------|-------|
@@ -45,98 +28,110 @@ Plans are organized by YEARS OF PLAN not calendar dates. The year counter does n
 | Premium | $249/year | 12 per year (monthly) | 4 per year |
 | Legacy | $899/year | 52 per year (weekly) | 12 per year |
 | Custom | Contact Us | Custom | Custom |
-| Financial Hardship | Contact Us | 1-2 messages | None |
+| Grace | Contact Us | 1-2 messages | None |
 
 All message tiers include optional handwritten note per message.
 Videos weighted at 2x a text message unit (operational cost rationale — do NOT display on pricing cards, include in user manual only).
-Legacy tier: add "Limited Availability" tag to plan card (Phase 3).
-Legacy customer cap: 10 customers at launch, configurable from admin dashboard (Phase 3).
-Stripe and live site prices still showing old prices ($39/$99/$299) — PENDING UPDATE next session.
+Plan names on site/customer-facing materials: Horizon, Basic, Premium, Legacy, Custom, Grace.
+Plan names in Stripe only: Posterity Horizon, Posterity Basic, Posterity Premium, Posterity Legacy, Posterity Grace.
 
-## Stripe Products (PENDING PRICE UPDATE)
-| Product | Old Price ID (outdated) | New Price ID |
-|---------|------------------------|--------------|
-| Posterity Horizon | price_1Tcvq1BcdnR2VoDgYustrs4G | No change |
-| Posterity Basic | price_1TeTeyBcdnR2VoDgYhf7uym0 | Pending ($99) |
-| Posterity Premium | price_1Tcvj2BcdnR2VoDgt4oZu8VA | Pending ($249) |
-| Posterity Legacy | price_1TeTj5BcdnR2VoDgtfA9O3z8 | Pending ($899) |
+## Plan Lifecycle & Phases
+Posterity plans move through four distinct phases. This language appears throughout the product, the onboarding walkthrough, and all customer-facing materials. It is a core part of what makes Posterity unique — clinical or death-related terminology is removed entirely. The system responds only to events and dates, never to death itself.
 
-New Price IDs to be generated next session. Update codebase and Vercel env vars after each change. Always test checkout after updating.
+**Key Terms:**
+- **Initiated** — a plan that has been paid for and exists in the system
+- **Non-response trigger** *(internal term only)* — the system event that moves a plan into Abeyance. Occurs when check-in goes unanswered after all 6 notifications, or when trusted contact submits confirmation. The system responds only to events — never to death itself.
+- **Abeyance** — the intentional waiting period between the non-response trigger and plan activation. Content is ready but not yet delivered. The bereaved are given time to process their loss.
+- **Active** — the plan is delivering content according to the customer's calendar
 
-## Horizon Tier - Dual Purpose
-1. Inactive account storage — for lapsed or paused plans
-2. Legacy builder starter — build account before committing to full plan
-- $9.99 is a holding fee not a service fee
-- Content stored but not delivered until death trigger activated and full plan in place
-- Recurring annual subscription
-- Auto-cancels when customer upgrades to paid plan (webhook/Supabase logic required — Phase 3)
-- Plans upgradeable from within user dashboard
-- Customers can upload content anytime after subscribing to Horizon
+**The Four Phases:**
 
-## Horizon Lapse Grace Period
-If Horizon account payment lapses:
-- 2 notifications/month for months 1-3 (6 total)
-- 2 notifications in final half month
-- 1 final notification that account was deleted
-- Total grace period: approximately 3.5 months before deletion
+*Phase 1 — Horizon (Building Phase)*
+The customer has subscribed to Horizon at $9.99/year. They are actively building their legacy — uploading content, setting up their calendar, and selecting the plan tiers they intend to initiate. Multiple plans can be built and worked on simultaneously via a side menu in the dashboard. There is no time limit on this phase. The Horizon subscription covers storage for as long as the customer remains in this phase.
+
+*Phase 2 — Planning Phase (Post-Initiation)*
+The customer has paid for their plan(s). The plan is now initiated — it exists, it is funded, and content continues to be refined. The customer continues their regular 6-month check-ins. This is typically the longest phase — it lasts however long the customer lives after initiating their plan, potentially years or decades. The Horizon subscription transitions into the initiated plan at this point.
+
+*Phase 3 — Abeyance*
+The non-response trigger has fired — either the check-in system detected a non-response after all 6 notifications, or a trusted contact submitted a confirmation through their portal. The plan is now in a waiting state. No content is delivered during this phase. This is intentionally brief — at most a few months between the trigger and January 1. This grace period reflects one of Posterity's core values: the bereaved deserve time to process before a loved one's legacy begins arriving.
+
+*Phase 4 — Active Phase*
+January 1 has arrived. Content delivery begins according to the customer's calendar. The system automatically generates that year's delivery schedule and posts content on the dates the customer set. This phase repeats annually for each plan year initiated.
 
 ## Plan Year System
 - Plans counted in years (Year 1, Year 2, Year 3) not calendar dates
-- Year 1 begins January 1 of the calendar year following death trigger activation
+- Year 1 begins January 1 of the calendar year following plan entering Abeyance
 - Payment timeline and delivery timeline tracked separately
-- Storage fees (Horizon) cover gap between signup and activation
+- Storage fees (Horizon) cover gap between signup and initiation
 - Customers can pay for multiple years upfront
+- All plans in Horizon account automatically included in cart at initiation
 - Calendar in user profiles built around real calendar dates tied to plan years
 - Funds for Year 2 not accessed until Year 1 is complete
 - Year-by-year fund release automated via server-side cron job
 - Service limit: 5 years guaranteed from Horizon signup, unlimited years optional (best effort, no legal guarantee beyond 5)
 - Needs further discussion with lawyer before building anything dependent on long-term service obligations
 
+## Horizon Tier
+- $9.99/year is a holding fee not a service fee
+- Dual purpose:
+  1. Inactive account storage — holds content and account data during years between active plan years when no delivery is scheduled
+  2. Building phase — customer builds legacy content before initiating any plan
+- Content stored but not delivered until plan enters Active Phase
+- Recurring annual subscription
+- Horizon subscription transitions into initiated plan upon payment
+- Customers can upload content anytime during Horizon phase
+- Customers can create and work on multiple plans simultaneously during Horizon
+
+## Horizon Lapse Grace Period
+If Horizon payment lapses:
+- Via Twilio SMS: 2 notifications/month for months 1-3 (6 total)
+- Via Twilio SMS: 2 notifications in final half month
+- Via Twilio SMS: 1 final notification that account was deleted
+- Total grace period: approximately 3.5 months before deletion
+
 ## Calendar System
-- Plan Year 1 begins January 1 of the calendar year following death trigger activation
+- Plan Year 1 begins January 1 of the calendar year following plan entering Abeyance
 - Intentional grace period: gives bereaved time to process loss before receiving content
 - Uses real calendar dates — no relative day counting
-- Customers set real dates during setup (anniversaries, birthdays, custom dates)
-- Important Dates section in user profiles:
-  - Their own birthday
-  - Anniversary
-  - Partner's birthday
-  - Children's birthdays
-  - Any custom named dates
+- Customers set real dates during calendar setup (anniversaries, birthdays, custom dates)
 - System auto-generates annual delivery schedule every January 1
 - Leap years handled automatically by real calendar
-- When plan activates, system takes most recent iteration of customer's calendar
+- When plan enters Active Phase, system takes most recent iteration of customer's calendar
 - Each calendar entry = Supabase record: plan year, delivery date, content attached, delivery status
 - Daily automated check triggers delivery when date matches
 - Full automation possible with this model
 
-## Check-in System (Active Plan Users)
-- User confirms alive every 6 months via email/app
+## Check-in System (Planning Phase)
+- User confirms they are present every 6 months via email or SMS
 - Missed check-in triggers 3-month warning period:
-  - 2 notifications/month for 3 months (6 total)
-  - Notifications sent to BOTH user AND trusted contact
-- No response after all 6 notifications: delivery triggered
-- This applies to active plan users only (separate from Horizon lapse system)
-
-## Death Trigger System
-- Option A: Check-in system failure (see above)
-- Option B: Trusted contact confirms passing via portal
-- Upon trigger: Year 1 of plan begins January 1 of following calendar year, content delivery schedule activates
+  - Via Twilio SMS + email: 2 notifications/month for 3 months (6 total)
+  - Notifications sent to BOTH customer AND trusted contact
+- No response after all 6 notifications: non-response trigger fires, plan moves into Abeyance
+- This applies to Planning Phase customers only (separate from Horizon lapse system)
 
 ## Trusted Contact System
 - Optional but strongly encouraged
-- Receives all 6 check-in notifications alongside user
-- Has portal to confirm death and trigger delivery
+- Customer adds trusted contact name and email in user profile during setup
+- System automatically sends trusted contact an invitation to create their own Posterity portal account
+- Customer can see confirmation that trusted contact has accepted and set up their account
+- Trusted contact portal is a separate login on the Posterity site, completely independent from customer account
+- Trusted contact portal shows: their role, linked customer, notification history, confirmation button
+- Trusted contact receives all 6 check-in notifications alongside customer during Planning Phase
+- When trusted contact believes customer has passed: they log into their portal and submit confirmation
+- Confirmation requires double verification (re-enter password + confirmation code sent to their email/phone) to prevent accidental triggering
+- Once confirmed: non-response trigger fires, plan moves into Abeyance
 - Trusted contact payment authority: TBD, tabled for later discussion
-- Trusted contact handling payments after death: potential late add-on
+- Trusted Contact page added to global nav dropdown for easy portal access
 
 ## Social Media Integration
 - Platforms: Facebook and Instagram to start, gauge interest and expand later
 - Meta Business API required for all scheduled posts
-- Backup login credentials REQUIRED (stored securely in Supabase, activated when customer nears end of life)
-- Per-customer Posterity-generated passwords stored securely — customer responsible for changing their own passwords
-- Buffer as primary scheduling tool, direct login as fallback
-- Posterity team logs into customer social media via Buffer post-mortem and posts on their behalf
+- Backup login credentials REQUIRED
+- Individual unique passwords automatically generated by Posterity for each customer, stored securely in Supabase
+- Customers are responsible for activating and maintaining their backup credentials prior to plan activation. Failure to provide credentials is a breach of user agreement but will not cancel service.
+- 2FA must be configured using Posterity-controlled backup email or Twilio phone number to ensure access post plan activation
+- Buffer used by Posterity team post plan activation to post content to customer social media accounts. Direct platform login used as fallback.
+- Posterity team posts on behalf of customers during Active Phase
 - Facebook Memories feature: skipped for now, add later if needed (requires direct login)
 - Monitor Meta API announcements as standing operational task
 - Meta API risks:
@@ -146,41 +141,41 @@ If Horizon account payment lapses:
   - Mitigation: backup direct login, manual override essential
 
 ## Video & Content Delivery
-- Delivered via social media, text (MMS), and email
+- Delivered via social media, text (MMS via Twilio), and email
 - Hard limit: 25MB maximum, 720p minimum quality, 3-4 minutes maximum length
 - FFmpeg.wasm compresses automatically client-side at moment of upload within user profile
 - System rejects upload with clear error message if file exceeds 25MB after compression
-- MMS delivery via Twilio for videos under 25MB
-- Secure link fallback via SMS if MMS carrier delivery fails
+- Via Twilio MMS: video delivery for files under 25MB
+- Secure link fallback via Twilio SMS if MMS carrier delivery fails
 - Contract and user profile disclaimer: "If direct video delivery is not possible due to carrier limitations, a secure link to your video will be shared instead"
 - Email video delivery via link, not attachment (Phase 5)
 - Unused video slots can be used as message slots (flexible rollover)
 - Remaining messages/videos ticker in user profiles
 - Ability to process multiple posts simultaneously (Phase 5)
 - Manual override "Post Manually" button for API failures (Phase 5)
-- Account passwords required in addition to Meta API access
 
 ## Video Storage & Compression
 - Storage via Supabase Storage (low cost at early scale)
 - Client-side compression via FFmpeg.wasm at point of upload in user profile (Phase 4)
+- Per-video limits: 25MB max, 720p min, 3-4 minutes max (enforced at upload)
+- Total Supabase storage allocation per tier TBD at scale
 - Upgrade path: Cloudflare Stream or Mux at scale
-- Storage limits per tier TBD
 - Video weight explanation (2x units) goes in user manual only, not pricing cards
 
-## Customer Contact & Communication (Twilio)
-- Posterity phone number via Twilio with voicemail enabled
-- Inbound: customer contact for Build Your Own inquiries, general questions, Financial Hardship applications
-- Outbound: automated SMS notifications to customers (check-ins, alerts, delivery confirmations)
-- MMS: video delivery under 25MB
-- Secure link fallback if MMS carrier delivery fails
+## Customer Contact & Communication
+- Via Twilio: dedicated Posterity phone number with voicemail enabled
+- Via Twilio: inbound customer contact for Build Your Own inquiries, general questions, Grace tier applications
+- Via Twilio: outbound automated SMS notifications to customers (check-ins, alerts, delivery confirmations)
+- Via Twilio: secure video link delivery fallback if MMS carrier delivery fails
 - No intermediary at launch, founder handles directly
-- Posterity email account needed for email video delivery (Phase 5)
+- Posterity email account (Phase 5) — used for video delivery via link and responding to customer email inquiries
 
 ## Financial Architecture
 - Customer pre-loads full balance upfront
 - Funds held in Posterity Trust Account (internal name) / Posterity Legacy Fund (customer-facing name)
 - Annual transfers from Trust Account to Posterity Operating Account triggered by server-side cron job at start of each plan year
 - Mercury Bank recommended: free business checking, API access, sub-accounts, built for startups
+- Mercury Bank two-account setup chosen as intentional workaround to avoid legal ramifications from regional escrow ordinances while achieving the same functional result as formal escrow
 - No employee ever accesses funds directly — fully automated with audit logs
 - Any automation failure triggers immediate admin dashboard alert: what failed, which customer, amount, timestamp, retry status
 - Full audit trail for every transfer: timestamp, amount, customer ID, plan year
@@ -188,26 +183,29 @@ If Horizon account payment lapses:
 - Stripe fees: ~2.9% + $0.30 per transaction — not material at early scale
 
 ## User Profiles (Phase 4)
-- Calendar built around real dates tied to plan years
-- Important Dates section (birthday, anniversary, partner/children birthdays, custom dates)
-- Social media connection (Meta API + backup credentials — required)
+- Calendar setup — customers set real dates (anniversaries, birthdays, custom dates) that feed the automation system
+- Social media connection (Meta API + unique Posterity-generated backup credentials — required). 2FA configured using Posterity-controlled contact details.
 - Video/photo/message upload with FFmpeg compression
 - Total cost calculation
 - Payment setup (pre-loaded balance)
-- Trusted contact info (optional but encouraged)
-- Check-in settings
+- Trusted contact setup — enter name and email, system sends invitation, customer confirms acceptance
+- Check-in preferences — preferred notification method (email or SMS) and trusted contact details for check-in alerts
 - Remaining messages/videos ticker
-- Assurance that money not withdrawn until service starts
+- Assurance that money not withdrawn until plan enters Active Phase
+- Multi-plan side menu — customers can create and work on multiple plans simultaneously
+- All plans in Horizon account automatically included in cart at initiation
 - All automated and set up to notify Posterity team
 
 ## Onboarding & Walkthrough (Phase 4)
 - Step-by-step onboarding walkthrough
+- Explain the four plan phases (Horizon, Planning, Abeyance, Active) during onboarding
+- Phase language displayed in user profile dashboard so customers always know which phase their plan is in
 - AI chatbot for customer setup guidance and product explanations
 - Test/preview mode so customers can see exactly what recipients will receive
 - Encourage customers to double-check and test everything before finalizing
 - Explain video storage and posting has higher workload (2x unit weight) — in walkthrough/manual only
 
-## Build Your Own & Financial Hardship
+## Build Your Own & Financial Hardship (Grace)
 - Manual input panel in admin dashboard for custom posting parameters
 - Automated system treats them like regular accounts once parameters are set
 - How they fit year-by-year automation: needs further discussion before building
@@ -219,10 +217,10 @@ If Horizon account payment lapses:
 - No employee access to customer funds — audit logs only
 - Automated year-by-year fund release via server-side cron job (Mercury Bank)
 - Admin dashboard alerts for any automation failures
-- Manual input panel for Build Your Own and Financial Hardship accounts
+- Manual input panel for Build Your Own and Grace accounts
 - Manual override Post Manually button for API failures
 - Ability to process multiple posts simultaneously
-- Twilio voicemail notifications
+- Via Twilio: voicemail notifications
 - Test account option post-launch
 - Standing task: monitor Meta API announcements
 
@@ -253,6 +251,7 @@ Break-even (with part-time hire, $7,200/year total):
 - Legacy: 9 customers
 
 Realistic mixed target: 25-35 customers covers all costs including part-time hire (12-18 month target)
+
 Full pricing analysis: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchzJMzb5v-MCqJE/view?usp=sharing
 
 ## Legal & Compliance
@@ -270,6 +269,7 @@ Full pricing analysis: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchzJMzb
 - Core angle: life chapters not dates
 - Hero line: "Your voice. Forever."
 - Supporting line: "Your legacy, on your terms"
+- The four plan phases are a core brand differentiator and selling point. Phase language removes all clinical or death-related terminology from the product entirely and should be prominent in marketing materials, the onboarding walkthrough, and the user dashboard.
 - January 1 delivery start is a marketing and trust-building point — Posterity is thoughtful about when content is delivered, not just that it is delivered. Content lands when recipients are ready to receive it, not in the immediate fog of grief.
 - Upgrade savings story: more messages/videos = lower cost per unit
   - Premium saves 24.5% vs Basic rate
@@ -289,7 +289,7 @@ Full pricing analysis: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchzJMzb
 - Additional social media platforms
 - Trusted contact payment authority
 - Facebook Memories feature
-- Trusted contact handling payments after death
+- Trusted contact handling payments after passing
 
 ## Tech Stack
 | Tool | Purpose |
@@ -301,7 +301,7 @@ Full pricing analysis: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchzJMzb
 | Vercel | Hosting |
 | GitHub | Code storage |
 | Cursor | AI-assisted code editor |
-| Buffer | Social media scheduling |
+| Buffer | Social media posting (admin side, post plan activation) |
 | Twilio | Phone number + voicemail + SMS/MMS |
 | FFmpeg.wasm | Video compression (Phase 4) |
 | Meta Business API | Facebook/Instagram (Phase 4/5) |
@@ -350,45 +350,70 @@ Set in both .env.local and Vercel:
 - End of session: paste "Update CONTEXT_for_posterity.md with everything we worked on this session, then run npm run sync to copy it to Documents and regenerate the PDF, then commit and push everything to GitHub with an appropriate commit message" into Cursor Agent
 - g = go/approved, d = done
 
+## Stripe Products (PENDING PRICE UPDATE)
+| Product | Current Price ID (outdated) | Status |
+|---------|----------------------------|--------|
+| Posterity Horizon | price_1Tcvq1BcdnR2VoDgYustrs4G | No change needed |
+| Posterity Basic | price_1TeTeyBcdnR2VoDgYhf7uym0 | Pending update to $99 |
+| Posterity Premium | price_1Tcvj2BcdnR2VoDgt4oZu8VA | Pending update to $249 |
+| Posterity Legacy | price_1TeTj5BcdnR2VoDgtfA9O3z8 | Pending update to $899 |
+
+New Price IDs to be generated when Stripe is updated. Update codebase and Vercel env vars after each change. Always test checkout after updating.
+
+## Important Links
+- Live site: https://posterity-seven.vercel.app
+- GitHub: https://github.com/jerthrwicked/posterity (PRIVATE)
+- Vercel dashboard: https://vercel.com/jerthrwicked/posterity
+- Stripe dashboard: https://dashboard.stripe.com/test/dashboard
+- Supabase dashboard: https://supabase.com/dashboard/project/vypytfmutmeyfwmkapjg
+- Pricing analysis PDF: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchzJMzb5v-MCqJE/view?usp=sharing
+
 ## Phase Roadmap
 
-### Phase 3 (Current)
+### Phase 3 (Current) — 2-3 sessions (4-9 hours)
 - Update Stripe prices to locked pricing ($99/$249/$899) + update Price IDs in code
+- Update codebase and Vercel env vars after each Stripe change, always test checkout after updating
 - Add Limited Availability tag to Legacy plan card
 - Legacy customer cap: 10 customers, configurable from admin dashboard
+- Rename Financial Hardship to Grace on pricing card, update description
 - Connect Stripe to Supabase (record subscription on payment)
-- Horizon auto-cancel webhook when plan activates
+- Horizon subscription transition logic (transitions into initiated plan upon payment)
 - Webhook for subscription status changes
 - Lock dashboard behind subscription tiers
+- Trusted Contact portal page + separate login + nav dropdown entry
 
-### Phase 4
-- User profiles (real-date calendar tied to plan years, Important Dates section, content scheduling, social media setup)
+### Phase 4 — 8-12 sessions (16-36 hours)
+- User profiles (real-date calendar setup, content scheduling, social media setup)
+- Multi-plan dashboard with side menu (create and work on multiple plans simultaneously)
+- All plans in Horizon auto-included in cart at initiation
 - Onboarding walkthrough + AI chatbot + test/preview mode
-- Check-in system (6 month intervals, 3 month warning, 2x/month notifications)
-- Trusted contact system (optional, death confirmation portal)
+- Four plan phases explanation in onboarding and dashboard
+- Check-in system (6 month intervals, 3 month warning, 2x/month notifications via Twilio + email)
+- Trusted contact system (optional portal, double verification confirmation, invitation flow)
 - Video upload + FFmpeg.wasm compression (client-side at upload)
 - Video size/length validation (25MB max, 720p min, 3-4 min max)
 - Remaining messages/videos ticker
 - Video rollover to messages
 - Multi-year cart system with storage fee calculation
 - Meta Business API + Buffer integration
-- Per-customer backup credentials (required, Posterity-generated passwords)
+- Per-customer backup credentials (required, Posterity-generated, 2FA via Posterity-controlled contact)
 
-### Phase 5
+### Phase 5 — 6-8 sessions (12-24 hours)
 - Admin/operational dashboard (priority task list)
 - Separate financial dashboard
 - Mercury Bank two-account setup (Trust Account + Operating Account)
 - Automated year-by-year fund release via server-side cron job
 - Admin dashboard alerts for automation failures
-- Manual input panel for Build Your Own and Financial Hardship
+- Manual input panel for Build Your Own and Grace accounts
 - Manual override for API failures (Post Manually button)
 - Simultaneous post processing
-- Twilio voicemail + Posterity email account
+- Via Twilio: voicemail + outbound SMS notifications
+- Posterity email account
 - Audit logs for all financial movements
 - Test account option
 - Lawyer review before financial build begins
 
-### Phase 6
+### Phase 6 — 4-6 sessions (8-18 hours)
 - App appearance fine-tuning + logo design (Claude first, Canva backup)
 - Tax compliance
 - Terms of Service + lawyer review + copyright application
@@ -400,13 +425,7 @@ Set in both .env.local and Vercel:
 - Life insurance partnership exploration
 - Service time limit legal documentation
 
-## Important Links
-- Live site: https://posterity-seven.vercel.app
-- GitHub: https://github.com/jerthrwicked/posterity (PRIVATE)
-- Vercel dashboard: https://vercel.com/jerthrwicked/posterity
-- Stripe dashboard: https://dashboard.stripe.com/test/dashboard
-- Supabase dashboard: https://supabase.com/dashboard/project/vypytfmutmeyfwmkapjg
-- Pricing analysis PDF: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchzJMzb5v-MCqJE/view?usp=sharing
+### Total Remaining: 20-29 sessions (40-87 hours)
 
 ## How To Resume
 1. Open Cursor
