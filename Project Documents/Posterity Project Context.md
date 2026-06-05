@@ -2,7 +2,7 @@
 Last Updated: June 2026
 
 ## What Is Posterity
-A social media legacy app that allows users to schedule messages, memories, and content to be delivered to loved ones after they are gone. A digital time capsule with a subscription model. Posterity posts content on behalf of customers to their social media accounts after plan activation.
+A social media legacy app that allows users to schedule messages, memories, and content to be delivered to loved ones after they are gone. A digital time capsule with a subscription model. Posterity posts content on behalf of customers to their chosen delivery platforms after plan activation.
 
 ## Subscription Tiers (LOCKED June 2026)
 | Tier | Price | Messages | Video |
@@ -23,12 +23,11 @@ Plan names in Stripe only: Posterity Horizon, Posterity Basic, Posterity Premium
 Posterity plans move through four distinct phases. This language appears throughout the product, the onboarding walkthrough, and all customer-facing materials. It is a core part of what makes Posterity unique — clinical terminology is removed entirely. The system responds only to events and dates, never to the customer's passing itself.
 
 **Key Terms:**
-- **Initiated** — a plan that has been paid for and exists in the system. When a customer pays for their plan they are said to have initiated it. Initiation is the act of funding a plan and bringing it into existence within Posterity.
+- **Initiated** — a plan that has been paid for and exists in the system. When a customer pays for their plan they are said to have initiated it. Initiation is the act of funding a plan and bringing it into the Posterity system. Upon initiation, the customer enters the Planning Phase and the check-in system begins.
 - **Non-response trigger** *(internal term only)* — the system event that moves a plan into Abeyance. Occurs in one of three ways:
   1. Check-in goes unanswered after all 6 notifications
   2. Trusted contact submits confirmation through their portal
-  3. Customer manually moves their plan into Abeyance using the "I'm Ready" option
-  The system responds only to events — never to the customer's passing itself.
+  3. Customer manually moves their plan into Abeyance using the "I'm Ready" option. The system responds only to events — never to the customer's passing itself.
 - **Abeyance** — the intentional waiting period between the non-response trigger and plan activation. Content is ready but not yet delivered. The bereaved are given time to process their loss.
 - **Active** — the plan is delivering content according to the customer's calendar. Activation occurs automatically on January 1 following the plan entering Abeyance.
 
@@ -38,17 +37,17 @@ Posterity plans move through four distinct phases. This language appears through
 The customer has subscribed to Horizon at $9.99/year. They are actively building their legacy — uploading content, setting up their calendar, and selecting the plan tiers they intend to initiate. Multiple plans can be built and worked on simultaneously via a side menu in the dashboard. There is no time limit on this phase. The Horizon subscription covers storage for as long as the customer remains in this phase.
 
 *Phase 2 — Planning Phase (Post-Initiation)*
-The customer has paid for their plan(s) (initiated). The plan now exists, is funded, and content continues to be refined. The customer continues their regular 6-month check-ins. This is typically the longest phase — it lasts from the moment a plan is initiated until the non-response trigger fires, potentially spanning years or decades.
+The customer has paid for their plan(s) (initiated). The plan now exists, is funded, and content continues to be refined. The customer continues their regular 6-month check-ins. This is typically the longest phase — it lasts from the moment a plan is initiated until the non-response trigger fires or the customer manually moves their plan into Abeyance, potentially spanning years or decades.
 
 *Phase 3 — Abeyance*
-The non-response trigger has fired — either the check-in system detected a non-response after all 6 notifications, a trusted contact submitted a confirmation through their portal, or the customer chose to manually move their plan into Abeyance. The plan is now in a waiting state. No content is delivered during this phase. This is intentionally brief — at most a few months between the trigger and January 1. This grace period reflects one of Posterity's core values: the bereaved deserve time to process before their loved one's plan enters its Active Phase.
+A trigger event has occurred — either the non-response trigger has fired or the customer has manually moved their plan into Abeyance using the I'm Ready feature. The plan is now in a waiting state. No content is delivered during this phase. This is intentionally brief — lasting until the following January 1, a maximum of approximately 11 months. This grace period reflects one of Posterity's core values: the bereaved deserve time to process before their loved one's plan enters its Active Phase.
 
 *Phase 4 — Active Phase*
 January 1 has arrived. Content delivery begins according to the customer's calendar. The system automatically generates that year's delivery schedule and posts content on the dates the customer set. This phase repeats annually for each plan year initiated.
 
 ## Core Values
 **Compassion over convenience**
-Content delivery begins January 1 of the year following a plan entering Abeyance — not immediately after the non-response trigger fires. The bereaved deserve time to grieve before receiving scheduled content. Posterity prioritizes emotional readiness over technical immediacy.
+Content delivery begins January 1 of the year following a plan entering Abeyance — not immediately after the trigger event. The bereaved deserve time to grieve before receiving scheduled content. Posterity prioritizes emotional readiness over technical immediacy.
 
 **Life chapters, not dates**
 Most services think in calendar dates. Posterity thinks in life chapters. A plan's year counter does not start when a customer signs up — it starts when their legacy begins for others. A customer who signs up in 2026 and whose plan enters Abeyance in 2034 gets a full Year 1 starting January 1 2035. Plans are organized by years of plan, not calendar dates. Two timelines are tracked: payment timeline and delivery timeline.
@@ -66,7 +65,7 @@ Customers can build, test, preview, and adjust their legacy content at any time 
 - Plans counted in years (Year 1, Year 2, Year 3) not calendar dates
 - Year 1 begins January 1 of the calendar year following plan entering Abeyance
 - Payment timeline and delivery timeline tracked separately
-- Storage fees (Horizon) cover gap between signup and initiation
+- The Horizon storage fee ($9.99/year) applies throughout both the Building and Planning phases — from signup through all years in which no active plan year is delivering content. Storage fees are not limited to the pre-initiation period.
 - Customers can pay for multiple years upfront
 - All plans in Horizon account automatically included in cart at initiation
 - Calendar in user profiles built around real calendar dates tied to plan years
@@ -78,8 +77,8 @@ Customers can build, test, preview, and adjust their legacy content at any time 
 ## Horizon Tier
 - $9.99/year is a holding fee not a service fee
 - Dual purpose:
-  1. Inactive account storage — holds content and account data during years between active plan years when no delivery is scheduled
-  2. Building phase — customer builds legacy content before initiating any plan
+  1. Inactive account storage — holds content and account data during any year in which no active plan delivery is scheduled, including years between active plan years
+  2. Covers both the Building Phase (before initiation) and Planning Phase (post-initiation) storage needs
 - Content stored but not delivered until plan enters Active Phase
 - Recurring annual subscription
 - Horizon subscription transitions into initiated plan upon payment
@@ -156,7 +155,7 @@ If Horizon payment lapses:
 - Unused video slots can be used as message slots (flexible rollover)
 - Remaining messages/videos ticker in user profiles
 - Ability to process multiple posts simultaneously (Phase 5)
-- Manual override "Post Manually" button for API failures (Phase 5)
+- Manual override "Post Manually" button for API failures and general posting workarounds (Phase 5)
 
 ## Video Storage & Compression
 - Storage via Supabase Storage (low cost at early scale)
@@ -212,7 +211,7 @@ If Horizon payment lapses:
 - Explain video storage and posting has higher workload (2x unit weight) — in walkthrough/manual only
 
 ## Build Your Own & Grace
-- Grace (financial hardship) customers: everyone deserves a legacy. Grace plans are available for those who cannot afford standard pricing. Contact us to discuss.
+- Grace plans are available for those facing financial hardship. Everyone deserves a legacy — contact us to discuss a plan built around your situation. A consultation with a Posterity rep is required.
 - Grace customers still pay the Horizon storage fee ($9.99/year) to maintain their account
 - Grace customers should have their 1-2 messages built before contacting Posterity
 - Grace plan details and guidance included in tutorial/onboarding materials
@@ -230,7 +229,7 @@ If Horizon payment lapses:
 - Automated year-by-year fund release via server-side cron job (Mercury Bank)
 - Admin dashboard alerts for any automation failures
 - Manual input panel for Build Your Own and Grace accounts
-- Manual override Post Manually button for API failures
+- Manual override Post Manually button for API failures and general posting workarounds
 - Ability to process multiple posts simultaneously
 - Via Twilio: voicemail notifications
 - Test account option post-launch
@@ -418,7 +417,7 @@ New Price IDs to be generated when Stripe is updated. Update codebase and Vercel
 - Automated year-by-year fund release via server-side cron job
 - Admin dashboard alerts for automation failures
 - Manual input panel for Build Your Own and Grace accounts
-- Manual override for API failures (Post Manually button)
+- Manual override for API failures and general posting workarounds (Post Manually button)
 - Simultaneous post processing
 - Via Twilio: voicemail + outbound SMS notifications
 - Posterity email account
