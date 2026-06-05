@@ -253,6 +253,7 @@ Break-even (with part-time hire, $7,200/year total):
 - Legacy: 9 customers
 
 Realistic mixed target: 25-35 customers covers all costs including part-time hire (12-18 month target)
+Full pricing analysis: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchzJMzb5v-MCqJE/view?usp=sharing
 
 ## Legal & Compliance
 - Formal Terms of Service before launch (lawyer review)
@@ -398,6 +399,14 @@ Set in both .env.local and Vercel:
 - Sales sheet + investor materials + growth projections
 - Life insurance partnership exploration
 - Service time limit legal documentation
+
+## Important Links
+- Live site: https://posterity-seven.vercel.app
+- GitHub: https://github.com/jerthrwicked/posterity (PRIVATE)
+- Vercel dashboard: https://vercel.com/jerthrwicked/posterity
+- Stripe dashboard: https://dashboard.stripe.com/test/dashboard
+- Supabase dashboard: https://supabase.com/dashboard/project/vypytfmutmeyfwmkapjg
+- Pricing analysis PDF: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchzJMzb5v-MCqJE/view?usp=sharing
 
 ## How To Resume
 1. Open Cursor
