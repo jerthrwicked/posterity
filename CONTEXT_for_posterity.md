@@ -67,7 +67,7 @@ Customers can build, test, preview, and adjust their legacy content at any time 
 - Payment timeline and delivery timeline tracked separately
 - The Horizon storage fee ($9.99/year) applies throughout both the Building and Planning phases — from signup through all years in which no active plan year is delivering content. Storage fees are not limited to the pre-initiation period.
 - Customers can pay for multiple years upfront
-- All plans in Horizon account automatically included in cart at initiation
+- All plans in a customer's Horizon account are built during the Building Phase and paid for together at initiation
 - Calendar in user profiles built around real calendar dates tied to plan years
 - Funds for Year 2 not accessed until Year 1 is complete
 - Year-by-year fund release automated via server-side cron job
@@ -116,13 +116,17 @@ If Horizon payment lapses:
 - Optional but strongly encouraged
 - Customer adds trusted contact name and email in user profile during setup
 - System automatically sends trusted contact an invitation to create their own Posterity portal account
-- Customer can see confirmation that trusted contact has accepted and set up their account
+- Invitation automatically resent every 6 months until accepted. Can also be resent manually via admin dashboard.
+- Customer receives notifications alongside trusted contact reminding them that their trusted contact has not yet set up their account
+- Customer receives notification when trusted contact accepts invitation and sets up their account
+- If trusted contact never sets up their account the check-in non-response system still functions independently — trusted contact is optional
 - Trusted contact portal is a separate login on the Posterity site, completely independent from customer account
 - Trusted contact portal shows: their role, linked customer, notification history, confirmation button
 - Trusted contact receives all 6 check-in notifications alongside customer during Planning Phase
 - When trusted contact believes customer has passed: they log into their portal and submit confirmation
 - Confirmation requires double verification (re-enter password + confirmation code sent to their email/phone) to prevent accidental triggering
 - Once confirmed: non-response trigger fires, plan moves into Abeyance
+- All plans within a customer profile move through phases together simultaneously — one customer, one phase progression
 - Trusted contact payment authority: TBD, tabled for later discussion
 - Trusted Contact page added to global nav dropdown for easy portal access
 
@@ -169,6 +173,7 @@ If Horizon payment lapses:
 - Via Twilio: dedicated Posterity phone number with voicemail enabled
 - Via Twilio: inbound customer contact for Build Your Own inquiries, general questions, Grace tier applications
 - Via Twilio: outbound automated SMS notifications to customers (check-ins, alerts, delivery confirmations)
+- Via Twilio: delivery of all forms of customer content including messages, videos (MMS), and secure links
 - Via Twilio: secure video link delivery fallback if MMS carrier delivery fails
 - No intermediary at launch, founder handles directly
 - Posterity email account (Phase 5) — used for video delivery via link and responding to customer email inquiries
@@ -189,38 +194,38 @@ If Horizon payment lapses:
 - Calendar setup — customers set real dates (anniversaries, birthdays, custom dates) that feed the automation system
 - Social media connection (Meta API + unique Posterity-generated backup credentials — required). 2FA configured using Posterity-controlled contact details.
 - Video/photo/message upload with FFmpeg compression
-- Total cost calculation
-- Payment setup (pre-loaded balance)
-- Trusted contact setup — enter name and email, system sends invitation, customer confirms acceptance
+- Previews of all uploaded images, videos, and messages displayed within each plan's building dashboard so customers can review their content at any time
+- Live cart top right of dashboard (above dropdown nav) — shows all plans currently being built with total cost, storage fee, and next payment date as a permanent separate line item. Updates in real time. Persists across sessions.
+- All plans currently being built are automatically in the cart. Customer pays once for all plans simultaneously — full upfront payment.
+- Plan deletion automatically removes cart item. Deletion triggers confirmation: "Are you sure? This will permanently delete all work on this plan and cannot be undone."
+- Trusted contact setup — enter name and email, system sends invitation, customer confirms acceptance and receives notification when trusted contact sets up their account
 - Check-in preferences — we recommend enabling both email and SMS notifications for maximum reliability, along with trusted contact details for check-in alerts
 - Remaining messages/videos ticker
 - Assurance that money not withdrawn until plan enters Active Phase
-- Multi-plan side menu — customers can create and work on multiple plans simultaneously
-- All plans in Horizon account automatically included in cart at initiation
-- "I'm Ready" feature — allows customer to manually move their plan into Abeyance on their own terms. Displayed in profile with explanation: "Don't want to wait? Use this option to manually transition your plan into abeyance and begin your legacy journey on your own terms." Button reads: "I'm Ready" (Transition your plan into abeyance and begin your legacy journey). Requires double verification to prevent accidental triggering.
+- Multi-plan side menu — customers can create and work on multiple plans simultaneously. Each plan displays its current phase clearly.
+- "I'm Ready" button (Don't want to wait for the unexpected? Use this option to manually transition your plan into Abeyance and begin your legacy journey on your own terms.) Requires double verification to prevent accidental triggering.
 - All automated and set up to notify Posterity team
 
 ## Onboarding & Walkthrough (Phase 4)
-- Step-by-step onboarding walkthrough
+- Step-by-step onboarding walkthrough triggered on first login
+- Onboarding FAQ available within the app for reference after initial walkthrough
 - Explain the four plan phases (Horizon, Planning, Abeyance, Active) during onboarding
 - The four phases should feel like a natural, fluid progression to the customer — not a technical system. Each phase mirrors a stage of their own end of life journey: building their legacy, living with it in place, the quiet waiting, and finally the moment their voice reaches the people they love.
 - Phase language displayed in user profile dashboard so customers always know which phase their plan is in
-- AI chatbot for customer setup guidance and product explanations
-- Test/preview mode so customers can see exactly what recipients will receive
+- AI chatbot for customer setup guidance, product explanations, and general questions
 - Encourage customers to double-check and test everything before finalizing
 - Explain video storage and posting has higher workload (2x unit weight) — in walkthrough/manual only
 
 ## Build Your Own & Grace
-- Grace plans are available for those facing financial hardship. Everyone deserves a legacy — contact us to discuss a plan built around your situation. A consultation with a Posterity rep is required.
-- Grace customers still pay the Horizon storage fee ($9.99/year) to maintain their account
+- Grace plans are available for those facing financial hardship. A consultation with a Posterity rep is required.
+- Grace customers pay a reduced storage fee of $4.99/year (Posterity Grace Storage — separate Stripe product, admin-assigned via unique access code generated after consultation). This reduced rate is a potential future branding win — could be positioned publicly as a signal of Posterity's commitment to accessibility during Phase 6 marketing review.
 - Grace customers should have their 1-2 messages built before contacting Posterity
-- Grace plan details and guidance included in tutorial/onboarding materials
-- For Grace plans: admin initiates the plan on behalf of the customer after contact
+- Grace plan details and guidance included in onboarding FAQ only — not in main onboarding flow
+- For Grace plans: admin initiates the plan on behalf of the customer after consultation
+- Grace and Custom customers follow the same phase progression as standard customers — Planning Phase into Abeyance with full trigger system. Custom parameters set by admin determine their posting schedule. Once parameters are set the automated system treats them identically to standard accounts.
 - For Custom (Build Your Own) plans: admin sets custom account parameters first, customer builds content after parameters are established following contact. Customer initiates but plan goes straight to Planning Phase — no standard Horizon building phase.
 - Manual input panel in admin dashboard required for both Grace and Custom account setup
-- Automated system treats them like regular accounts once parameters are set
-- How Grace and Custom plans fit year-by-year automation: needs further discussion before building
-- Contact Us buttons on pricing page (no Stripe product needed)
+- Custom and Grace tiers use Contact Us buttons on pricing page — no public checkout. Grace storage fee ($4.99/year) is a separate Stripe product assigned by admin after consultation via unique access code. No public-facing checkout for Grace storage.
 
 ## Admin & Operations (Phase 5)
 - Operational dashboard: all tasks in priority order
@@ -270,7 +275,7 @@ Full pricing analysis: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchzJMzb
 - Copyright application
 - Liability FAQ: Posterity not responsible for customer failure to meet standards of operation
 - Standards of use FAQ required
-- Refund policy: unspent years refunded ONLY if company closes OR delivery proves unfeasible AND customer met required standards
+- Refund policy: unspent years refunded ONLY if company closes OR delivery proves unfeasible AND customer met required standards of operation and compliance as outlined in contract
 - Tax compliance (Phase 6)
 - Service time limit legal documentation (5yr guaranteed, unlimited optional) — lawyer input needed
 - Formal escrow language — lawyer review Phase 6
@@ -368,6 +373,7 @@ Set in both .env.local and Vercel:
 | Posterity Basic | price_1TeTeyBcdnR2VoDgYhf7uym0 | Pending update to $99 |
 | Posterity Premium | price_1Tcvj2BcdnR2VoDgt4oZu8VA | Pending update to $249 |
 | Posterity Legacy | price_1TeTj5BcdnR2VoDgtfA9O3z8 | Pending update to $899 |
+| Posterity Grace Storage | N/A | Pending creation at $4.99/year — admin assigned via unique access code |
 
 New Price IDs to be generated when Stripe is updated. Update codebase and Vercel env vars after each change. Always test checkout after updating.
 
@@ -396,12 +402,14 @@ New Price IDs to be generated when Stripe is updated. Update codebase and Vercel
 ### Phase 4 — 8-12 sessions (16-36 hours)
 - User profiles (real-date calendar setup, content scheduling, social media setup)
 - Multi-plan dashboard with side menu (create and work on multiple plans simultaneously)
-- All plans in Horizon auto-included in cart at initiation
-- Onboarding walkthrough + AI chatbot + test/preview mode
+- Live cart top right of dashboard showing all plans, total cost, storage fee, next payment date
+- Plan deletion flow with permanent delete confirmation message
+- All plans in Horizon auto-included in cart during building phase
+- Onboarding walkthrough + onboarding FAQ + AI chatbot + first-login triggered walkthrough
 - Four plan phases explanation in onboarding and dashboard
 - "I'm Ready" feature (customer manually moves plan into Abeyance)
 - Check-in system (6 month intervals, 3 month warning, 2x/month notifications via Twilio + email)
-- Trusted contact system (optional portal, double verification confirmation, invitation flow)
+- Trusted contact system (optional portal, double verification confirmation, invitation flow, resend logic)
 - Video upload + FFmpeg.wasm compression (client-side at upload)
 - Video size/length validation (25MB max, 720p min, 3-4 min max)
 - Remaining messages/videos ticker
@@ -417,6 +425,8 @@ New Price IDs to be generated when Stripe is updated. Update codebase and Vercel
 - Automated year-by-year fund release via server-side cron job
 - Admin dashboard alerts for automation failures
 - Manual input panel for Build Your Own and Grace accounts
+- Grace access code generation system (unique codes for Grace storage fee assignment)
+- Create Posterity Grace Storage Stripe product ($4.99/year)
 - Manual override for API failures and general posting workarounds (Post Manually button)
 - Simultaneous post processing
 - Via Twilio: voicemail + outbound SMS notifications
@@ -436,6 +446,7 @@ New Price IDs to be generated when Stripe is updated. Update codebase and Vercel
 - Sales sheet + investor materials + growth projections
 - Life insurance partnership exploration
 - Service time limit legal documentation
+- Grace Storage public branding review ($4.99 accessibility signal)
 
 ### Total Remaining: 20-29 sessions (40-87 hours)
 
