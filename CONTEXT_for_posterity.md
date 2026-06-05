@@ -2,23 +2,7 @@
 Last Updated: June 2026
 
 ## What Is Posterity
-A social media legacy app that allows users to schedule messages, memories, and content to be delivered to loved ones after death. A digital time capsule with a subscription model. Posterity posts content on behalf of customers to their social media accounts after plan activation.
-
-## Core Values
-**Compassion over convenience**
-Content delivery begins January 1 of the year following plan activation — not immediately after the non-response trigger fires. The bereaved deserve time to grieve before receiving scheduled content. Posterity prioritizes emotional readiness over technical immediacy.
-
-**Life chapters, not dates**
-Most services think in calendar dates. Posterity thinks in life chapters. A plan's year counter does not start when a customer signs up — it starts when their legacy begins for others. A customer who signs up in 2026 and whose plan enters abeyance in 2034 gets a full Year 1 starting January 1 2035. Plans are organized by years of plan, not calendar dates. Two timelines are tracked: payment timeline and delivery timeline.
-
-**Trust through transparency**
-No employee ever touches customer funds directly. All financial movements are automated with full audit trails. Customers can trust that their legacy investment is protected.
-
-**Accessibility without compromise**
-Financial hardship options ensure everyone can leave something behind regardless of means. A legacy should not be a luxury.
-
-**Control until the end**
-Customers can build, test, preview, and adjust their legacy content at any time before activation. Nothing is set in stone until they are ready.
+A social media legacy app that allows users to schedule messages, memories, and content to be delivered to loved ones after they are gone. A digital time capsule with a subscription model. Posterity posts content on behalf of customers to their social media accounts after plan activation.
 
 ## Subscription Tiers (LOCKED June 2026)
 | Tier | Price | Messages | Video |
@@ -36,13 +20,17 @@ Plan names on site/customer-facing materials: Horizon, Basic, Premium, Legacy, C
 Plan names in Stripe only: Posterity Horizon, Posterity Basic, Posterity Premium, Posterity Legacy, Posterity Grace.
 
 ## Plan Lifecycle & Phases
-Posterity plans move through four distinct phases. This language appears throughout the product, the onboarding walkthrough, and all customer-facing materials. It is a core part of what makes Posterity unique — clinical or death-related terminology is removed entirely. The system responds only to events and dates, never to death itself.
+Posterity plans move through four distinct phases. This language appears throughout the product, the onboarding walkthrough, and all customer-facing materials. It is a core part of what makes Posterity unique — clinical terminology is removed entirely. The system responds only to events and dates, never to the customer's passing itself.
 
 **Key Terms:**
-- **Initiated** — a plan that has been paid for and exists in the system
-- **Non-response trigger** *(internal term only)* — the system event that moves a plan into Abeyance. Occurs when check-in goes unanswered after all 6 notifications, or when trusted contact submits confirmation. The system responds only to events — never to death itself.
+- **Initiated** — a plan that has been paid for and exists in the system. When a customer pays for their plan they are said to have initiated it. Initiation is the act of funding a plan and bringing it into existence within Posterity.
+- **Non-response trigger** *(internal term only)* — the system event that moves a plan into Abeyance. Occurs in one of three ways:
+  1. Check-in goes unanswered after all 6 notifications
+  2. Trusted contact submits confirmation through their portal
+  3. Customer manually moves their plan into Abeyance using the "I'm Ready" option
+  The system responds only to events — never to the customer's passing itself.
 - **Abeyance** — the intentional waiting period between the non-response trigger and plan activation. Content is ready but not yet delivered. The bereaved are given time to process their loss.
-- **Active** — the plan is delivering content according to the customer's calendar
+- **Active** — the plan is delivering content according to the customer's calendar. Activation occurs automatically on January 1 following the plan entering Abeyance.
 
 **The Four Phases:**
 
@@ -50,13 +38,29 @@ Posterity plans move through four distinct phases. This language appears through
 The customer has subscribed to Horizon at $9.99/year. They are actively building their legacy — uploading content, setting up their calendar, and selecting the plan tiers they intend to initiate. Multiple plans can be built and worked on simultaneously via a side menu in the dashboard. There is no time limit on this phase. The Horizon subscription covers storage for as long as the customer remains in this phase.
 
 *Phase 2 — Planning Phase (Post-Initiation)*
-The customer has paid for their plan(s). The plan is now initiated — it exists, it is funded, and content continues to be refined. The customer continues their regular 6-month check-ins. This is typically the longest phase — it lasts however long the customer lives after initiating their plan, potentially years or decades. The Horizon subscription transitions into the initiated plan at this point.
+The customer has paid for their plan(s) (initiated). The plan now exists, is funded, and content continues to be refined. The customer continues their regular 6-month check-ins. This is typically the longest phase — it lasts from the moment a plan is initiated until the non-response trigger fires, potentially spanning years or decades.
 
 *Phase 3 — Abeyance*
-The non-response trigger has fired — either the check-in system detected a non-response after all 6 notifications, or a trusted contact submitted a confirmation through their portal. The plan is now in a waiting state. No content is delivered during this phase. This is intentionally brief — at most a few months between the trigger and January 1. This grace period reflects one of Posterity's core values: the bereaved deserve time to process before a loved one's legacy begins arriving.
+The non-response trigger has fired — either the check-in system detected a non-response after all 6 notifications, a trusted contact submitted a confirmation through their portal, or the customer chose to manually move their plan into Abeyance. The plan is now in a waiting state. No content is delivered during this phase. This is intentionally brief — at most a few months between the trigger and January 1. This grace period reflects one of Posterity's core values: the bereaved deserve time to process before their loved one's plan enters its Active Phase.
 
 *Phase 4 — Active Phase*
 January 1 has arrived. Content delivery begins according to the customer's calendar. The system automatically generates that year's delivery schedule and posts content on the dates the customer set. This phase repeats annually for each plan year initiated.
+
+## Core Values
+**Compassion over convenience**
+Content delivery begins January 1 of the year following a plan entering Abeyance — not immediately after the non-response trigger fires. The bereaved deserve time to grieve before receiving scheduled content. Posterity prioritizes emotional readiness over technical immediacy.
+
+**Life chapters, not dates**
+Most services think in calendar dates. Posterity thinks in life chapters. A plan's year counter does not start when a customer signs up — it starts when their legacy begins for others. A customer who signs up in 2026 and whose plan enters Abeyance in 2034 gets a full Year 1 starting January 1 2035. Plans are organized by years of plan, not calendar dates. Two timelines are tracked: payment timeline and delivery timeline.
+
+**Trust through transparency**
+No employee ever touches customer funds directly. All financial movements are automated with full audit trails. Customers can trust that their legacy investment is protected.
+
+**Accessibility without compromise**
+Financial hardship options ensure everyone can leave something behind regardless of means. A legacy should not be a luxury.
+
+**Control until the end**
+Customers can build, test, preview, and adjust their legacy content at any time before their plan enters Abeyance. Nothing is set in stone until they are ready. Customers also have the option to manually move their plan into Abeyance on their own terms using the "I'm Ready" feature.
 
 ## Plan Year System
 - Plans counted in years (Year 1, Year 2, Year 3) not calendar dates
@@ -91,7 +95,7 @@ If Horizon payment lapses:
 
 ## Calendar System
 - Plan Year 1 begins January 1 of the calendar year following plan entering Abeyance
-- Intentional grace period: gives bereaved time to process loss before receiving content
+- Intentional grace period: gives bereaved time to process before plan enters Active Phase
 - Uses real calendar dates — no relative day counting
 - Customers set real dates during calendar setup (anniversaries, birthdays, custom dates)
 - System auto-generates annual delivery schedule every January 1
@@ -102,7 +106,7 @@ If Horizon payment lapses:
 - Full automation possible with this model
 
 ## Check-in System (Planning Phase)
-- User confirms they are present every 6 months via email or SMS
+- Customer checks in every 6 months via email or SMS
 - Missed check-in triggers 3-month warning period:
   - Via Twilio SMS + email: 2 notifications/month for 3 months (6 total)
   - Notifications sent to BOTH customer AND trusted contact
@@ -128,7 +132,7 @@ If Horizon payment lapses:
 - Meta Business API required for all scheduled posts
 - Backup login credentials REQUIRED
 - Individual unique passwords automatically generated by Posterity for each customer, stored securely in Supabase
-- Customers are responsible for activating and maintaining their backup credentials prior to plan activation. Failure to provide credentials is a breach of user agreement but will not cancel service.
+- Customers are responsible for activating and maintaining their backup credentials prior to plan entering Abeyance. Failure to provide credentials is a breach of user agreement but will not cancel service.
 - 2FA must be configured using Posterity-controlled backup email or Twilio phone number to ensure access post plan activation
 - Buffer used by Posterity team post plan activation to post content to customer social media accounts. Direct platform login used as fallback.
 - Posterity team posts on behalf of customers during Active Phase
@@ -189,26 +193,34 @@ If Horizon payment lapses:
 - Total cost calculation
 - Payment setup (pre-loaded balance)
 - Trusted contact setup — enter name and email, system sends invitation, customer confirms acceptance
-- Check-in preferences — preferred notification method (email or SMS) and trusted contact details for check-in alerts
+- Check-in preferences — we recommend enabling both email and SMS notifications for maximum reliability, along with trusted contact details for check-in alerts
 - Remaining messages/videos ticker
 - Assurance that money not withdrawn until plan enters Active Phase
 - Multi-plan side menu — customers can create and work on multiple plans simultaneously
 - All plans in Horizon account automatically included in cart at initiation
+- "I'm Ready" feature — allows customer to manually move their plan into Abeyance on their own terms. Displayed in profile with explanation: "Don't want to wait? Use this option to manually transition your plan into abeyance and begin your legacy journey on your own terms." Button reads: "I'm Ready" (Transition your plan into abeyance and begin your legacy journey). Requires double verification to prevent accidental triggering.
 - All automated and set up to notify Posterity team
 
 ## Onboarding & Walkthrough (Phase 4)
 - Step-by-step onboarding walkthrough
 - Explain the four plan phases (Horizon, Planning, Abeyance, Active) during onboarding
+- The four phases should feel like a natural, fluid progression to the customer — not a technical system. Each phase mirrors a stage of their own end of life journey: building their legacy, living with it in place, the quiet waiting, and finally the moment their voice reaches the people they love.
 - Phase language displayed in user profile dashboard so customers always know which phase their plan is in
 - AI chatbot for customer setup guidance and product explanations
 - Test/preview mode so customers can see exactly what recipients will receive
 - Encourage customers to double-check and test everything before finalizing
 - Explain video storage and posting has higher workload (2x unit weight) — in walkthrough/manual only
 
-## Build Your Own & Financial Hardship (Grace)
-- Manual input panel in admin dashboard for custom posting parameters
+## Build Your Own & Grace
+- Grace (financial hardship) customers: everyone deserves a legacy. Grace plans are available for those who cannot afford standard pricing. Contact us to discuss.
+- Grace customers still pay the Horizon storage fee ($9.99/year) to maintain their account
+- Grace customers should have their 1-2 messages built before contacting Posterity
+- Grace plan details and guidance included in tutorial/onboarding materials
+- For Grace plans: admin initiates the plan on behalf of the customer after contact
+- For Custom (Build Your Own) plans: admin sets custom account parameters first, customer builds content after parameters are established following contact. Customer initiates but plan goes straight to Planning Phase — no standard Horizon building phase.
+- Manual input panel in admin dashboard required for both Grace and Custom account setup
 - Automated system treats them like regular accounts once parameters are set
-- How they fit year-by-year automation: needs further discussion before building
+- How Grace and Custom plans fit year-by-year automation: needs further discussion before building
 - Contact Us buttons on pricing page (no Stripe product needed)
 
 ## Admin & Operations (Phase 5)
@@ -269,8 +281,8 @@ Full pricing analysis: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchzJMzb
 - Core angle: life chapters not dates
 - Hero line: "Your voice. Forever."
 - Supporting line: "Your legacy, on your terms"
-- The four plan phases are a core brand differentiator and selling point. Phase language removes all clinical or death-related terminology from the product entirely and should be prominent in marketing materials, the onboarding walkthrough, and the user dashboard.
-- January 1 delivery start is a marketing and trust-building point — Posterity is thoughtful about when content is delivered, not just that it is delivered. Content lands when recipients are ready to receive it, not in the immediate fog of grief.
+- The four plan phases are a core brand differentiator and selling point. Phase language removes all clinical terminology from the product entirely and should be prominent in marketing materials, the onboarding walkthrough, and the user dashboard.
+- January 1 delivery start is a marketing and trust-building point — Posterity is thoughtful about when content is delivered, not just that it is delivered. Content lands when our customers decided their recipients would be ready to receive it, not in the immediate fog of grief.
 - Upgrade savings story: more messages/videos = lower cost per unit
   - Premium saves 24.5% vs Basic rate
   - Legacy saves 28.3% vs Basic rate
@@ -285,7 +297,7 @@ Full pricing analysis: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchzJMzb
 - Claude design first, Canva as backup
 
 ## Potential Late Add-Ons (Tabled — not concrete)
-- Application/approval process for all users
+- Application/approval process for Legacy tier only
 - Additional social media platforms
 - Trusted contact payment authority
 - Facebook Memories feature
@@ -388,6 +400,7 @@ New Price IDs to be generated when Stripe is updated. Update codebase and Vercel
 - All plans in Horizon auto-included in cart at initiation
 - Onboarding walkthrough + AI chatbot + test/preview mode
 - Four plan phases explanation in onboarding and dashboard
+- "I'm Ready" feature (customer manually moves plan into Abeyance)
 - Check-in system (6 month intervals, 3 month warning, 2x/month notifications via Twilio + email)
 - Trusted contact system (optional portal, double verification confirmation, invitation flow)
 - Video upload + FFmpeg.wasm compression (client-side at upload)
