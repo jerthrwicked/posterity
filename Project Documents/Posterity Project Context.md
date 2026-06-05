@@ -1,4 +1,4 @@
-# Posterity - Project Context
+﻿# Posterity - Project Context
 Last Updated: June 2026
 
 ## Pricing Analysis Document
@@ -268,6 +268,7 @@ Stripe fees: ~2.9% + $0.30 per transaction — not material at early scale, fact
 - Global nav in layout.js (dropdown, all pages)
 - Homepage cards matching pricing cards
 - sync-context.js + npm run sync for end-of-session context updates
+- Project Documents folder created in project root
 - Cursor Pro subscribed (Sonnet 4.6 for daily use, Opus 4.8 for complex tasks)
 
 ## Environment Variables

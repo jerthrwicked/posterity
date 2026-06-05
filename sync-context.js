@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
 
-const src = path.join(__dirname, "CONTEXT for posterity.md");
+const src = path.join(__dirname, "CONTEXT_for_posterity.md");
 const oneDriveMd = "C:\\Users\\jerth\\OneDrive\\Documents\\Important\\Posterity Project Context.md";
 const oneDrivePdf = "C:\\Users\\jerth\\OneDrive\\Documents\\Important\\Posterity Project Context.pdf";
 const projectDocsMd = path.join(__dirname, "Project Documents", "Posterity Project Context.md");
