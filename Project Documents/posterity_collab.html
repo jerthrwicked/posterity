@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Posterity — Collaboration System</title>
+
+<style>
+  :root {
+    --ink: #0d0d0d;
+    --paper: #f5f0e8;
+    --gold: #c9a84c;
+    --gold-light: #e8d5a3;
+    --gold-dark: #8b6914;
+    --muted: #6b6355;
+    --accent-red: #8b2a2a;
+    --accent-green: #2a5c3f;
+    --accent-blue: #1a3a5c;
+    --rule: #d4c9b0;
+    --card-bg: #faf7f2;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  /* COVER */
+  .cover {
+    min-height: 100vh;
+    background: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 40%, rgba(201,168,76,0.12) 0%, transparent 70%);
+  }
+
+  .cover-ornament {
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-family: 'Courier New', monospace;
+    margin-bottom: 40px;
+  }
+
+  .cover-title {
+    font-size: clamp(52px, 8vw, 96px);
+    font-weight: 300;
+    color: #fff;
+    letter-spacing: -1px;
+    line-height: 1.05;
+    margin-bottom: 16px;
+  }
+
+  .cover-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .cover-subtitle {
+    font-size: 22px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 1px;
+    margin-bottom: 60px;
+    font-style: italic;
+  }
+
+  .cover-divider {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 60px;
+  }
+
+  .cover-meta {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  /* LAYOUT */
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 60px;
+  }
+
+  @media (max-width: 700px) {
+    .page { padding: 40px 24px; }
+  }
+
+  /* SECTION HEADERS */
+  .section-label {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .section-title {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    margin-bottom: 32px;
+    color: var(--ink);
+  }
+
+  .section-title em {
+    font-style: italic;
+    color: var(--gold-dark);
+  }
+
+  .lead {
+    font-size: 21px;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 48px;
+    font-style: italic;
+  }
+
+  p { margin-bottom: 20px; color: #2a2520; }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 60px 0;
+  }
+
+  .ornamental-divider {
+    text-align: center;
+    margin: 60px 0;
+    color: var(--gold);
+    font-size: 18px;
+    letter-spacing: 8px;
+  }
+
+  /* CARDS */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin: 40px 0;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 32px 28px;
+    position: relative;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+    border-radius: 4px 4px 0 0;
+  }
+
+  .card-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--ink);
+  }
+
+  .card-body {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* PHASE BLOCKS */
+  .phase-block {
+    display: flex;
+    gap: 28px;
+    margin-bottom: 40px;
+    align-items: flex-start;
+  }
+
+  .phase-number {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    background: var(--ink);
+    color: var(--gold);
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-top: 4px;
+  }
+
+  .phase-content h3 {
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+
+  .phase-content p {
+    font-size: 16px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* STATUS BAR */
+  .status-bar {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 6px;
+    padding: 24px 28px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    margin: 40px 0;
+    line-height: 2;
+  }
+
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-green { background: #4ade80; box-shadow: 0 0 6px #4ade80; }
+  .dot-yellow { background: #fbbf24; box-shadow: 0 0 6px #fbbf24; }
+  .dot-red { background: #f87171; box-shadow: 0 0 6px #f87171; }
+
+  /* POSTERITY ID CARD */
+  .id-card {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 360px;
+    position: relative;
+    overflow: hidden;
+    margin: 40px auto;
+  }
+
+  .id-card::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(201,168,76,0.2) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .id-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  .id-card-brand {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .id-card-type {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+  }
+
+  .id-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin-bottom: 16px;
+    color: #fff;
+  }
+
+  .id-name {
+    font-size: 22px;
+    font-weight: 300;
+    margin-bottom: 4px;
+  }
+
+  .id-role {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .id-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .id-stat-label {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .id-stat-value {
+    font-size: 18px;
+    font-weight: 300;
+    color: #fff;
+  }
+
+  .id-gauge-bar {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    height: 4px;
+    margin-top: 20px;
+  }
+
+  .id-gauge-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+    border-radius: 2px;
+    width: 72%;
+  }
+
+  .id-gauge-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 6px;
+  }
+
+  /* TIER BLOCKS */
+  .tier-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 20px;
+    align-items: start;
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .tier-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .tier-badge {
+    text-align: center;
+    padding: 10px 8px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .tier-solo { background: #e8f5e9; color: #2a5c3f; }
+  .tier-low { background: #e3f2fd; color: #1a3a5c; }
+  .tier-medium { background: #fff8e1; color: #8b6914; }
+  .tier-heavy { background: #fce4ec; color: #8b2a2a; }
+  .tier-simultaneous { background: #1a1a1a; color: var(--gold); }
+
+  .tier-content h4 {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 6px;
+  }
+
+  .tier-content p {
+    font-size: 15px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* WORKFLOW STEPS */
+  .workflow {
+    counter-reset: step;
+    margin: 40px 0;
+  }
+
+  .workflow-step {
+    counter-increment: step;
+    display: flex;
+    gap: 20px;
+    margin-bottom: 24px;
+    align-items: flex-start;
+  }
+
+  .workflow-step::before {
+    content: counter(step, decimal-leading-zero);
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    flex-shrink: 0;
+    padding-top: 3px;
+    letter-spacing: 1px;
+  }
+
+  .workflow-step-content h4 {
+    font-size: 17px;
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+
+  .workflow-step-content p {
+    font-size: 15px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* CREATIVITY SECTION */
+  .creativity-gauge {
+    background: linear-gradient(135deg, #0d0d0d, #1a1510);
+    border-radius: 8px;
+    padding: 40px;
+    margin: 40px 0;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .creativity-gauge::after {
+    content: '✦';
+    position: absolute;
+    bottom: -20px;
+    right: 20px;
+    font-size: 120px;
+    color: rgba(201,168,76,0.05);
+  }
+
+  .creativity-gauge h3 {
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .creativity-gauge .lead-small {
+    font-size: 16px;
+    color: rgba(255,255,255,0.5);
+    font-style: italic;
+    margin-bottom: 32px;
+  }
+
+  .gauge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 20px;
+  }
+
+  .gauge-item {
+    text-align: center;
+  }
+
+  .gauge-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 2px solid rgba(201,168,76,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    font-size: 22px;
+  }
+
+  .gauge-item-label {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 4px;
+  }
+
+  .gauge-item-value {
+    font-size: 20px;
+    color: var(--gold);
+  }
+
+  /* POINT TABLE */
+  .point-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 32px 0;
+    font-size: 15px;
+  }
+
+  .point-table th {
+    text-align: left;
+    padding: 12px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 2px solid var(--rule);
+  }
+
+  .point-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--rule);
+    color: #2a2520;
+    vertical-align: top;
+  }
+
+  .point-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .point-value {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: var(--gold-dark);
+    font-weight: 500;
+  }
+
+  /* FOOTER */
+  .doc-footer {
+    background: var(--ink);
+    color: rgba(255,255,255,0.35);
+    text-align: center;
+    padding: 40px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+
+  .doc-footer span {
+    color: var(--gold);
+  }
+
+  /* HIGHLIGHT BOX */
+  .highlight-box {
+    border-left: 3px solid var(--gold);
+    padding: 20px 24px;
+    background: rgba(201,168,76,0.06);
+    margin: 32px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .highlight-box p {
+    margin: 0;
+    font-style: italic;
+    color: var(--muted);
+    font-size: 17px;
+  }
+
+  /* TAG */
+  .tag {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--gold);
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 2px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
+
+  .tag-outline {
+    background: transparent;
+    border: 1px solid var(--rule);
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-ornament">✦ &nbsp; Posterity &nbsp; ✦</div>
+  <h1 class="cover-title">The <em>Collaboration</em><br>System</h1>
+  <p class="cover-subtitle">A complete guide to building together</p>
+  <div class="cover-divider"></div>
+  <div class="cover-meta">June 2026 &nbsp;·&nbsp; Confidential &nbsp;·&nbsp; Internal Document</div>
+</div>
+
+<!-- INTRODUCTION -->
+<div class="page">
+  <div class="section-label">01 &nbsp; Introduction</div>
+  <h2 class="section-title">What This<br><em>System Does</em></h2>
+  <p class="lead">Posterity's collaboration system is not a project management tool. It is a living, automated infrastructure that allows multiple builders to work on the same project across different sessions — without stepping on each other's work, without lengthy handoffs, and without ever losing context.</p>
+
+  <p>At its core, the system uses a single source of truth: the <strong>Posterity Project Context document</strong>. Every session begins by reading it. Every session ends by updating it. The context is what connects every builder, every Claude instance, and every build decision made across the entire project.</p>
+
+  <p>This document explains how that system works — how builders communicate through it, how conflicts are prevented, how creativity is tracked, and how the whole thing stays synchronized automatically.</p>
+
+  <div class="highlight-box">
+    <p>"The context is not documentation. It is the project. Everything that has been decided, built, and planned lives there — and it moves forward with every session."</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-icon">🔄</span>
+      <div class="card-title">Fully Automated Sync</div>
+      <p class="card-body">One command at the end of every session updates all locations — local files, OneDrive, Google Docs, session log — simultaneously.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">⚡</span>
+      <div class="card-title">Conflict Prevention</div>
+      <p class="card-body">The context contains active build plans. Claude reads them at session start and flags any overlap before a single line of code is written.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🧠</span>
+      <div class="card-title">AI-Native</div>
+      <p class="card-body">Claude reads, updates, and reasons about the context automatically. Every session starts with full project awareness — no manual briefing required.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">📊</span>
+      <div class="card-title">Live Tracking</div>
+      <p class="card-body">Contribution points, creativity gauges, collaboration tiers, and builder status are all tracked and updated automatically through the session log.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- THE CONTEXT DOCUMENT -->
+<div class="page">
+  <div class="section-label">02 &nbsp; The Medium</div>
+  <h2 class="section-title">The Context<br><em>Document</em></h2>
+  <p class="lead">Every builder works from the same document. It is always current. It is always authoritative.</p>
+
+  <p>The Posterity Project Context is a living markdown document maintained across four synchronized locations: the local project folder, OneDrive, a Google Doc, and a generated PDF. When <code>npm run sync</code> runs at the end of a session, all four update simultaneously.</p>
+
+  <p>The document contains everything: product decisions, technical architecture, phase roadmap, brand copy, rules, collaboration status, and the active build plan. When a new session begins, the builder uploads the latest context to Claude. Claude reads it entirely before responding to anything else. This gives every session full project memory — regardless of which Claude instance, which builder, or how long since the last session.</p>
+
+  <div class="status-bar">
+    <div class="status-row"><span class="status-dot dot-green"></span> Context current &nbsp;|&nbsp; Last sync: June 6 2026 &nbsp;|&nbsp; Version: 47</div>
+    <div class="status-row"><span class="status-dot dot-green"></span> Main Builder: Jeremy Grego &nbsp;|&nbsp; Auxiliary: None active</div>
+    <div class="status-row"><span class="status-dot dot-green"></span> No pending notifications &nbsp;|&nbsp; Collaboration tier: Solo</div>
+  </div>
+
+  <p>The notification bar above lives at the very top of the context document. It updates automatically every sync. When a collaborator has worked since your last session, it turns yellow. When a simultaneous session is detected, it turns red.</p>
+
+  <div class="status-bar">
+    <div class="status-row"><span class="status-dot dot-yellow"></span> Context updated since last session — pull latest before building</div>
+    <div class="status-row"><span class="status-dot dot-yellow"></span> New session logged: June 7 2026 — review session notes</div>
+    <div class="status-row"><span class="status-dot dot-green"></span> Main Builder: Jeremy Grego &nbsp;|&nbsp; Auxiliary: Active</div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-row"><span class="status-dot dot-red"></span> Simultaneous session detected — coordinate before building</div>
+    <div class="status-row"><span class="status-dot dot-red"></span> Main Builder switch request pending from: [Collaborator Name]</div>
+    <div class="status-row"><span class="status-dot dot-yellow"></span> Collaboration tier: Heavy — sync after every build segment</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- WORKFLOW -->
+<div class="page">
+  <div class="section-label">03 &nbsp; The Workflow</div>
+  <h2 class="section-title">Session<br><em>Workflow</em></h2>
+  <p class="lead">Every session — yours or a collaborator's — follows the same sequence. No deviations. The workflow is what makes the system work.</p>
+
+  <h3 style="font-size:22px; font-weight:400; margin-bottom:24px; margin-top:8px;">Session Start</h3>
+  <div class="workflow">
+    <div class="workflow-step">
+      <div class="workflow-step-content">
+        <h4>Pull latest context from Google Drive</h4>
+        <p>Always start from the most current version. Never work from a cached or local copy without verifying it matches the Google Doc version number.</p>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <div class="workflow-step-content">
+        <h4>Upload context to Claude Project Instructions</h4>
+        <p>Open the Posterity project in Claude.ai and paste the full context into the Project Instructions. This gives Claude complete project memory for the session.</p>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <div class="workflow-step-content">
+        <h4>Read the notification bar</h4>
+        <p>Check the status indicators at the top of the context. If yellow or red, review recent session notes before planning any work.</p>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <div class="workflow-step-content">
+        <h4>Declare your build plan to Claude</h4>
+        <p>Before writing a single line of code, tell Claude what you intend to build. Claude will read the current context, check for conflicts with other active plans, and confirm it is safe to proceed.</p>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <div class="workflow-step-content">
+        <h4>Work from the Collaborative Phase section</h4>
+        <p>Auxiliary builders must only work on items listed in the Collaborative Phase section of the context. This section is auto-generated each session and lists everything safe to build in parallel with the primary phase.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-size:22px; font-weight:400; margin-bottom:24px; margin-top:40px;">Session End</h3>
+  <div class="workflow">
+    <div class="workflow-step">
+      <div class="workflow-step-content">
+        <h4>Fill in session-notes.md</h4>
+        <p>Document key decisions made, what was built, what was discussed, and next session priorities. This feeds the session log automatically.</p>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <div class="workflow-step-content">
+        <h4>Run npm run sync</h4>
+        <p>One command handles everything: updates local context, copies to OneDrive and Project Documents, regenerates PDF, appends session notes to Google Session Log Doc, updates Google Context Doc, and commits and pushes to GitHub.</p>
+      </div>
+    </div>
+    <div class="workflow-step">
+      <div class="workflow-step-content">
+        <h4>Update Claude Project Instructions</h4>
+        <p>Copy the updated context and paste into the Posterity Claude Project Instructions. This ensures the next session starts with full current memory.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <p>Deviations from this workflow require written notification to the project administrator at posterity.admin@gmail.com with a clear explanation of the reasoning. The workflow exists to protect every builder's work — not just yours.</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- BUILDER ROLES -->
+<div class="page">
+  <div class="section-label">04 &nbsp; Builder Roles</div>
+  <h2 class="section-title">Main Builder &<br><em>Auxiliary</em></h2>
+  <p class="lead">At any given time, one builder holds Main Builder status. All others are Auxiliary. Roles can switch — but only through a declared request, not unilaterally.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-icon">👑</span>
+      <div class="card-title">Main Builder</div>
+      <p class="card-body">Owns the primary phase build. Works directly on whatever the current Phase Roadmap item is. There is only ever one Main Builder active at a time.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔧</span>
+      <div class="card-title">Auxiliary Builder</div>
+      <p class="card-body">Works exclusively from the auto-generated Collaborative Phase section. Builds parallel items that do not conflict with the primary phase work.</p>
+    </div>
+  </div>
+
+  <h3 style="font-size:20px; font-weight:400; margin: 32px 0 16px;">Switching Roles</h3>
+  <p>Either builder can request a role switch at any time by posting a request in the notification section of the context. The current Main Builder must acknowledge the switch before it takes effect. This prevents two people from unknowingly working as Main Builder simultaneously — which is the primary source of build conflicts.</p>
+
+  <p>For long multi-session builds, declare the full plan in the context upfront. As long as no builder deviates from their declared plan, no conflicts arise across sessions — even without real-time coordination.</p>
+</div>
+
+<hr class="divider">
+
+<!-- COLLABORATION TIERS -->
+<div class="page">
+  <div class="section-label">05 &nbsp; Intensity Tiers</div>
+  <h2 class="section-title">Collaboration<br><em>Tiers</em></h2>
+  <p class="lead">The collaboration tier is a live gauge of how actively the project is being worked on. It lives in the notification bar and updates automatically based on session frequency.</p>
+
+  <div style="margin: 40px 0;">
+    <div class="tier-row">
+      <div class="tier-badge tier-solo">Solo</div>
+      <div class="tier-content">
+        <h4>One builder, no coordination needed</h4>
+        <p>Standard context update at end of session. No special protocols required.</p>
+      </div>
+    </div>
+    <div class="tier-row">
+      <div class="tier-badge tier-low">Low</div>
+      <div class="tier-content">
+        <h4>Occasional collaboration</h4>
+        <p>Async context updates sufficient. Pull latest context at session start. Session log review recommended.</p>
+      </div>
+    </div>
+    <div class="tier-row">
+      <div class="tier-badge tier-medium">Medium</div>
+      <div class="tier-content">
+        <h4>Regular collaboration</h4>
+        <p>Daily context syncs strongly recommended. Declare build plans before starting. Review session notes carefully.</p>
+      </div>
+    </div>
+    <div class="tier-row">
+      <div class="tier-badge tier-heavy">Heavy</div>
+      <div class="tier-content">
+        <h4>Frequent collaboration</h4>
+        <p>Context update required after every build segment — not just at session end. Treat context as a live document.</p>
+      </div>
+    </div>
+    <div class="tier-row">
+      <div class="tier-badge tier-simultaneous">Simultaneous</div>
+      <div class="tier-content">
+        <h4>Two or more builders working at the same time</h4>
+        <p>Real-time coordination required. Declare plans explicitly. Conflict check mandatory before every build action. Context updates after every segment, no exceptions.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- POSTERITY ID -->
+<div class="page">
+  <div class="section-label">06 &nbsp; Builder Identity</div>
+  <h2 class="section-title">The Posterity<br><em>ID</em></h2>
+  <p class="lead">Every builder on the project has a Posterity ID — a contributor profile that lives in the collaboration section of the context and updates automatically through the session log.</p>
+
+  <div class="id-card">
+    <div class="id-card-header">
+      <div class="id-card-brand">Posterity</div>
+      <div class="id-card-type">Main Builder</div>
+    </div>
+    <div class="id-avatar">👤</div>
+    <div class="id-name">Jeremy Grego</div>
+    <div class="id-role">Founder &nbsp;·&nbsp; Main Builder</div>
+    <div class="id-stats">
+      <div>
+        <div class="id-stat-label">Points This Week</div>
+        <div class="id-stat-value" style="color:var(--gold)">847</div>
+      </div>
+      <div>
+        <div class="id-stat-label">Collab Tier</div>
+        <div class="id-stat-value" style="font-size:14px; padding-top:4px; font-family:'DM Mono',monospace; color:rgba(255,255,255,0.7)">SOLO</div>
+      </div>
+      <div>
+        <div class="id-stat-label">Sessions</div>
+        <div class="id-stat-value">47</div>
+      </div>
+      <div>
+        <div class="id-stat-label">Last Active</div>
+        <div class="id-stat-value" style="font-size:13px; padding-top:5px; font-family:'DM Mono',monospace; color:rgba(255,255,255,0.7)">Jun 6</div>
+      </div>
+    </div>
+    <div class="id-gauge-bar">
+      <div class="id-gauge-fill"></div>
+    </div>
+    <div class="id-gauge-label">
+      <span>Creativity Gauge</span>
+      <span style="color:var(--gold)">72%</span>
+    </div>
+  </div>
+
+  <p>The ID contains: name and position, builder role (Main/Auxiliary), contribution points for the current week, collaboration tier, session count, last active date, and the personal creativity gauge. A photo can be added optionally.</p>
+
+  <p>Points are calculated automatically from session notes entries. The creativity gauge reflects creative contributions specifically — brand decisions, system innovations, concept development — separate from standard build points.</p>
+
+  <h3 style="font-size:20px; font-weight:400; margin: 40px 0 20px;">Point System</h3>
+  <table class="point-table">
+    <thead>
+      <tr>
+        <th>Contribution Type</th>
+        <th>Points</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Phase completion</td><td class="point-value">25 pts</td></tr>
+      <tr><td>Phase-changing creative idea</td><td class="point-value">15 pts</td></tr>
+      <tr><td>Architecture / system design</td><td class="point-value">10 pts</td></tr>
+      <tr><td>Feature build (scaled by complexity)</td><td class="point-value">5–15 pts</td></tr>
+      <tr><td>Brand copy written and approved</td><td class="point-value">8 pts</td></tr>
+      <tr><td>New concept introduced</td><td class="point-value">10 pts</td></tr>
+      <tr><td>Visual / design contribution</td><td class="point-value">7 pts</td></tr>
+      <tr><td>Bug resolution (scaled by severity)</td><td class="point-value">3–8 pts</td></tr>
+      <tr><td>Context / documentation update</td><td class="point-value">2 pts</td></tr>
+      <tr><td>Problem reframed creatively</td><td class="point-value">6 pts</td></tr>
+      <tr><td>Simple code fix</td><td class="point-value">1 pt</td></tr>
+    </tbody>
+  </table>
+
+  <p style="color:var(--muted); font-size:15px; font-style:italic;">The point system is designed to make collaboration fun and competitive — not to create hierarchy. It rewards both technical execution and creative thinking equally, because both are essential to what Posterity is becoming.</p>
+</div>
+
+<hr class="divider">
+
+<!-- CREATIVITY GAUGE -->
+<div class="page">
+  <div class="section-label">07 &nbsp; Creativity</div>
+  <h2 class="section-title">The Creativity<br><em>Gauge</em></h2>
+  <p class="lead">Creativity is not a soft metric at Posterity. It is tracked, weighted, and displayed — because the way this company evolves depends entirely on it.</p>
+
+  <p>Two creativity gauges run simultaneously: a personal gauge tied to each Posterity ID, and a project-wide gauge that reflects the aggregate creative momentum of all builders. Both update through session notes and are displayed in the collaboration section of the context.</p>
+
+  <div class="creativity-gauge">
+    <h3>✦ Project Creativity Gauge</h3>
+    <p class="lead-small">Aggregate creative momentum across all builders and sessions</p>
+    <div class="gauge-grid">
+      <div class="gauge-item">
+        <div class="gauge-circle">🌅</div>
+        <div class="gauge-item-label">Today</div>
+        <div class="gauge-item-value">+34</div>
+      </div>
+      <div class="gauge-item">
+        <div class="gauge-circle">📅</div>
+        <div class="gauge-item-label">This Week</div>
+        <div class="gauge-item-value">+187</div>
+      </div>
+      <div class="gauge-item">
+        <div class="gauge-circle">🌙</div>
+        <div class="gauge-item-label">This Month</div>
+        <div class="gauge-item-value">+612</div>
+      </div>
+      <div class="gauge-item">
+        <div class="gauge-circle">∞</div>
+        <div class="gauge-item-label">All Time</div>
+        <div class="gauge-item-value">2,841</div>
+      </div>
+    </div>
+  </div>
+
+  <p>Creativity points are a subset of the total point system, weighted specifically toward brand-moving contributions: new concepts, system innovations, creative reframes, approved copy, and phase-changing ideas. They track the evolution of Posterity as a brand, not just as a codebase.</p>
+
+  <p>The project-wide gauge gives investors, collaborators, and the founding team a real-time sense of brand momentum. A rising creativity score signals that the product is evolving, not just being built.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-icon">🎨</span>
+      <div class="card-title">Personal Gauge</div>
+      <p class="card-body">Lives on your Posterity ID. Reflects your individual creative contribution rate. Resets weekly with a running all-time total.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🌐</span>
+      <div class="card-title">Project Gauge</div>
+      <p class="card-body">Aggregate of all personal gauges. Shows brand momentum over time. Day, week, month, and all-time views.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- HORIZON BUILDS -->
+<div class="page">
+  <div class="section-label">08 &nbsp; Creative Backlog</div>
+  <h2 class="section-title">Horizon<br><em>Builds</em></h2>
+  <p class="lead">Ideas that emerge during the build process and could change the way Posterity works, looks, or feels. Not tabled because they are unimportant — tabled because they haven't found their phase yet.</p>
+
+  <p>Horizon Builds sits above the Phase Roadmap in the context. Items here are high priority creative sparks that are actively being considered for roadmap inclusion. They are not discarded ideas. They are the next evolution of the product waiting to be built.</p>
+
+  <p>Any builder can add to Horizon Builds during a session. Claude will flag items that could affect the current phase build and surface them at session start. Items that graduate into a phase get moved to the roadmap automatically during the context update.</p>
+
+  <div class="highlight-box">
+    <p>Horizon Builds is where Posterity becomes more than what it was planned to be. It is the space where the product grows beyond its original vision — session by session, idea by idea.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-icon">💡</span>
+      <div class="card-title">How to Add</div>
+      <p class="card-body">Tell Claude during any session. It will be formatted and added to the Horizon Builds section during the end-of-session context update.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🚀</span>
+      <div class="card-title">How Items Graduate</div>
+      <p class="card-body">When a Horizon Build item is ready for a phase, the team declares it in the context and it moves to the roadmap in the next update.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">📊</span>
+      <div class="card-title">Creativity Credit</div>
+      <p class="card-body">Adding a Horizon Build item earns creativity points on your Posterity ID. Phase-changing ideas earn the highest point value in the system.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- MCP INFRASTRUCTURE -->
+<div class="page">
+  <div class="section-label">09 &nbsp; Infrastructure</div>
+  <h2 class="section-title">The MCP<br><em>Layer</em></h2>
+  <p class="lead">Model Context Protocol servers are the automation backbone of the collaboration system. They connect Claude in Cursor directly to GitHub, Supabase, and Google Docs — enabling fully automated syncing without manual steps.</p>
+
+  <div class="phase-block">
+    <div class="phase-number">G</div>
+    <div class="phase-content">
+      <h3>GitHub MCP</h3>
+      <p>Connects Claude to the private Posterity repository. Enables direct code commits, branch management, and push operations without leaving the Cursor Agent. Contact project administrator for repository access.</p>
+    </div>
+  </div>
+
+  <div class="phase-block">
+    <div class="phase-number">S</div>
+    <div class="phase-content">
+      <h3>Supabase MCP</h3>
+      <p>Connects Claude to the Posterity database. Enables schema inspection, query execution, and database operations directly from the Agent. Requires a Supabase personal access token from the project dashboard.</p>
+    </div>
+  </div>
+
+  <div class="phase-block">
+    <div class="phase-number">D</div>
+    <div class="phase-content">
+      <h3>Google Docs MCP</h3>
+      <p>Connects Claude to the Posterity Context Doc and Session Log Doc on Google Drive. Enables automatic context updates and session log appends at the end of every session via npm run sync. Requires the shared service account key file from the project administrator.</p>
+    </div>
+  </div>
+
+  <p>Full setup instructions for all MCP servers are provided in the Posterity Collaboration Setup Guide. Each collaborator creates their own GitHub and Supabase tokens. The Google Docs service account key is shared and provided by the project administrator.</p>
+
+  <div class="highlight-box">
+    <p>Contact <strong>posterity.admin@gmail.com</strong> to receive the Google Docs service account key, GitHub repository access, and Supabase project credentials needed to begin collaborating.</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- CONTACT -->
+<div class="page">
+  <div class="section-label">10 &nbsp; Contact</div>
+  <h2 class="section-title">Project<br><em>Administrator</em></h2>
+
+  <div class="card" style="max-width:480px;">
+    <span class="card-icon">👤</span>
+    <div class="card-title">Jeremy Grego</div>
+    <div style="margin-bottom:12px;">
+      <span class="tag">Founder</span>
+      <span class="tag">Main Builder</span>
+    </div>
+    <p class="card-body" style="margin-bottom:8px;">📧 posterity.admin@gmail.com</p>
+    <p class="card-body" style="margin-bottom:8px;">📱 504-402-0450</p>
+    <p class="card-body">All questions about setup, credentials, workflow deviations, and project direction go here first.</p>
+  </div>
+
+  <p style="margin-top:40px; color:var(--muted); font-size:15px;">This document is confidential and intended for authorized collaborators only. Setup and workflow procedures must be followed completely. Deviations require written notification to the project administrator with a clear explanation of the reasoning.</p>
+</div>
+
+<!-- FOOTER -->
+<div class="doc-footer">
+  <span>Posterity</span> &nbsp;·&nbsp; Collaboration System &nbsp;·&nbsp; June 2026 &nbsp;·&nbsp; Confidential
+</div>
+
+</body>
+</html>
