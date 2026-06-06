@@ -22,3 +22,7 @@ console.log("✅ Markdown copied to Project Documents.");
 // Copy PDF to Project Documents
 fs.copyFileSync(oneDrivePdf, projectDocsPdf);
 console.log("✅ PDF copied to Project Documents.");
+
+// Append session notes to Google Doc (skips automatically if notes are blank)
+console.log("\n📋 Checking session notes...");
+execSync("node session-summary.js", { stdio: "inherit", cwd: __dirname });

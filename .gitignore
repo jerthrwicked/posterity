@@ -42,3 +42,9 @@ next-env.d.ts
 
 # Cursor MCP config (contains API tokens)
 .cursor/mcp.json
+
+# Google service account key
+.cursor/posterity-docs-key.json
+
+# Session notes (appended to Google Doc on sync, then reset)
+session-notes.md
