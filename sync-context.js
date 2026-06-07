@@ -8,6 +8,33 @@ const oneDrivePdf = "C:\\Users\\jerth\\OneDrive\\Documents\\Important\\Posterity
 const projectDocsMd = path.join(__dirname, "Project Documents", "Posterity Project Context.md");
 const projectDocsPdf = path.join(__dirname, "Project Documents", "Posterity Project Context.pdf");
 
+// Update context size bar in Project Status section
+function updateContextSizeBar() {
+  const THRESHOLD_BYTES = 40 * 1024; // 40KB
+  const BAR_WIDTH = 20;
+
+  const content = fs.readFileSync(src, "utf8");
+  const sizeBytes = Buffer.byteLength(content, "utf8");
+  const pct = Math.min(100, Math.round((sizeBytes / THRESHOLD_BYTES) * 100));
+  const filled = Math.round((pct / 100) * BAR_WIDTH);
+  const bar = "▓".repeat(filled) + "░".repeat(BAR_WIDTH - filled);
+  const newLine = `📊 Context size: [${pct}%] ${bar}`;
+
+  const updated = content.replace(
+    /📊 Context size: \[\d+%\] [▓░]+/,
+    newLine
+  );
+
+  if (updated !== content) {
+    fs.writeFileSync(src, updated, "utf8");
+    console.log(`📊 Context size updated: ${pct}% of 40KB (${(sizeBytes / 1024).toFixed(1)}KB)`);
+  } else {
+    console.log(`📊 Context size: ${pct}% of 40KB (${(sizeBytes / 1024).toFixed(1)}KB) — status bar line not found, skipping update.`);
+  }
+}
+
+updateContextSizeBar();
+
 // Copy markdown to OneDrive
 fs.copyFileSync(src, oneDriveMd);
 console.log("✅ Markdown copied to OneDrive.");
