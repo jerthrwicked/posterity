@@ -1,10 +1,10 @@
 ﻿# Posterity - Project Context
-Last Updated: June 6, 2026
 
 ## Project Status
 🟢 Context current | Last sync: June 6, 2026 | Version: 1
-👤 Main Builder: Jeremy Grego | Auxiliary: None active | Tier: Solo
+👤 Main Builder: Jeremy Grego | Contributors: None active
 ⚠️ No pending notifications
+📊 Context size: [42%] ▓▓▓▓▓▓▓▓░░░░░░░░░░░░
 
 ---
 
@@ -32,10 +32,12 @@ Plan names in Stripe only: Posterity Horizon, Posterity Basic, Posterity Premium
 ---
 
 ## Account Lifecycle & Phases
-Posterity accounts move through six distinct phases. This language appears throughout the product, the onboarding walkthrough, and all customer-facing materials. It is a core part of what makes Posterity unique — clinical terminology is removed entirely. The system responds only to events and dates, never to the customer's passing itself.
+Posterity accounts move through six distinct phases, in sequence. It is important to understand that only accounts shift phases. Plans exist within accounts and move alongside them — plans do not independently progress between phases. Think of the account as the container and the plans as its contents. When the account moves forward, everything within it moves with it.
+
+This language appears throughout the product, the onboarding walkthrough, and all customer-facing materials. It is a core part of what makes Posterity unique — clinical terminology is removed entirely. The system responds only to events and dates, never to the customer's passing itself.
 
 **Key Terms:**
-- **Initiated** — an account that has been funded by paying for plan(s). All plans within the account are fully funded. Upon initiation, the customer enters the Planning Phase and the check-in system begins.
+- **Initiated** — an account that has been funded by paying for the plan(s) within it. All plans within the account are fully funded. Upon initiation, the account enters the Planning Phase and the check-in system begins.
 - **Non-response trigger** *(internal term only)* — the system event that moves an account into Abeyance. Occurs in one of three ways:
   1. All check-in notifications go unanswered and a non-response event is automatically generated
   2. Trusted contact confirms identity and submits confirmation through their portal
@@ -49,7 +51,7 @@ Posterity accounts move through six distinct phases. This language appears throu
 **The Six Phases:**
 
 *Phase 1 — Horizon (Building Phase)*
-The customer has subscribed to Horizon at $9.99/year. They are actively building their legacy — uploading content, setting up their calendar, and selecting the plan tiers they intend to initiate. Multiple plans can be built and worked on simultaneously via a side menu in the dashboard. There is no time limit on this phase. The Horizon subscription covers storage for as long as the customer remains in this phase.
+The customer has subscribed to Horizon at $9.99/year. They are actively building their legacy — uploading content, setting up their calendar, and selecting the plan tiers they intend to include in their account. Multiple plans can be built and worked on simultaneously via a side menu in the dashboard. There is no time limit on this phase. The Horizon subscription covers storage for as long as the customer remains in this phase.
 
 *Phase 2 — Planning Phase (Post-Initiation)*
 The customer has funded their account by paying for their plan(s). Plans now exist, are funded, and content continues to be refined. The customer continues their regular 6-month check-ins. This is typically the longest phase — it lasts from the moment an account is initiated until the non-response trigger fires or the customer manually moves their account into Abeyance, potentially spanning years or decades.
@@ -140,11 +142,13 @@ Full automation is a core selling point and key investor talking point. The syst
 ---
 
 ## Horizon Lapse Grace Period
-If Horizon payment lapses:
-- Via Twilio SMS: 2 notifications/month for months 1–3 (6 total)
-- Via Twilio SMS: 2 notifications in final half month
-- Via Twilio SMS: 1 final notification that account was deleted
+If Horizon payment lapses, the following automated notification sequence fires:
+- First notification: unique message explaining the lapsed payment, account status, and next steps — distinct from the standard reminder sequence
+- Via Twilio SMS: 2 notifications/month for months 1–3 (6 total), each labeled with sequence position (e.g. "Reminder 2 of 6")
+- Via Twilio SMS: 2 notifications in final half month, sequence-labeled
+- Final notification: unique message confirming the account has been deleted — distinct from the standard reminder sequence
 - Total grace period: approximately 3.5 months before deletion
+- All notifications fully automated — first and last are unique in content, middle notifications are standard automated reminders with sequence labels
 
 ---
 
@@ -164,11 +168,12 @@ If Horizon payment lapses:
 
 ## Check-in System (Planning Phase)
 - Customer checks in every 6 months via email or SMS
-- Initial outreach: custom message explaining the missed check-in and next steps — NOT a generic automated reminder
-- Via Twilio SMS + email: 2 notifications/month for 3 months (6 total)
-- Notifications sent to customer AND all trusted contacts
-- Final notification: custom message confirming non-response trigger has fired — NOT a generic automated reminder
-- First and last notifications are always custom — never automated reminders
+- Missed check-in triggers the following automated notification sequence:
+  - First notification: unique message explaining the missed check-in and next steps — distinct from the standard reminder sequence
+  - Via Twilio SMS + email: 2 notifications/month for 3 months (6 total), each labeled with sequence position (e.g. "Reminder 2 of 6")
+  - Notifications sent to customer AND all trusted contacts
+  - Final notification: unique message confirming the non-response trigger has fired — distinct from the standard reminder sequence
+- All notifications fully automated — first and last are unique in content, middle notifications are standard automated reminders with sequence labels
 - No response after all 6 notifications: non-response event automatically generated, account moves into Abeyance
 - This applies to Planning Phase accounts only (separate from Horizon lapse system)
 
@@ -180,7 +185,8 @@ If Horizon payment lapses:
 - Primary trusted contact receives all notifications during the first month only
 - If primary contact is unanswered: all remaining notifications go to all contacts within the system
 - System automatically sends trusted contact(s) an invitation to create their own Posterity portal account
-- Invitation automatically resent every 6 months until accepted. Can also be resent manually via admin dashboard.
+- First invitation: unique message explaining their role, what Posterity is, and their next steps — distinct from the standard resend sequence
+- Invitation automatically resent every 6 months until accepted, each resend sequence-labeled. Can also be resent manually via admin dashboard.
 - Customer receives notifications alongside trusted contacts reminding them that a trusted contact has not yet set up their account
 - Customer receives notification when a trusted contact accepts invitation and sets up their account
 - If no trusted contact ever sets up their account: check-in non-response system still functions independently
@@ -192,7 +198,7 @@ If Horizon payment lapses:
 - Once confirmed: non-response trigger fires, account moves into Abeyance
 - All accounts within a customer profile move through phases together simultaneously
 - During Twilight and Posterity phases: all trusted contacts notified, primary first, all contacts notified if primary is unanswered after first month
-- Trusted contact payment authority: TBD — tabled for later discussion
+- Trusted contact payment authority: tabled for later discussion
 - Trusted Contact page added to global nav dropdown for easy portal access
 
 Recommended onboarding message (verbatim):
@@ -441,19 +447,19 @@ Full pricing analysis: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchzJMzb
 All identified risks are framed as addressed — not ongoing threats.
 
 **Business Model Risks**
-- Early adopter activation timing: customers may sign up years before accounts activate, creating a gap between revenue and service delivery. Mitigated by storage fees providing continuous revenue and the Legacy customer cap ensuring the business cannot fail financially from early-stage workload.
+Early adopter activation timing: customers may sign up years before accounts activate, creating a gap between revenue and service delivery. Mitigated by storage fees providing continuous revenue and the Legacy customer cap ensuring the business cannot fail financially from early-stage workload.
 
 **Financial & Legal Risks**
-- Regional escrow ordinances: holding customer funds pre-delivery could trigger escrow regulations in some jurisdictions. Addressed via Mercury Bank two-account workaround achieving same functional result as formal escrow. Lawyer review required before Phase 5 financial build.
+Regional escrow ordinances: holding customer funds pre-delivery could trigger escrow regulations in some jurisdictions. Addressed via Mercury Bank two-account workaround achieving same functional result as formal escrow. Lawyer review required before Phase 5 financial build.
 
 **Technical Risks**
-- Meta API instability: Meta reduced Instagram API limits 96% in 2025 without warning. Addressed by mandatory backup direct login credentials for every customer account. This is now an inconvenience, not a risk — manual override capability is built in.
+Meta API instability: Meta reduced Instagram API limits 96% in 2025 without warning. Addressed by mandatory backup direct login credentials for every customer account. This is now an inconvenience, not a risk — manual override capability is built in.
 
 **Operational Risks**
-- Legacy tier workload: one Legacy customer equals the operational load of approximately 13 Basic customers. Addressed by Legacy customer cap (10 customers, configurable from admin dashboard).
+Legacy tier workload: one Legacy customer equals the operational load of approximately 13 Basic customers. Addressed by Legacy customer cap (10 customers, configurable from admin dashboard).
 
 **Build Risks**
-- Financial automation requires lawyer review before Phase 5 build begins. No financial automation should be built until legal review is complete.
+Financial automation requires lawyer review before Phase 5 build begins. No financial automation should be built until legal review is complete.
 
 ---
 
@@ -484,23 +490,39 @@ All identified risks are framed as addressed — not ongoing threats.
 ---
 
 ## Horizon Builds
-Horizon Builds is where creative sparks live until they're ready to become reality. These are ideas that emerged organically during the build process — concepts that could change the way Posterity works, looks, or feels. Items here are being actively considered for roadmap inclusion. They are not tabled because they're unimportant. They are here because they haven't found their phase yet. High priority creative items that could reshape the product sit here above the roadmap, not below it.
+Horizon Builds is where creative sparks live until they're ready to become reality. These are ideas that emerged organically during the build process — concepts that could change the way Posterity works, looks, or feels. Items here are being actively considered for roadmap inclusion. They are not here because they are unimportant. They are here because they haven't found their stage yet. Each item can be picked up independently at any time and worked on — then set back down when the primary build demands attention. High priority creative items that could reshape the product sit here above the roadmap, not below it.
 
-Any builder can add to Horizon Builds during a session. Claude surfaces new items at session start. Items that graduate into a phase move to the roadmap during the next context update. Adding a Horizon Build item earns creativity points on your Posterity ID.
+Any builder can add to Horizon Builds during a session. Claude surfaces new items at session start. Items that graduate into a stage move to the roadmap during the next context update. Adding a Horizon Builds item earns creativity points on your Posterity ID.
 
 Current Horizon Builds:
 - Dependency tree visual document (build item map with color-coded arrows showing dependencies between all build items)
-- Collaboration MCP suite (tier calculator, point tracker, notification pusher, Legacy Card generator)
+- Collaboration MCP suite (tier calculator, point tracker, notification pusher, Posterity ID generator)
 - Simultaneous session detection
-- Creativity gauge full build (Phase 5+)
+- Creativity gauge full build (Stage 5+)
 - Multiple recipients add-on (tiered: 2–5, 5–10, unlimited)
 - Context growth rate management — summary MCP for Google Docs consolidation
 - Pricing review once social media login time is measured
 - Domain name purchase (posterity.co taken — research alternatives: posterity.app, posteritylegacy.com, etc.)
+- Auto-update remaining sessions and hours on each sync based on completed build items
+- Reformat all section PDFs to app visual style (blue/black, app typography)
 
 ---
 
-## Potential Late Add-Ons (Tabled — not concrete)
+## Tabled & Shelved
+Items here are not important enough or worth addressing right now. They are not forgotten — just set aside until relevant.
+
+- Cursor Agent auto-approval settings (Run Mode locked by permissions.json — revisit when solution found)
+- Windows screenshot hotkey not working (Fn+PrtScn on Amazon Basics keyboard — revisit)
+- Domain name research (posterity.co taken — check posterity.app, posteritylegacy.com, and alternatives)
+- Google Docs MCP for collaborator setup documentation (to be configured for new collaborators)
+- Team plan pricing evaluation (Cursor/Claude team plans — evaluate when collaborator joins)
+- Formal ToS + lawyer review (Phase 6)
+- Formal escrow language review (Phase 6)
+- posterity.admin@gmail.com created as official admin email — confirm full setup
+
+---
+
+## Potential Late Add-Ons
 - Application/approval process for Legacy tier only
 - Additional social media platforms
 - Trusted contact payment authority
@@ -617,22 +639,23 @@ New Price IDs to be generated when Stripe is updated. Update codebase and Vercel
 
 ---
 
-## Phase Roadmap
+## Build Roadmap
 
-### Phase 3 (Current) — 2–3 sessions (4–9 hours)
+### Stage 3 (Current) — 2–3 sessions (4–9 hours)
 - Update Stripe prices to locked pricing ($99/$249/$899) + update Price IDs in code
 - Update codebase and Vercel env vars after each Stripe change, always test checkout after updating
 - Add Limited Availability tag to Legacy plan card
 - Legacy customer cap: 10 customers, configurable from admin dashboard
 - Rename Financial Hardship to Grace on pricing card, update description
 - Create Posterity Grace Storage Stripe product ($4.99/year)
+- Create custom payment option in Stripe dashboard for Custom tier plans
 - Connect Stripe to Supabase (record subscription on payment)
 - Horizon subscription transition logic (transitions into initiated account upon payment)
 - Webhook for subscription status changes
 - Lock dashboard behind subscription tiers
 - Trusted Contact portal page + separate login + nav dropdown entry
 
-### Phase 4 — 8–12 sessions (16–36 hours)
+### Stage 4 — 8–12 sessions (16–36 hours)
 - User profiles (real-date calendar setup, Content Creation Portal, social media setup)
 - Content Creation Portal: file upload, auto-generated metadata, visual snapshots, Posterity toggle, recipient/platform/date assignment
 - Multi-plan dashboard with side menu (create and work on multiple plans simultaneously)
@@ -642,7 +665,7 @@ New Price IDs to be generated when Stripe is updated. Update codebase and Vercel
 - Onboarding walkthrough + FAQ + AI chatbot + first-login triggered walkthrough
 - All six account phases explanation in onboarding and dashboard
 - "I'm Ready" feature (customer manually moves account into Abeyance, double verification)
-- Check-in system (6 month intervals, 3 month warning, 2x/month notifications, custom first/last notifications via Twilio + email)
+- Check-in system (6 month intervals, 3 month warning, 2x/month notifications, unique first/last notifications via Twilio + email, sequence-labeled middle notifications)
 - Trusted contact system (multiple contacts, primary/backup notification flow, portal, double verification, invitation flow, resend logic)
 - Video upload + FFmpeg.wasm compression
 - Video size/length validation (25MB max, 720p min, 3–4 min max)
@@ -653,7 +676,7 @@ New Price IDs to be generated when Stripe is updated. Update codebase and Vercel
 - Per-customer backup credentials (Posterity-generated, 2FA via Posterity-controlled contact)
 - Twilight and Posterity Phase dashboard builds (archive view, trusted contact transfer flow)
 
-### Phase 5 — 6–8 sessions (12–24 hours)
+### Stage 5 — 6–8 sessions (12–24 hours)
 - Admin/operational dashboard (priority task list)
 - Admin task and assignment system (manual task creation, calendar view, push back options)
 - Admin access tiers (Director, Manager, Staff — multiple profiles per level)
@@ -673,7 +696,7 @@ New Price IDs to be generated when Stripe is updated. Update codebase and Vercel
 - Lawyer review before financial build begins
 - Google Docs session log MCP integration
 
-### Phase 6 — 4–6 sessions (8–18 hours)
+### Stage 6 — 4–6 sessions (8–18 hours)
 - App appearance fine-tuning + logo design (Claude first, Canva backup)
 - Tax compliance
 - Terms of Service + lawyer review + copyright application
@@ -694,58 +717,46 @@ New Price IDs to be generated when Stripe is updated. Update codebase and Vercel
 ---
 
 ## Collaborative Phase
-*Auto-generated — identifies tasks safe to build in parallel by an Auxiliary Builder without conflicting with the current Main Builder phase.*
+*Auto-generated — identifies tasks safe to build in parallel by a Contributor without conflicting with the current Main Builder stage.*
 
-Current Main Builder phase: Phase 3
+Current Main Builder stage: Stage 3
 
-Parallel-safe tasks for Auxiliary Builder:
+Parallel-safe tasks for Contributors:
 - Brand copy refinement (no code dependencies)
-- Onboarding walkthrough copy and flow documentation (Phase 4 prep, no code required)
+- Onboarding walkthrough copy and flow documentation (Stage 4 prep, no code required)
 - Trusted contact recommended message copy review
 - Horizon Builds research (domain name alternatives, dependency tree structure)
 - Collaboration Setup Guide Google Doc (document the workflow for future collaborators)
 - Collaboration Workflow Google Doc (detailed session start/end procedures)
 
-No code tasks are parallel-safe during Phase 3 — all Phase 3 tasks touch core infrastructure (Stripe, Supabase, auth, nav). Auxiliary Builder should focus on documentation and copy until Phase 3 is complete.
+No code tasks are parallel-safe during Stage 3 — all Stage 3 tasks touch core infrastructure (Stripe, Supabase, auth, nav). Contributors should focus on documentation and copy until Stage 3 is complete.
 
 ---
 
-## Collaboration
+## Collaboration System (Optional Stage 1)
 
-### Purpose
+**Purpose**
 The collaboration system exists to allow multiple builders to work on Posterity simultaneously without conflicts, lost work, or lengthy handoffs. The context document is the live medium of interchange — not email, not Slack, not verbal. Everything lives in the context. The system is designed to be fun, competitive, and automated wherever possible.
 
-### Builder Roles
-- **Main Builder**: owns primary phase build. Only one Main Builder at a time.
-- **Auxiliary Builder**: works exclusively from the Collaborative Phase section
-- **Role switch**: Auxiliary posts request in the status bar notification area of the context. Current Main Builder must acknowledge before switch takes effect. The context is the medium — not a separate message.
+**Builder Roles**
+- **Main Builder**: owns primary stage build. Only one Main Builder at a time.
+- **Contributors**: work exclusively from the Collaborative Phase section. There is no limit to the number of Contributors active at once.
+- Role switch: Contributors post a request in the status bar notification area of the context. Current Main Builder must acknowledge before switch takes effect. The context is the medium — not a separate message.
 - For long multi-session builds: declare full plan in context upfront. As long as no builder deviates, no conflicts arise across sessions.
-- When a collaborator starts a session: tell Claude the plan before writing any code. Claude reads context, checks for conflicts with other active plans, confirms safe to proceed.
+- When a Contributor starts a session: tell Claude the plan before writing any code. Claude reads context, checks for conflicts with other active plans, confirms safe to proceed.
 
-### Collaboration Tiers
-| Tier | Description |
-|------|-------------|
-| Solo | One builder. Standard end-of-session context update. |
-| Low | Occasional collaboration. Async context updates sufficient. Pull latest at session start. |
-| Medium | Regular collaboration. Daily context syncs recommended. Declare plans before building. |
-| Heavy | Frequent collaboration. Context update required after every build segment — not just session end. |
-| Simultaneous | Two or more builders at same time. Real-time coordination. Conflict check before every action. Context update after every segment, no exceptions. |
-
-The tier is a live gauge displayed in the status bar. It is not a hierarchy — it is an illustration of where the project stands at any given time. Auto-updated from session log frequency.
-
-### Posterity ID
+**Posterity ID**
 Every builder has a Posterity ID — auto-updated through the session log MCP after every sync.
 
-**Jeremy Grego — Founder / Main Builder**
+Jeremy Grego — Founder / Main Builder
 - Role: Main Builder
-- Collaboration Tier: Solo
 - Contribution Points This Week: —
 - All-Time Points: —
 - Creativity Gauge: —
 - Session Count: —
 - Last Active: June 2026
 
-### Point System
+**Point System**
 | Contribution | Points |
 |-------------|--------|
 | Phase completion | 25 pts |
@@ -762,12 +773,12 @@ Every builder has a Posterity ID — auto-updated through the session log MCP af
 
 Points reset weekly with running all-time total maintained. Builders can see each other's weekly totals and all-time scores via their Posterity IDs.
 
-### Creativity Gauge
+**Creativity Gauge**
 Two simultaneous gauges:
 
-**Personal creativity gauge** — lives on each Posterity ID. Reflects individual creative contribution rate. Resets weekly with running all-time total. Creativity points are a subset of total points, weighted specifically toward brand-moving contributions.
+*Personal creativity gauge* — lives on each Posterity ID. Reflects individual creative contribution rate. Resets weekly with running all-time total. Creativity points are a subset of total points, weighted specifically toward brand-moving contributions.
 
-**Project-wide creativity gauge** — aggregate of all personal gauges. Shows brand momentum over time. Tracked by day, week, month, and all-time. A rising creativity score signals the product is evolving, not just being built.
+*Project-wide creativity gauge* — aggregate of all personal gauges. Shows brand momentum over time. Tracked by day, week, month, and all-time. A rising creativity score signals the product is evolving, not just being built.
 
 Creativity point weighting:
 - Phase-changing idea: 15 pts
@@ -777,15 +788,15 @@ Creativity point weighting:
 - Visual/design contribution: 7 pts
 - Problem reframed creatively: 6 pts
 
-The creativity gauge full build is in Horizon Builds — planned for Phase 5+.
+The creativity gauge full build is in Horizon Builds — planned for Stage 5+.
 
-### Notification System
+**Notification System**
 The Project Status Bar IS the notification system. It lives at the top of the context and updates automatically every sync. Never cleared — only updated. Three states: 🟢 current, 🟡 updated since last session, 🔴 simultaneous session or conflict. Also shows pending Main Builder switch requests.
 
-### Simultaneous Collaboration
-When two or more builders are working at the same time the tier automatically moves to Simultaneous. Context updates after every build segment. Plans declared explicitly before building. Claude live-tracks declared plans and flags any potential overlaps.
+**Simultaneous Collaboration**
+When two or more builders are working at the same time, context updates after every build segment. Plans declared explicitly before building. Claude live-tracks declared plans and flags any potential overlaps.
 
-### Workflow Summary
+**Workflow Summary**
 Session start: pull latest context from Google Drive, upload to Claude Project Instructions, read status bar, declare build plan to Claude before building.
 Session end: fill in session-notes.md, run npm run sync, update Claude Project Instructions with new context.
 Deviations from workflow require email to posterity.admin@gmail.com with reasoning.
@@ -793,7 +804,7 @@ Deviations from workflow require email to posterity.admin@gmail.com with reasoni
 Full setup instructions: see Posterity Collaboration Setup Guide Google Doc (to be created).
 Full workflow details: see Posterity Collaboration Workflow Google Doc (to be created).
 
-### Important Contacts
+**Important Contacts**
 Jeremy Grego — Founder
 posterity.admin@gmail.com
 504-402-0450
@@ -801,80 +812,100 @@ Contact for: repository access, Google Docs service account key, Supabase creden
 
 ---
 
-## Tabled & Pending
-- Cursor Agent auto-approval settings (Run Mode locked by permissions.json — revisit when solution found)
-- Windows screenshot hotkey not working (Fn+PrtScn on Amazon Basics keyboard — revisit)
-- Domain name research (posterity.co taken — check posterity.app, posteritylegacy.com, and alternatives)
-- Google Docs MCP for collaborator setup documentation (to be configured for new collaborators)
-- Dependency tree visual document (build item map with color-coded dependency arrows — in Horizon Builds)
-- Context growth rate unsustainable long-term — summary MCP for Google Docs consolidation needed (in Horizon Builds)
-- Pricing review once social media login time is measured (in Horizon Builds)
-- Collaboration Setup Guide Google Doc — to be created
-- Collaboration Workflow Google Doc — to be created
-- Team plan pricing evaluation (Cursor/Claude team plans — evaluate when collaborator joins)
-- Formal ToS + lawyer review (Phase 6)
-- Formal escrow language review (Phase 6)
-- posterity.admin@gmail.com created as official admin email — confirm full setup
-
----
-
 ## Rules
 
-**Rule 1 — Session Opening:** Read context, scan for issues, post agenda including tabled items that supersede phase build and any flagged issues from previous session.
+**Rule 1 — Session Opening**
+At the start of every session Claude must read CONTEXT_for_posterity.md, perform an immediate scan for any issues, and post a brief session agenda including: current stage, next roadmap items, any items from Tabled & Shelved that were last being worked on (these supersede the stage build), and any flagged issues from the previous session.
 
-**Rule 2 — End of Session Scan:** Thorough scan for inconsistencies, redundancies, and repeats before any context update. Report findings before writing changes.
+**Rule 2 — End of Session Scan**
+At the end of every session, before updating the context, Claude must perform a thorough scan of CONTEXT_for_posterity.md for inconsistencies, redundancies, repeats, and general issues and report all findings before writing any changes.
 
-**Rule 3 — Collaborative Phase Generation:** Auto-generate Collaborative Phase section after roadmap identifying parallel-safe build tasks. If nothing safe to build in parallel, say so explicitly.
+**Rule 3 — Collaborative Phase Generation**
+At the end of every session, after the scan and before the context update, Claude must auto-generate a Collaborative Phase section after the Build Roadmap identifying build tasks that can be worked on in parallel without conflicting with the primary stage build. If nothing safe to build in parallel exists, the section must say so explicitly.
 
-**Rule 4 — No Context Posted Without Approval:** Always present complete change summary and get explicit approval before writing context prompt.
+**Rule 4 — No Context Posted Without Approval**
+Claude must never post a full context rewrite prompt without first presenting a complete summary of all changes being made and receiving explicit approval.
 
-**Rule 5 — Account vs Plan Language:** Account = phase progression. Plan = content delivery configuration. Never use plan in a phase context.
+**Rule 5 — Account vs Plan Language**
+Claude must always use "account" when referring to phase progression and "plan" when referring to content delivery configuration. Never use "plan" in a phase context.
 
-**Rule 6 — No TBD in Context:** Unresolved items go to Tabled & Pending with explanation of why tabled and what needs to happen before it can be addressed.
+**Rule 6 — No TBD in Context**
+Claude must never write TBD in the context document. If something is unresolved it goes in Tabled & Shelved with a clear explanation.
 
-**Rule 7 — Death Language:** Never use death/passing/deceased in customer-facing sections. Internal terms only where necessary, clearly labeled.
+**Rule 7 — Death Language**
+Claude must never use death, passing, deceased, or any clinical mortality language in customer-facing context sections. Internal terms only where absolutely necessary, clearly labeled as internal.
 
-**Rule 8 — Completeness Check:** Verify every discussed item has a location in the context before finalizing update.
+**Rule 8 — Completeness Check**
+Before finalizing any context update Claude must verify that every item discussed in the session has a clearly assigned location in the document and has been included.
 
-**Rule 9 — Response Shortcuts:** Solo paste only to register: g/+ = go, n/- = no, m = more. Rule numbers toggle that rule ON/OFF. Claude responds with Rule [X] ON/OFF to confirm.
+**Rule 9 — Response Shortcuts**
+The following shortcuts are only recognized when pasted as a standalone single character message:
+- g or + = Go / Approved / Good / Positive feedback
+- n or - = No / Don't proceed / Negative feedback
+- m = More — provide additional feedback, points, opinions, or options on the last response
+- * = Release confirmation code for instruction release
+- [number] = Toggle the corresponding numbered rule ON or OFF. Claude responds with "Rule [X] ON" or "Rule [X] OFF" to confirm.
 
-**Rule 10 — Brainstorm Protocol (default OFF):** Toggle via 10. Read full message, identify every distinct point, resolve one at a time in sequence. Do not move to next point until current is resolved.
+**Rule 10 — Brainstorm Protocol (default: OFF)**
+When toggled ON via "10" posted solo, Claude reads the entire message before responding, identifies every distinct point or shift in topic, consolidates related points, and resolves them one at a time in sequence. Claude does not move to the next point until the current one is fully resolved. Toggle ON or OFF by posting "10" solo.
 
-**Rule 11 — Context Size Warning:** Flag when context risks hitting Project Instruction limits. Shortening takes precedence over all other priorities.
+**Rule 11 — Context Size Warning**
+When CONTEXT_for_posterity.md is growing large enough to risk hitting Project Instruction limits or degrading response quality, Claude must flag it immediately. Context shortening takes precedence over all other workflow priorities until resolved.
 
-**Rule 12 — Conversation Length Warning:** Flag when conversation length affects memory or response quality. Recommend new chat before quality degrades.
+**Rule 12 — Conversation Length Warning**
+When a conversation becomes long enough to affect Claude's memory, response quality, or context window efficiency, Claude must proactively flag it and recommend moving to a new chat within the Posterity project before quality degrades.
 
-**Rule 13 — Tabled & Pending Updates:** Any tabled item immediately added to section with explanation of why tabled and what needs to happen before it can be addressed.
+**Rule 13 — Tabled & Shelved Updates**
+Any item that is intentionally set aside during a session must be immediately added to the Tabled & Shelved section with a clear explanation of why it was set aside and what needs to happen before it can be addressed.
 
-**Rule 14 — Copy Accessibility:** Every copyable item in its own individual code block. No copyable item buried in prose.
+**Rule 14 — Copy Accessibility**
+Every item that may need to be copied must be presented in its own individual code block. This includes: terminal commands, Cursor Agent prompts, file paths, API keys, links, credentials, rule text, and any other copyable content. Each distinct copyable item gets its own separate code block — never buried in prose.
 
-**Rule 15 — Step Batching:** Batch simple sequential steps into single message. Only separate when a decision or response is needed.
+**Rule 15 — Step Batching**
+During any step-by-step process, Claude must batch multiple simple sequential steps into a single message when they require no decision-making or back-and-forth. Only separate steps when a response or decision is needed before proceeding.
 
-**Rule 16 — Context Repost:** In any step-by-step process, repost full sequence with current position marker when exchange exceeds one screen length. Topic must not itself exceed a screen length.
+**Rule 16 — Context Repost**
+When a back-and-forth exchange on a single topic extends beyond approximately one screen length, and the topic itself does not exceed a screen length, Claude must automatically repost a brief summary of what we are currently working on. If we are mid-sequence in any step-by-step process and have not completed all steps, Claude reposts the full original step sequence with a marker showing where we currently are.
 
-**Rule 17 — Cursor Agent Workflow:** Claude provides copy-ready prompts for Cursor Agent. Never assumes direct terminal use. Claude role: brainstorm, plan, write prompts, troubleshoot, debug.
+**Rule 17 — Cursor Agent Workflow**
+Claude's role in this project is to brainstorm, plan, make decisions, write prompts, manage context, troubleshoot issues, and assist with debugging. All coding, file creation, terminal commands, and pushes to GitHub are handled by the Cursor Agent. Claude must always provide copy-ready prompts for the Cursor Agent rather than raw terminal commands. Claude never assumes the user will run commands directly unless explicitly asked. When a coding task is ready, Claude writes a complete Cursor Agent prompt in a code block. The user pastes it into Cursor Agent and reports back results.
+
+**Rule 18 — Assume Agreement Protocol**
+Claude assumes Jeremy agrees with proposed changes unless he indicates otherwise. Every point requiring confirmation is presented clearly. Silence = agreement. Claude does not ask for confirmation on items already confirmed.
+
+**Rule 19 — Think First**
+Before writing any language into the context or presenting it as confirmed, Claude must read it back against prior decisions and check for redundancy, contradiction, or logical errors. Claude is not a transcription service — active thinking is required at every step. If something reads wrong, flag it rather than write it.
+
+**Rule 20 — Section PDF Protocol**
+When a section of the context becomes large enough to warrant its own document, Claude creates a PDF version styled to match the app visual design, adds a brief description and link in the relevant section of the context, and automatically adds the link to the Important Links section. Links added anywhere in the context are always mirrored in Important Links. Links are exempt from the redundancy/repeat rule.
+
+**Rule 21 — Hold All Instructions Until Released**
+Every instruction Jeremy gives remains active until explicitly no longer needed. When Claude believes an instruction is no longer needed it flags it clearly and concisely for approval before releasing it. Format: "Ready to release: [instruction]. Confirm?" Release confirmation code: *
 
 ---
 
 ## Brand Copy
+This section stores all approved brand copy for use throughout the app, marketing materials, onboarding, and investor documents. Copy stored here has been reviewed and approved. Use these as the source of truth for all written customer-facing language.
 
-**Onboarding opening (approved):**
+**Approved copy — Onboarding opening:**
 "Before you move forward on your legacy journey, you first must go back. Back through the memories, friendships, love, connection, brilliance, creations, accomplishments — all the uniqueness that made you you. The little and big things that make life feel well-lived. You'll relive your past, so you can carry it into the future."
 
-**Product explanation (approved):**
+**Approved copy — Product explanation:**
 "With Posterity, you create a custom tailored legacy that will — on your terms — reach whatever goal or goals you design for it. Do you want your plans to slowly tell a story, one person at a time, to those you think need to hear it? Do you want all of them to not realize you were telling a story the entire time, with a final post to everyone you know? The only limit is your creativity. As you journey back through your life to create your legacy content, you are creating an account that will journey forward. It can be a secret, a confession, a reminder, a remembrance, a photo album — it can solely be a way for your loved ones to relive the joy you've shared together. Your legacy is whatever you want it to be, and it starts now."
 
-**Posterity Phase (approved):**
+**Approved copy — Posterity Phase:**
 "Your Posterity account will become a living representation of the legacy you created."
 
-**Hero line (approved):**
+**Approved copy — Hero line:**
 "Your voice. Forever."
 
-**Supporting line (approved):**
+**Approved copy — Supporting line:**
 "Your legacy, on your terms."
 
-**Active Phase emotional line (approved):**
+**Approved copy — Active Phase emotional line:**
 "Your legacy is reaching the ones you love."
+
+Note: This section will expand as copy is written and approved for each area of the app. Eventually this context document will evolve into a full sales and vision document encompassing the product philosophy, automation systems, brand ethos, and investor narrative. (Stage 6)
 
 ---
 
