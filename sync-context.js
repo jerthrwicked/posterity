@@ -20,16 +20,13 @@ function updateContextSizeBar() {
   const bar = "▓".repeat(filled) + "░".repeat(BAR_WIDTH - filled);
   const newLine = `📊 Context size: [${pct}%] ${bar}`;
 
-  const updated = content.replace(
-    /📊 Context size: \[\d+%\] [▓░]+/,
-    newLine
-  );
-
-  if (updated !== content) {
+  const sizeBar = /Context size: \[\d+%\] \S+/;
+  if (sizeBar.test(content)) {
+    const updated = content.replace(sizeBar, `Context size: [${pct}%] ${bar}`);
     fs.writeFileSync(src, updated, "utf8");
-    console.log(`📊 Context size updated: ${pct}% of 40KB (${(sizeBytes / 1024).toFixed(1)}KB)`);
+    console.log(`📊 Context size: ${pct}% of 40KB (${(sizeBytes / 1024).toFixed(1)}KB)`);
   } else {
-    console.log(`📊 Context size: ${pct}% of 40KB (${(sizeBytes / 1024).toFixed(1)}KB) — status bar line not found, skipping update.`);
+    console.log(`⚠️  Context size bar line not found — skipping update.`);
   }
 }
 
