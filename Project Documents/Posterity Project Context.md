@@ -490,8 +490,20 @@ Financial automation requires lawyer review before Phase 5 build begins. No fina
 ---
 
 ## PDF Design Standards
-All non-session PDFs use: black background (#000000), dark grey wrap (#2a2a2a), black content area inside wrap, white table cards, blue section labels (#5b9bd5), Lora italic for accents and pull quotes, Poppins for all other text. Cover page: pure black full bleed, large left-aligned hero text. Section dividers: full width #1e2939 line centered between sections. No text near page edges or wrap edges.
-Session/context PDFs: standard format unchanged.
+Stylized investor PDF (Posterity_Stylized_Context.pdf) — generated manually via npm run generate-stylized only:
+- Cover page: full bleed black (#000000), no wrap, no border. "POSTERITY" small caps top left at 60px from left, 60px from top. Hero text "Your Voice. / Forever." raised to approximately 35–40% down from top. Supporting line Lora italic, thin rule, metadata line — all left aligned at 60px.
+- Wrap color: #3a3a3a — outer frame only, never content fill
+- Content area: always #000000 black on all interior pages
+- First content page: wrap all four sides
+- Middle pages: wrap left and right sides only
+- Last page: wrap left, right, and bottom only
+- Section dividers: #2d4a6e, 1px, full width, 28px margin top and bottom
+- Typography: Poppins (section headers #5b9bd5, body white) + Lora italic (#cccccc accents)
+- Page numbers: bottom right, #555555, 20px from all edges
+- Text clearance: 20px minimum from ALL borders on ALL pages including top edge — applies to every element on every page type
+- Previous error (now fixed in code): grey was placed inside content area instead of as outer wrap only
+
+Plain context PDF (Posterity Project Context.pdf) — auto-generated on every npm run sync. Standard format, no styling.
 
 ---
 
@@ -511,8 +523,6 @@ Current Horizon Builds:
 - Domain name purchase (posterity.co taken — research alternatives: posterity.app, posteritylegacy.com, etc.)
 - Auto-update remaining sessions and hours on each sync based on completed build items
 - Reformat all section PDFs to app visual style (blue/black, app typography)
-- PDF vector rebuild — replace wkhtmltopdf with vector PDF generation to reduce file size from ~17MB to under 3MB
-- PDF auto-rebuild on npm run sync — add to sync-context.js so styled PDF regenerates automatically every session end
 - Claude as Cursor MCP (direct API connection) — custom MCP that routes Cursor Agent questions through Claude.ai context
 - Cursor web agent interface — Claude can access cursor.com/agents via Chrome; evaluate direct prompt execution
 
@@ -530,10 +540,9 @@ Items here are not important enough or worth addressing right now. They are not 
 - Formal escrow language review (Phase 6)
 - posterity.admin@gmail.com created as official admin email — confirm full setup
 - Google Docs MCP not syncing correctly — Posterity Project context doc showing 1KB in Google Drive, full context not writing through. Needs investigation next session.
-- PDF file size issue — wkhtmltopdf produces ~17MB due to background rasterization. Rebuild in vector format needed. Add to Horizon Builds.
 - Rule 26 scroll fix — MCP tab navigates to wrong Claude tab. Needs different implementation.
 - Cursor cloud agents environment not yet configured — Start Setup at cursor.com/dashboard/cloud-agents
-- Stylized PDF visual verification pending — PDF has been generated but not yet visually checked. First task at start of next session.
+- Stylized PDF visual corrections pending — three fixes written but not yet run: (1) POSTERITY small caps moved to top left, (2) hero text raised to upper half of cover, (3) 20px top border clearance enforced on all pages. Cursor prompt ready. Run next session, verify visually, then move to What's Been Built.
 
 ---
 
@@ -607,6 +616,10 @@ Items here are not important enough or worth addressing right now. They are not 
 - Both commands added to package.json: "generate-pdf" and "generate-stylized"
 - sync-context.js confirmed: calls generate-pdf.js only, never touches stylized PDF
 - Cursor Pro upgraded to Pro+ ($60/month) — Sonnet 4.6 Max now active, Medium throttling resolved
+- PDF pipeline rebuilt: Puppeteer + markdown-it replacing wkhtmltopdf/md-to-pdf
+- scripts/generate-pdf.js — plain context PDF, called automatically by npm run sync. Output: C:\Users\jerth\OneDrive\Documents\Important\Posterity Project Context.pdf
+- scripts/generate-stylized-pdf.js — styled investor PDF, manual only via npm run generate-stylized. Output: C:\Users\jerth\OneDrive\Documents\Important\Posterity_Stylized_Context.pdf
+- Plain PDF output confirmed at 0.65MB
 
 ---
 
@@ -642,7 +655,7 @@ Set in both .env.local and Vercel:
 - Claude.ai writes prompts for Cursor Agent (Sonnet 4.6)
 - Cursor Agent writes and pushes all code
 - End of session: paste "Update CONTEXT_for_posterity.md with everything we worked on this session, then run npm run sync to copy it to Documents and regenerate the PDF, then commit and push everything to GitHub with an appropriate commit message" into Cursor Agent
-- npm run sync: copies context to OneDrive Documents, regenerates PDF via md-to-pdf, appends session-notes.md to Google Session Log Doc, updates Google Context Doc, resets session-notes.md template, commits and pushes to GitHub
+- npm run sync: copies context to OneDrive Documents, regenerates plain context PDF via Puppeteer + markdown-it (scripts/generate-pdf.js), appends session-notes.md to Google Session Log Doc, updates Google Context Doc, resets session-notes.md template, commits and pushes to GitHub
 - g = go/approved, d = done
 
 ---
