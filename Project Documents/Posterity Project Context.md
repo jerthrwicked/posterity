@@ -519,6 +519,8 @@ Items here are not important enough or worth addressing right now. They are not 
 - Formal ToS + lawyer review (Phase 6)
 - Formal escrow language review (Phase 6)
 - posterity.admin@gmail.com created as official admin email — confirm full setup
+- Google Docs MCP not syncing correctly — Posterity Project context doc showing 1KB in Google Drive, full context not writing through. Needs investigation next session.
+- Claude in Chrome extension not installed on Jeremy's machine — needed for browser-based MCP work. Install from Chrome Web Store before next session.
 
 ---
 
@@ -574,6 +576,8 @@ Items here are not important enough or worth addressing right now. They are not 
 - Cursor Pro subscribed (Sonnet 4.6 for daily use, Opus 4.8 for complex tasks)
 - Google Docs MCP connected: context doc + session log doc live
 - npm run sync now appends session-notes.md to Google Session Log, updates Google Context Doc, resets session-notes.md template
+- Homepage visual updates: hero sublines replaced, feature card copy updated (A Living Legacy / On Your Terms / Fully Automated. Fully Protected), nav Pricing→Plans, Login→Account state-dependent logic, hamburger dropdown logged-in/out states, hero buttons removed
+- Plans page visual updates: locked pricing ($99/$249/$899), all bullets updated to per plan year, Horizon description updated, Financial Hardship renamed to Posterity Grace, Limited Availability badge on Legacy card, button uniformity across page, card sizing and spacing updated
 
 ---
 
@@ -881,6 +885,15 @@ When a section of the context becomes large enough to warrant its own document, 
 
 **Rule 21 — Hold All Instructions Until Released**
 Every instruction Jeremy gives remains active until explicitly no longer needed. When Claude believes an instruction is no longer needed it flags it clearly and concisely for approval before releasing it. Format: "Ready to release: [instruction]. Confirm?" Release confirmation code: *
+
+**Rule 22 — Auto-Upload Rules to Context**
+Every new rule added during a session is automatically included in the next context update. No rule gets lost between sessions.
+
+**Rule 23 — UI Navigation Guidance**
+When explaining anything that involves a dashboard, settings panel, or interface, always include exact location instructions — where to click, what menu it's under, what it looks like — as if Jeremy is seeing it for the first time. Step by step. No assumed familiarity with any UI.
+
+**Rule 25 — Prompt End Notification**
+After every Cursor Agent prompt, Claude posts a summary line immediately after the code block stating what the prompt covers and how many changes. Format: Prompt complete — [X] changes across [Y] files. Paste and run.
 
 ---
 
