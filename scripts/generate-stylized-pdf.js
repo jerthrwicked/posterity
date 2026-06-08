@@ -74,7 +74,11 @@ const html = `<!DOCTYPE html>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   /* ── Page setup ── */
-  @page { size: A4; margin: 0; }
+  /* @page :first targets page 1 (cover) — stays full bleed, zero margin.
+   * @page targets all other pages — 20px top margin enforces clearance rule.
+   * Puppeteer's margin option is omitted from pdf() so CSS @page controls. */
+  @page { size: A4; margin: 20px 0 0 0; }
+  @page :first { size: A4; margin: 0; }
 
   /*
    * body background = #3a3a3a (the grey wrap frame).
@@ -101,27 +105,36 @@ const html = `<!DOCTYPE html>
     print-color-adjust: exact;
   }
 
-  /* ── Cover page — full bleed black, no grey at all ── */
+  /* ── Cover page — full bleed black, position:relative for absolute children ── */
   .cover-page {
     width: 100%;
     height: 297mm;
     background: #000000;
     break-after: page;
     page-break-after: always;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 0 0 80px 60px;
+    position: relative;
+    overflow: hidden;
   }
 
+  /* "POSTERITY" anchored top-left: 60px from left, 60px from top */
   .cover-brand {
+    position: absolute;
+    top: 60px;
+    left: 60px;
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
     font-size: 13px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: #ffffff;
-    margin-bottom: 20px;
+  }
+
+  /* Hero group anchored at ~37% from top (≈110mm on A4) */
+  .cover-hero-group {
+    position: absolute;
+    top: 37%;
+    left: 60px;
+    right: 60px;
   }
 
   .cover-hero {
@@ -328,10 +341,12 @@ const html = `<!DOCTYPE html>
 <!-- ═══════════════════ COVER PAGE ═══════════════════ -->
 <div class="cover-page">
   <div class="cover-brand">Posterity</div>
-  <div class="cover-hero">Your Voice.<br>Forever.</div>
-  <div class="cover-tagline">Your legacy, on your terms.</div>
-  <hr class="cover-rule" />
-  <div class="cover-meta">Project Context &middot; June 2026 &middot; Jeremy Grego, Founder</div>
+  <div class="cover-hero-group">
+    <div class="cover-hero">Your Voice.<br>Forever.</div>
+    <div class="cover-tagline">Your legacy, on your terms.</div>
+    <hr class="cover-rule" />
+    <div class="cover-meta">Project Context &middot; June 2026 &middot; Jeremy Grego, Founder</div>
+  </div>
 </div>
 
 <!-- ═══════════════════ CONTENT ═══════════════════ -->
@@ -366,7 +381,8 @@ ${sectioned}
   const pdfBuffer = await page.pdf({
     format: "A4",
     printBackground: true,
-    margin: { top: "0", right: "0", bottom: "0", left: "0" },
+    // margin intentionally omitted — CSS @page rules control margins per page type
+    // (@page :first = cover, margin:0 full bleed; @page = all others, margin-top:20px)
     displayHeaderFooter: false,
   });
 

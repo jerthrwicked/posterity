@@ -620,6 +620,12 @@ Items here are not important enough or worth addressing right now. They are not 
 - scripts/generate-pdf.js — plain context PDF, called automatically by npm run sync. Output: C:\Users\jerth\OneDrive\Documents\Important\Posterity Project Context.pdf
 - scripts/generate-stylized-pdf.js — styled investor PDF, manual only via npm run generate-stylized. Output: C:\Users\jerth\OneDrive\Documents\Important\Posterity_Stylized_Context.pdf
 - Plain PDF output confirmed at 0.65MB
+- PDF pipeline rebuilt: Puppeteer + markdown-it replaced wkhtmltopdf/md-to-pdf
+- Two PDF scripts: generate-pdf.js (plain, auto via sync) and generate-stylized-pdf.js (investor, manual only)
+- Stylized PDF design spec locked (cover, typography, clearance rules, page numbers)
+- Stylized PDF visual corrections complete (POSTERITY positioning, hero text raised, 20px top clearance on all pages)
+- Cursor upgraded to Pro Max ($60/month) — Sonnet 4.6 Max active
+- All six MCP servers connected and active in Cursor (filesystem, gdocs, github, posterity, stripe, supabase)
 
 ---
 
@@ -635,28 +641,75 @@ Set in both .env.local and Vercel:
 ---
 
 ## MCP Setup
-- Config: C:\Users\jerth\posterity\.cursor\mcp.json (in .gitignore)
-- GitHub MCP: personal access token, no expiration — 26 tools enabled
-- Supabase MCP: personal access token (sbp_...) — 29 tools enabled
-- Google Docs MCP (gdocs): active and connected
-  - Service account: posterity-docs@pro-runway-498614-d5.iam.gserviceaccount.com
-  - Key file: C:\Users\jerth\posterity\.cursor\posterity-docs-key.json (in .gitignore)
-  - Context Doc ID: 1sci1dW16chyAOZ7MuvYBhDMdXZIB0G5LWF7VuuIk9CM
-  - Session Log Doc ID: 1l0oGbIbHoDC7FrG7Ds3fqC_cXg0hRsL_k2D6hExJZOY
-- Session log MCP: built into sync-context.js — reads session-notes.md, appends to Google Session Log Doc on sync, resets template after append
-- Filesystem MCP: command npx.cmd, args @modelcontextprotocol/server-filesystem C:\Users\jerth\posterity
-- Stripe MCP: command npx.cmd, args @stripe/mcp --tools=all, env STRIPE_SECRET_KEY from .env.local
-- Posterity MCP: command node, args C:\Users\jerth\posterity\posterity-mcp\index.mjs, env ANTHROPIC_API_KEY from .env.local — exposes ask_posterity tool
+Config: C:\Users\jerth\posterity\.cursor\mcp.json (in .gitignore)
+
+Installed MCP Servers (all configured in Cursor):
+- filesystem — direct access to local project files
+- gdocs — Google Docs integration (Project Context doc + Session Log doc)
+- github — GitHub repository tools (26 tools, personal access token, no expiration)
+- posterity — custom local project MCP server (C:\Users\jerth\posterity\posterity-mcp\index.mjs) — NOTE: name is confusing, needs renaming to clarify its function (tabled)
+- stripe — Stripe API tools (22 tools, 2 prompts enabled)
+- supabase — Supabase database tools (29 tools, personal access token sbp_...)
+
+Stripe MCP is now active — Stage 3 Stripe work executes through Cursor via MCP, not manual Stripe dashboard.
+Stripe MCP to be renamed to something clearer — tabled.
+
+Claude Console (platform.claude.com) — Anthropic API dashboard. Holds API credit balance used when Cursor calls Claude programmatically. This is NOT Claude the assistant. Credit balance monitored by Jeremy. Auto-reload is on.
 
 ---
 
 ## Session Workflow
-- Brainstorm and plan in Claude.ai
-- Claude.ai writes prompts for Cursor Agent (Sonnet 4.6)
-- Cursor Agent writes and pushes all code
-- End of session: paste "Update CONTEXT_for_posterity.md with everything we worked on this session, then run npm run sync to copy it to Documents and regenerate the PDF, then commit and push everything to GitHub with an appropriate commit message" into Cursor Agent
-- npm run sync: copies context to OneDrive Documents, regenerates plain context PDF via Puppeteer + markdown-it (scripts/generate-pdf.js), appends session-notes.md to Google Session Log Doc, updates Google Context Doc, resets session-notes.md template, commits and pushes to GitHub
-- g = go/approved, d = done
+
+Initiation chain — all work begins here, in this order:
+1. Jeremy and Claude brainstorm in Claude.ai → decision reached
+2. Claude writes Cursor Agent prompt
+3. Jeremy pastes prompt into Cursor
+4. Cursor executes
+5. If Cursor hits a problem, it escalates to Claude via MCP
+6. Claude resolves (can access files, Google Docs, verify visuals via Claude in Chrome)
+7. Jeremy reviews result and approves before any push to GitHub
+8. Push to GitHub on approval
+
+Claude cannot initiate. Jeremy always starts the chain. Jeremy always approves before push. Nothing is pushed without Jeremy's explicit sign-off.
+
+Claude in Chrome — visual verification layer. Claude can open any Posterity-related tab, access local files, and answer Cursor's questions independently without Jeremy in the middle. Used for: PDF visual verification, file review, Cursor escalation responses.
+
+Jeremy's role: brainstorming, creative decisions, approvals. Not execution, not ferrying prompts, not manual verification.
+
+End of session: Jeremy pastes end-of-session prompt into Cursor Agent → Cursor runs npm run sync (updates CONTEXT_for_posterity.md, appends to Session Log, regenerates plain PDF) → commits and pushes to GitHub on Jeremy's approval.
+
+g = go/approved, d = done
+
+---
+
+## Operating Procedures
+
+**PDF Pipeline:**
+- npm run sync — runs automatically at end of every session. Calls generate-pdf.js only. Outputs plain internal context PDF to C:\Users\jerth\OneDrive\Documents\Important\Posterity Project Context.pdf. Never touches stylized PDF.
+- npm run generate-stylized — manual only, never called automatically. Outputs investor PDF to C:\Users\jerth\OneDrive\Documents\Important\Posterity_Stylized_Context.pdf. Run only when stylized PDF changes are needed.
+- Visual verification of stylized PDF happens via Claude in Chrome after every generate-stylized run before PDF is shared or moved anywhere.
+- Stylized PDF corrections go to Cursor Agent. Claude in Chrome confirms visually after each run.
+
+**Session Start:**
+- Claude reads CONTEXT_for_posterity.md in full at session start
+- Claude posts session agenda: current stage, next roadmap items, any Tabled & Shelved items superseding stage build, flagged issues from previous session
+- If previous session summary was not synced, that is resolved first before any new work starts
+
+**Session End:**
+- Compile full session summary before closing
+- Jeremy pastes end-of-session sync prompt into Cursor Agent
+- Cursor runs npm run sync, commits, pushes on Jeremy's approval
+- New Claude chat started from within Posterity project after sync completes
+
+**Approval Gate:**
+- Jeremy approves all pushes to GitHub — no exceptions
+- Claude and Cursor may prepare, investigate, and draft freely within a session Jeremy has initiated
+- Nothing is finalized or pushed without Jeremy's explicit sign-off
+
+**Branches:**
+- Branches are not automatic
+- Claude flags Jeremy when branch usage is warranted given task complexity or risk level
+- Jeremy decides whether to branch
 
 ---
 
@@ -691,19 +744,16 @@ New Price IDs to be generated when Stripe is updated. Update codebase and Vercel
 
 ## Build Roadmap
 
-### Stage 3 (Current) — 2–3 sessions (4–9 hours)
-- Update Stripe prices to locked pricing ($99/$249/$899) + update Price IDs in code
-- Update codebase and Vercel env vars after each Stripe change, always test checkout after updating
-- Add Limited Availability tag to Legacy plan card
-- Legacy customer cap: 10 customers, configurable from admin dashboard
-- Rename Financial Hardship to Grace on pricing card, update description
-- Create Posterity Grace Storage Stripe product ($4.99/year)
-- Create custom payment option in Stripe dashboard for Custom tier plans
+### Stage 3 (Current)
+- Update Stripe prices to locked pricing ($99/$249/$899) + generate new Price IDs + update codebase + Vercel env vars + test checkout for each tier
+- Add "Limited Availability" tag to Legacy plan card
+- Add Grace Storage Stripe product ($4.99/year)
+- Add Custom payment option in Stripe
 - Connect Stripe to Supabase (record subscription on payment)
-- Horizon subscription transition logic (transitions into initiated account upon payment)
+- Horizon auto-cancel webhook when plan activates
 - Webhook for subscription status changes
 - Lock dashboard behind subscription tiers
-- Trusted Contact portal page + separate login + nav dropdown entry
+- Trusted Contact portal + separate login + nav entry
 
 ### Stage 4 — 8–12 sessions (16–36 hours)
 - User profiles (real-date calendar setup, Content Creation Portal, social media setup)
@@ -955,6 +1005,9 @@ Claude never edits, paraphrases, restructures, or improves approved copy without
 
 **Rule 30 — No Action Without Confirmation**
 Claude never builds, codes, or generates any file without explicit confirmation. Silence is not confirmation. Explicit go signal required every time. Claude always responds before building.
+
+**Rule 31 — Branch Notification**
+Claude notifies Jeremy when branch usage is warranted for a given task. Jeremy makes the final decision. Branches are never created automatically.
 
 ---
 
