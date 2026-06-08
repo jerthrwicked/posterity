@@ -1,9 +1,19 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { supabase } from "../../lib/supabase";
 
 export default function GlobalNav() {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const menuRef = useRef(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data?.user ?? null));
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -28,21 +38,21 @@ export default function GlobalNav() {
           onClick={() => setOpen((v) => !v)}
           aria-label="Open menu"
           aria-expanded={open}
-          className="flex flex-col justify-center items-center w-10 h-10 gap-[5px]"
+          className="flex flex-col justify-center items-center w-12 h-12 gap-[6px]"
         >
           <span
-            className={`block w-6 h-[2px] bg-white rounded-full transition-all duration-200 origin-center ${
-              open ? "rotate-45 translate-y-[7px]" : ""
+            className={`block w-8 h-[2.5px] bg-white rounded-full transition-all duration-200 origin-center ${
+              open ? "rotate-45 translate-y-[8.5px]" : ""
             }`}
           />
           <span
-            className={`block w-6 h-[2px] bg-white rounded-full transition-all duration-200 ${
+            className={`block w-8 h-[2.5px] bg-white rounded-full transition-all duration-200 ${
               open ? "opacity-0 scale-x-0" : ""
             }`}
           />
           <span
-            className={`block w-6 h-[2px] bg-white rounded-full transition-all duration-200 origin-center ${
-              open ? "-rotate-45 -translate-y-[7px]" : ""
+            className={`block w-8 h-[2.5px] bg-white rounded-full transition-all duration-200 origin-center ${
+              open ? "-rotate-45 -translate-y-[8.5px]" : ""
             }`}
           />
         </button>
@@ -54,24 +64,26 @@ export default function GlobalNav() {
               onClick={() => setOpen(false)}
               className="block px-6 py-4 text-sm text-gray-300 hover:text-white hover:bg-gray-900 transition"
             >
-              Pricing
+              Plans
             </a>
             <a
-              href="/login"
+              href={user ? "/dashboard" : "/login"}
               onClick={() => setOpen(false)}
               className="block px-6 py-4 text-sm text-gray-300 hover:text-white hover:bg-gray-900 transition border-t border-gray-800"
             >
-              Login
+              {user ? "Account" : "Login"}
             </a>
-            <div className="px-4 py-3 border-t border-gray-800">
-              <a
-                href="/signup"
-                onClick={() => setOpen(false)}
-                className="block text-center bg-white text-black px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-200 transition"
-              >
-                Get Started
-              </a>
-            </div>
+            {!user && (
+              <div className="px-4 py-3 border-t border-gray-800">
+                <a
+                  href="/signup"
+                  onClick={() => setOpen(false)}
+                  className="block text-center border border-white text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-white hover:text-black transition"
+                >
+                  Get Started
+                </a>
+              </div>
+            )}
           </div>
         )}
       </div>
