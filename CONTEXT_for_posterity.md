@@ -489,6 +489,12 @@ Financial automation requires lawyer review before Phase 5 build begins. No fina
 
 ---
 
+## PDF Design Standards
+All non-session PDFs use: black background (#000000), dark grey wrap (#2a2a2a), black content area inside wrap, white table cards, blue section labels (#5b9bd5), Lora italic for accents and pull quotes, Poppins for all other text. Cover page: pure black full bleed, large left-aligned hero text. Section dividers: full width #1e2939 line centered between sections. No text near page edges or wrap edges.
+Session/context PDFs: standard format unchanged.
+
+---
+
 ## Horizon Builds
 Horizon Builds is where creative sparks live until they're ready to become reality. These are ideas that emerged organically during the build process — concepts that could change the way Posterity works, looks, or feels. Items here are being actively considered for roadmap inclusion. They are not here because they are unimportant. They are here because they haven't found their stage yet. Each item can be picked up independently at any time and worked on — then set back down when the primary build demands attention. High priority creative items that could reshape the product sit here above the roadmap, not below it.
 
@@ -505,6 +511,10 @@ Current Horizon Builds:
 - Domain name purchase (posterity.co taken — research alternatives: posterity.app, posteritylegacy.com, etc.)
 - Auto-update remaining sessions and hours on each sync based on completed build items
 - Reformat all section PDFs to app visual style (blue/black, app typography)
+- PDF vector rebuild — replace wkhtmltopdf with vector PDF generation to reduce file size from ~17MB to under 3MB
+- PDF auto-rebuild on npm run sync — add to sync-context.js so styled PDF regenerates automatically every session end
+- Claude as Cursor MCP (direct API connection) — custom MCP that routes Cursor Agent questions through Claude.ai context
+- Cursor web agent interface — Claude can access cursor.com/agents via Chrome; evaluate direct prompt execution
 
 ---
 
@@ -520,7 +530,9 @@ Items here are not important enough or worth addressing right now. They are not 
 - Formal escrow language review (Phase 6)
 - posterity.admin@gmail.com created as official admin email — confirm full setup
 - Google Docs MCP not syncing correctly — Posterity Project context doc showing 1KB in Google Drive, full context not writing through. Needs investigation next session.
-- Claude in Chrome extension not installed on Jeremy's machine — needed for browser-based MCP work. Install from Chrome Web Store before next session.
+- PDF file size issue — wkhtmltopdf produces ~17MB due to background rasterization. Rebuild in vector format needed. Add to Horizon Builds.
+- Rule 26 scroll fix — MCP tab navigates to wrong Claude tab. Needs different implementation.
+- Cursor cloud agents environment not yet configured — Start Setup at cursor.com/dashboard/cloud-agents
 
 ---
 
@@ -578,6 +590,15 @@ Items here are not important enough or worth addressing right now. They are not 
 - npm run sync now appends session-notes.md to Google Session Log, updates Google Context Doc, resets session-notes.md template
 - Homepage visual updates: hero sublines replaced, feature card copy updated (A Living Legacy / On Your Terms / Fully Automated. Fully Protected), nav Pricing→Plans, Login→Account state-dependent logic, hamburger dropdown logged-in/out states, hero buttons removed
 - Plans page visual updates: locked pricing ($99/$249/$899), all bullets updated to per plan year, Horizon description updated, Financial Hardship renamed to Posterity Grace, Limited Availability badge on Legacy card, button uniformity across page, card sizing and spacing updated
+- Claude in Chrome extension installed, connected, permissions set on all key sites
+- .cursorrules file created in project root
+- Filesystem MCP (@modelcontextprotocol/server-filesystem) added to mcp.json
+- Stripe MCP (@stripe/mcp) added to mcp.json
+- posterity-mcp server built (posterity-mcp/index.mjs) — ask_posterity tool tested and confirmed working
+- Privacy mode disabled in Cursor, usage-based spending enabled (unlimited)
+- Anthropic Console account active — $40 credits, posterity-mcp API key in .env.local
+- cursor.com/dashboard accessible via Claude in Chrome
+- platform.claude.com accessible via Claude in Chrome
 
 ---
 
@@ -602,7 +623,9 @@ Set in both .env.local and Vercel:
   - Context Doc ID: 1sci1dW16chyAOZ7MuvYBhDMdXZIB0G5LWF7VuuIk9CM
   - Session Log Doc ID: 1l0oGbIbHoDC7FrG7Ds3fqC_cXg0hRsL_k2D6hExJZOY
 - Session log MCP: built into sync-context.js — reads session-notes.md, appends to Google Session Log Doc on sync, resets template after append
-- Stripe MCP: to be added when Stripe goes live
+- Filesystem MCP: command npx.cmd, args @modelcontextprotocol/server-filesystem C:\Users\jerth\posterity
+- Stripe MCP: command npx.cmd, args @stripe/mcp --tools=all, env STRIPE_SECRET_KEY from .env.local
+- Posterity MCP: command node, args C:\Users\jerth\posterity\posterity-mcp\index.mjs, env ANTHROPIC_API_KEY from .env.local — exposes ask_posterity tool
 
 ---
 
@@ -640,6 +663,8 @@ New Price IDs to be generated when Stripe is updated. Update codebase and Vercel
 - Session Log Google Doc: https://docs.google.com/document/d/1l0oGbIbHoDC7FrG7Ds3fqC_cXg0hRsL_k2D6hExJZOY/edit?usp=sharing
 - Full automation process PDF: to be created
 - Posterity Collaboration System PDF: to be added once stored
+- Anthropic Console: https://platform.claude.com
+- Cursor dashboard: https://cursor.com/dashboard
 
 ---
 
@@ -894,6 +919,21 @@ When explaining anything that involves a dashboard, settings panel, or interface
 
 **Rule 25 — Prompt End Notification**
 After every Cursor Agent prompt, Claude posts a summary line immediately after the code block stating what the prompt covers and how many changes. Format: Prompt complete — [X] changes across [Y] files. Paste and run.
+
+**Rule 26 — Auto-Scroll After Long Responses**
+After any response exceeding approximately one page, Claude posts a follow-up using Claude in Chrome to scroll the chat to the bottom. Current implementation navigates wrong tab — fix pending.
+
+**Rule 27 — Model and Session Guidance**
+Sonnet 4.6: default for all standard builds. Opus 4.8 + Extended Thinking: architectural decisions, complex multi-system debugging, decisions affecting multiple phases. New chat: when Rule 12 fires, when switching stages, or when starting fresh. Claude flags this unprompted when warranted.
+
+**Rule 28 — Proactive Information Retrieval**
+Claude retrieves non-sensitive read-only information from permitted sites without asking first. Only stops to ask when an action would write, submit, send, purchase, or expose credentials.
+
+**Rule 29 — Approved Copy Protection**
+Claude never edits, paraphrases, restructures, or improves approved copy without explicit permission. Approved copy is reproduced exactly or not at all. Changes presented as suggestions only.
+
+**Rule 30 — No Action Without Confirmation**
+Claude never builds, codes, or generates any file without explicit confirmation. Silence is not confirmation. Explicit go signal required every time. Claude always responds before building.
 
 ---
 

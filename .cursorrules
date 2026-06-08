@@ -1,0 +1,65 @@
+# Posterity — Cursor Rules
+
+## Project
+Social media legacy app. Users schedule messages, memories, and videos for delivery to loved ones after account activation. Built by Jeremy Grego (non-technical founder). All code is AI-generated. Full context: read CONTEXT_for_posterity.md in the project root before making any architectural decision.
+
+## Stack
+Next.js | Tailwind CSS | Supabase | Stripe | Vercel | GitHub | Twilio | Meta Business API | Buffer | FFmpeg.wasm | Mercury Bank
+
+## Environment
+Windows 11, PowerShell. NEVER use && between commands — use semicolons or separate commands.
+Node.js v24. Project root: C:\Users\jerth\posterity
+
+## Language Rules — NON-NEGOTIABLE
+- ACCOUNTS move through phases. PLANS exist within accounts. Never say "plan phase" or "plan enters Abeyance."
+- NEVER use in any customer-facing string, UI label, or copy: death, deceased, passing, died, or any clinical mortality language. Approved terms: "account activation," "trigger event," "after they're gone," "non-response trigger" (internal/comments only).
+- Phase names are proper nouns: Horizon, Planning, Abeyance, Active, Twilight, Posterity Phase.
+
+## Six Account Phases (in order)
+1. Horizon — building phase, $9.99/year storage fee
+2. Planning — account funded, 6-month check-in system active
+3. Abeyance — trigger fired, waiting for January 1
+4. Active — delivering content per customer calendar (starts January 1)
+5. Twilight — final plan year complete, first year free
+6. Posterity Phase — trusted contact archive, $9.99/year
+
+## Pricing (LOCKED — do not change without instruction)
+Horizon: $9.99/year | Basic: $99/year | Premium: $249/year | Legacy: $899/year
+Grace Storage: $4.99/year — admin-assigned only, no public checkout
+
+## Stripe Product Names (use these exact names in Stripe only)
+Posterity Horizon | Posterity Basic | Posterity Premium | Posterity Legacy | Posterity Grace
+
+## Current Build Stage: Stage 3
+Remaining tasks in order:
+1. Update Stripe prices to $99/$249/$899 + update Price IDs in code and Vercel env vars
+2. Connect Stripe to Supabase (record subscription on payment)
+3. Horizon subscription transition logic (transitions into initiated account on payment)
+4. Webhook for subscription status changes
+5. Lock dashboard behind subscription tiers
+6. Trusted Contact portal page + separate login + global nav dropdown entry
+7. Add Limited Availability badge to Legacy plan card
+8. Legacy customer cap: 10 customers, configurable from admin dashboard
+9. Create Posterity Grace Storage Stripe product ($4.99/year)
+Always test Stripe checkout after any Price ID change.
+
+## Key Technical Rules
+- Never hardcode Stripe Price IDs — use environment variables
+- Always test checkout after updating any Price ID
+- Supabase auth: email/password, confirmation OFF
+- mcp.json is gitignored — never commit it
+- .env.local is gitignored — never commit it
+- After code changes: test locally with npm run dev, then push to GitHub (Vercel auto-deploys)
+- Videos weighted 2x text units for operational reasons — do NOT display this on pricing cards
+
+## Session End Command
+npm run sync
+Then commit and push to GitHub with a descriptive commit message.
+
+## Important Locations
+Full context doc: C:\Users\jerth\posterity\CONTEXT_for_posterity.md
+Live site: https://posterity-seven.vercel.app
+GitHub: https://github.com/jerthrwicked/posterity (PRIVATE)
+Supabase dashboard: https://supabase.com/dashboard/project/vypytfmutmeyfwmkapjg
+Stripe dashboard: https://dashboard.stripe.com/test/dashboard
+Vercel dashboard: https://vercel.com/jerthrwicked/posterity
