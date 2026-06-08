@@ -533,6 +533,7 @@ Items here are not important enough or worth addressing right now. They are not 
 - PDF file size issue — wkhtmltopdf produces ~17MB due to background rasterization. Rebuild in vector format needed. Add to Horizon Builds.
 - Rule 26 scroll fix — MCP tab navigates to wrong Claude tab. Needs different implementation.
 - Cursor cloud agents environment not yet configured — Start Setup at cursor.com/dashboard/cloud-agents
+- Stylized PDF visual verification pending — PDF has been generated but not yet visually checked. First task at start of next session.
 
 ---
 
@@ -568,6 +569,8 @@ Items here are not important enough or worth addressing right now. They are not 
 - Local: C:\Users\jerth\posterity
 - GitHub: https://github.com/jerthrwicked/posterity (PRIVATE)
 - Live URL: https://posterity-seven.vercel.app
+- Plain context PDF: C:\Users\jerth\OneDrive\Documents\Important\Posterity Project Context.pdf
+- Stylized PDF: C:\Users\jerth\OneDrive\Documents\Important\Posterity_Stylized_Context.pdf
 
 ---
 
@@ -585,7 +588,7 @@ Items here are not important enough or worth addressing right now. They are not 
 - Homepage cards matching pricing cards
 - sync-context.js + npm run sync for end-of-session context updates
 - Project Documents folder created in project root
-- Cursor Pro subscribed (Sonnet 4.6 for daily use, Opus 4.8 for complex tasks)
+- Cursor Pro+ ($60/month), Sonnet 4.6 Max active
 - Google Docs MCP connected: context doc + session log doc live
 - npm run sync now appends session-notes.md to Google Session Log, updates Google Context Doc, resets session-notes.md template
 - Homepage visual updates: hero sublines replaced, feature card copy updated (A Living Legacy / On Your Terms / Fully Automated. Fully Protected), nav Pricing→Plans, Login→Account state-dependent logic, hamburger dropdown logged-in/out states, hero buttons removed
@@ -599,6 +602,11 @@ Items here are not important enough or worth addressing right now. They are not 
 - Anthropic Console account active — $40 credits, posterity-mcp API key in .env.local
 - cursor.com/dashboard accessible via Claude in Chrome
 - platform.claude.com accessible via Claude in Chrome
+- Puppeteer + markdown-it PDF pipeline (replaces wkhtmltopdf/md-to-pdf)
+- Two separate PDF scripts that never overwrite each other: scripts/generate-pdf.js (plain internal context PDF, called automatically by npm run sync) and scripts/generate-stylized-pdf.js (designed investor/collaborator PDF, run manually only via npm run generate-stylized)
+- Both commands added to package.json: "generate-pdf" and "generate-stylized"
+- sync-context.js confirmed: calls generate-pdf.js only, never touches stylized PDF
+- Cursor Pro upgraded to Pro+ ($60/month) — Sonnet 4.6 Max now active, Medium throttling resolved
 
 ---
 

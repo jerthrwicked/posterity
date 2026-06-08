@@ -7,15 +7,19 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "sync": "node sync-context.js"
+    "sync": "node sync-context.js",
+    "generate-pdf": "node scripts/generate-pdf.js",
+    "generate-stylized": "node scripts/generate-stylized-pdf.js"
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.7.0",
     "@supabase/supabase-js": "^2.106.2",
     "canvas": "^3.2.3",
     "googleapis": "^173.0.0",
+    "markdown-it": "^14.2.0",
     "md-to-pdf": "^5.2.5",
     "next": "16.2.6",
+    "puppeteer": "^25.1.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "stripe": "^22.2.0"

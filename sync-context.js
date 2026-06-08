@@ -37,7 +37,7 @@ fs.copyFileSync(src, oneDriveMd);
 console.log("✅ Markdown copied to OneDrive.");
 
 // Regenerate PDF to OneDrive
-execSync("node update-context.js", { stdio: "inherit", cwd: __dirname });
+execSync("node scripts/generate-pdf.js", { stdio: "inherit", cwd: __dirname });
 
 // Copy markdown to Project Documents
 fs.copyFileSync(src, projectDocsMd);
