@@ -505,6 +505,10 @@ Stylized investor PDF (Posterity_Stylized_Context.pdf) — generated manually vi
 
 Plain context PDF (Posterity Project Context.pdf) — auto-generated on every npm run sync. Standard format, no styling.
 
+Frozen files (never restyle or restructure):
+- Plain context PDF (Posterity Project Context.pdf) and CONTEXT_for_posterity.md are structurally frozen. Layout exists to make moving between sources easier. Never restyle or restructure these two files.
+- All other PDFs generated going forward must match the stylized PDF's final design parameters.
+
 ---
 
 ## Horizon Builds
@@ -541,8 +545,11 @@ Items here are not important enough or worth addressing right now. They are not 
 - posterity.admin@gmail.com created as official admin email — confirm full setup
 - Google Docs MCP not syncing correctly — Posterity Project context doc showing 1KB in Google Drive, full context not writing through. Needs investigation next session.
 - Rule 26 scroll fix — MCP tab navigates to wrong Claude tab. Needs different implementation.
-- Cursor cloud agents environment not yet configured — Start Setup at cursor.com/dashboard/cloud-agents
-- Stylized PDF visual corrections pending — three fixes written but not yet run: (1) POSTERITY small caps moved to top left, (2) hero text raised to upper half of cover, (3) 20px top border clearance enforced on all pages. Cursor prompt ready. Run next session, verify visually, then move to What's Been Built.
+- Stylized PDF top border clearance — unresolved after three Cursor attempts. @page margin approach and Puppeteer margin option both failed to produce equal grey wrap on all four sides of interior pages. Detailed fix prompt written and ready for next session.
+- Stylized PDF cover hero position — unresolved. top: 30%, top: 89mm, and flexbox approaches all attempted. Hero still rendering too low (~40-45% down page instead of 30%). Fix prompt written and ready for next session.
+- Cursor cloud agents blank page — environment not yet configured. Page loads blank at cursor.com/dashboard/cloud-agents. Diagnostic prompt written and ready. Do not configure until investigated.
+- All stage builds (Stage 3 through Stage 6) permanently tabled until work order is complete. No build work until further notice.
+- Stripe build paused indefinitely — resumes only after full work order completion.
 
 ---
 
@@ -623,9 +630,9 @@ Items here are not important enough or worth addressing right now. They are not 
 - PDF pipeline rebuilt: Puppeteer + markdown-it replaced wkhtmltopdf/md-to-pdf
 - Two PDF scripts: generate-pdf.js (plain, auto via sync) and generate-stylized-pdf.js (investor, manual only)
 - Stylized PDF design spec locked (cover, typography, clearance rules, page numbers)
-- Stylized PDF visual corrections complete (POSTERITY positioning, hero text raised, 20px top clearance on all pages)
 - Cursor upgraded to Pro Max ($60/month) — Sonnet 4.6 Max active
 - All six MCP servers connected and active in Cursor (filesystem, gdocs, github, posterity, stripe, supabase)
+- Stylized PDF visual corrections partially complete — POSTERITY small caps top-left ✓, blue rule on cover ✓, hero font size corrected to 52px ✓. Top border clearance and hero vertical position still pending.
 
 ---
 
@@ -742,77 +749,67 @@ New Price IDs to be generated when Stripe is updated. Update codebase and Vercel
 
 ---
 
-## Build Roadmap
+## Work Order
 
-### Stage 3 (Current)
-- Update Stripe prices to locked pricing ($99/$249/$899) + generate new Price IDs + update codebase + Vercel env vars + test checkout for each tier
-- Add "Limited Availability" tag to Legacy plan card
-- Add Grace Storage Stripe product ($4.99/year)
-- Add Custom payment option in Stripe
-- Connect Stripe to Supabase (record subscription on payment)
-- Horizon auto-cancel webhook when plan activates
-- Webhook for subscription status changes
-- Lock dashboard behind subscription tiers
-- Trusted Contact portal + separate login + nav entry
+ALL STAGE BUILDS PERMANENTLY TABLED until this work order is complete. No build work until further notice.
 
-### Stage 4 — 8–12 sessions (16–36 hours)
-- User profiles (real-date calendar setup, Content Creation Portal, social media setup)
-- Content Creation Portal: file upload, auto-generated metadata, visual snapshots, Posterity toggle, recipient/platform/date assignment
-- Multi-plan dashboard with side menu (create and work on multiple plans simultaneously)
-- Live cart top right of dashboard (above dropdown, all plans, total cost, storage fee, next payment date)
-- Plan deletion flow with permanent delete confirmation message
-- Add Plan button with Planning Phase cart flow and automated message
-- Onboarding walkthrough + FAQ + AI chatbot + first-login triggered walkthrough
-- All six account phases explanation in onboarding and dashboard
-- "I'm Ready" feature (customer manually moves account into Abeyance, double verification)
-- Check-in system (6 month intervals, 3 month warning, 2x/month notifications, unique first/last notifications via Twilio + email, sequence-labeled middle notifications)
-- Trusted contact system (multiple contacts, primary/backup notification flow, portal, double verification, invitation flow, resend logic)
-- Video upload + FFmpeg.wasm compression
-- Video size/length validation (25MB max, 720p min, 3–4 min max)
-- Remaining messages/videos ticker
-- Video rollover to messages
-- Multi-year cart system with storage fee calculation
-- Meta Business API + Buffer integration
-- Per-customer backup credentials (Posterity-generated, 2FA via Posterity-controlled contact)
-- Twilight and Posterity Phase dashboard builds (archive view, trusted contact transfer flow)
+---
 
-### Stage 5 — 6–8 sessions (12–24 hours)
-- Admin/operational dashboard (priority task list)
-- Admin task and assignment system (manual task creation, calendar view, push back options)
-- Admin access tiers (Director, Manager, Staff — multiple profiles per level)
-- Pay per task tracking system (on/off toggle, video weighted higher, used for pay calculation)
-- Separate financial dashboard (Director only)
-- Mercury Bank two-account setup (Trust Account + Operating Account)
-- Automated year-by-year fund release via server-side cron job
-- Admin dashboard alerts for automation failures
-- Manual input panel for Build Your Own and Grace accounts
-- Grace access code generation system (unique codes for Grace storage fee assignment)
-- Manual override Post Manually button for API failures and general posting workarounds
-- Simultaneous post processing
-- Via Twilio: voicemail + outbound SMS notifications
-- Posterity email account
-- Audit logs for all financial movements
-- Test account option
-- Lawyer review before financial build begins
-- Google Docs session log MCP integration
+**PRIORITY ZERO — Fix the broken system**
+Everything below is blocked until the workflow functions. This comes first.
+- Read posterity-mcp/index.mjs
+- Edit to route ask_posterity live to Claude API with full context
+- Rename the posterity-mcp index file to something clear once pathway confirmed working
+- Verify full back-and-forth loop functions before moving on
 
-### Stage 6 — 4–6 sessions (8–18 hours)
-- App appearance fine-tuning + logo design (Claude first, Canva backup)
-- Tax compliance
-- Terms of Service + lawyer review + copyright application
-- Liability FAQ + Standards of use FAQ
-- Refund policy finalization
-- Formal escrow language review
-- Testimonials section (after accruing content)
-- Sales sheet + investor materials + growth projections
-- Life insurance partnership exploration
-- Service time limit legal documentation
-- Grace Storage public branding review ($4.99 accessibility signal)
-- Full automation process PDF creation
-- Context document evolved into full sales/vision document
-- Pricing analysis update once social media login time is measured
+---
 
-### Total Remaining: 20–29 sessions (40–87 hours)
+**1. Stylized PDF corrections**
+Two pending fixes: top border clearance + hero vertical position. Prompt written and ready.
+
+---
+
+**2. Lock PDF design rules**
+- All future PDFs (outside context PDF and CONTEXT_for_posterity.md) match stylized PDF final parameters
+- Plain context PDF and CONTEXT_for_posterity.md structure frozen permanently — never restyled
+- New rule: "context" always means the layout context — the editable working file. Every time, no exceptions.
+
+---
+
+**3. Living Instruction File**
+- Single file, always current, pushed to all sources on every sync
+- Ready to paste into any new Claude session
+- Structure and content to be discussed once Priority Zero and items 1–2 are complete
+
+---
+
+**4. Fix Google Docs MCP**
+- Resolve 1KB sync issue so full context writes through
+- Add new MCPs to Google Drive
+- Enable live line-by-line editing through Claude in Chrome
+- Google Docs MCP issue remains tabled until this step is reached in work order
+
+---
+
+**5. Creative alignment pass**
+Work through full context until everything matches Jeremy's vision.
+
+---
+
+**6. Legal Preparation Package**
+Full legal prep required before any collaborator is given access to the project. Collaborator access is currently paused pending completion of this work.
+
+Items to be researched and produced:
+- Copyright: what qualifies in Posterity, what to file now vs. later, registration process and cost
+- Patent: whether the automation system, trigger logic, and check-in workflow constitute patentable process IP — patent application summary document to be written
+- NDA: collaborator NDA template written and ready before access is granted
+- Full consultation prep package: everything above compiled and ready to bring to a lawyer
+- Research PDF package: multiple styled PDFs summarizing research across all legal topic areas
+
+Key open questions for legal consultation:
+- File copyright now on existing creative work or wait until product is more complete
+- Whether patent application is warranted and on what specifically
+- How to structure collaborator access legally without damaging a personal relationship
 
 ---
 
@@ -1009,6 +1006,9 @@ Claude never builds, codes, or generates any file without explicit confirmation.
 **Rule 31 — Branch Notification**
 Claude notifies Jeremy when branch usage is warranted for a given task. Jeremy makes the final decision. Branches are never created automatically.
 
+**Rule 32 — Context Language**
+"context" always refers to the layout context — CONTEXT_for_posterity.md — the editable working file. This applies in every scenario without exception.
+
 ---
 
 ## Brand Copy
@@ -1053,5 +1053,5 @@ Note: This section will expand as copy is written and approved for each area of 
 - Founder: Jeremy Grego
 - Admin email: posterity.admin@gmail.com
 - Phone: 504-402-0450
-- g = go/approved, d = done
+- g or + = go/approved, n or - = no, m = more, * = instruction release confirmation
 - File creation: use $content = @'...'@ then [System.IO.File]::WriteAllText() to avoid UTF-8 corruption

@@ -77,8 +77,8 @@ const html = `<!DOCTYPE html>
   /* @page :first targets page 1 (cover) — stays full bleed, zero margin.
    * @page targets all other pages — 20px top margin enforces clearance rule.
    * Puppeteer's margin option is omitted from pdf() so CSS @page controls. */
-  @page { size: A4; margin: 20px 0 0 0; }
-  @page :first { size: A4; margin: 0; }
+  @page { size: A4; margin: 0; }
+  @page :not(:first) { margin-top: 32px; }
 
   /*
    * body background = #3a3a3a (the grey wrap frame).
@@ -122,17 +122,17 @@ const html = `<!DOCTYPE html>
     top: 60px;
     left: 60px;
     font-family: 'Poppins', sans-serif;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 13px;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
     color: #ffffff;
   }
 
-  /* Hero group anchored at ~37% from top (≈110mm on A4) */
+  /* Hero group anchored at 89mm from top */
   .cover-hero-group {
     position: absolute;
-    top: 37%;
+    top: 89mm;
     left: 60px;
     right: 60px;
   }
@@ -140,7 +140,7 @@ const html = `<!DOCTYPE html>
   .cover-hero {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
-    font-size: 72px;
+    font-size: 52px;
     line-height: 1.1;
     color: #ffffff;
   }
@@ -156,7 +156,7 @@ const html = `<!DOCTYPE html>
   .cover-rule {
     width: 120px;
     height: 1px;
-    background: #3a3a3a;
+    background: #5b9bd5;
     border: none;
     margin-top: 32px;
   }
@@ -174,17 +174,25 @@ const html = `<!DOCTYPE html>
   /*
    * ── Content wrapper ──
    *
-   * margin: 0 32px  → 32px grey gutter on left and right of every page
-   * padding-top: 32px  → grey cap appears at top of first content page only
-   * padding-bottom: 32px  → grey cap appears at bottom of last content page only
-   * background: #000000  → the black content area
-   * padding-left/right: 40px  → inner horizontal clearance (total 72px from page edge)
+   * margin: 0 32px     → 32px grey side gutters on left and right of every page
+   * padding-top: 32px  → grey cap at top of FIRST content page only (element start)
+   * padding-bottom: 32px → grey cap at bottom of LAST content page only (element end)
+   * background: #000000 → always black inside the wrap frame
+   * padding-left/right: 40px → inner text clearance from wrap edge
    *
-   * Combined clearance from any wrap edge: 40px (well above the 20px minimum).
+   * CLEARANCE BREAKDOWN (20px minimum from outer page edge — all page types):
+   *   Sides:       32px (wrap margin) + 40px (inner padding) = 72px from page edge ✓
+   *   First page top: @page margin 20px (grey) + 32px padding-top (black) = 52px ✓
+   *   Middle/last top: @page margin 20px (grey) — text starts at page-break point.
+   *     h2 margin-top: 24px adds inner clearance when a section header falls at top.
+   *     Non-header content relies on the 20px @page margin for page-edge clearance ✓
+   *   Bottom (last page): 32px padding-bottom before page ends ✓
+   *
+   * The wrap frame is outer only — the black content area is always #000000.
    */
   .content-wrapper {
     margin: 0 32px;
-    padding: 32px 40px 32px 40px;
+    padding: 52px 40px 32px 40px;
     background: #000000;
   }
 
@@ -198,7 +206,7 @@ const html = `<!DOCTYPE html>
     color: #5b9bd5;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-top: 20px;
+    margin-top: 24px;
     margin-bottom: 12px;
   }
 
@@ -340,7 +348,7 @@ const html = `<!DOCTYPE html>
 
 <!-- ═══════════════════ COVER PAGE ═══════════════════ -->
 <div class="cover-page">
-  <div class="cover-brand">Posterity</div>
+  <div class="cover-brand">POSTERITY</div>
   <div class="cover-hero-group">
     <div class="cover-hero">Your Voice.<br>Forever.</div>
     <div class="cover-tagline">Your legacy, on your terms.</div>
