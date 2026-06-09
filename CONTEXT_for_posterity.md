@@ -490,24 +490,28 @@ Financial automation requires lawyer review before Phase 5 build begins. No fina
 ---
 
 ## PDF Design Standards
-Stylized investor PDF (Posterity_Stylized_Context.pdf) — generated manually via npm run generate-stylized only:
-- Cover page: full bleed black (#000000), no wrap, no border. "POSTERITY" small caps top left at 60px from left, 60px from top. Hero text "Your Voice. / Forever." raised to approximately 35–40% down from top. Supporting line Lora italic, thin rule, metadata line — all left aligned at 60px.
+
+**Stylized investor PDF (Posterity_Stylized_Context.pdf) — LOCKED DESIGN RULES:**
+- Output path: `path.join(__dirname, "..", "Project Documents", "Posterity_Stylized_Context.pdf")`
+- Generated manually via `npm run generate-stylized` only. Never auto-generated on sync.
+- Grey side gutters: 32px Puppeteer margin left and right
+- Cover: full bleed black, no grey. Fix via `margin: -32px -32px 0 -32px` on `.cover-page` (cover fix prompt written, not yet executed — run next session)
+- Cover hero: 96px, line-height 1.1, Poppins 700
+- POSTERITY brand: absolute, top 60px, left 60px, 13px, letter-spacing 0.28em
+- Blue page separator: midnight/ice/midnight — #0A2540 5px / #5B9BD5 1px / #0A2540 5px. Applied as `.content-wrapper` border-top only — NOT on `hr.section-divider`
+- Section dividers (`hr.section-divider`): thin 1px #2d4a6e line, margin 24px 0
 - Wrap color: #3a3a3a — outer frame only, never content fill
 - Content area: always #000000 black on all interior pages
-- First content page: wrap all four sides
-- Middle pages: wrap left and right sides only
-- Last page: wrap left, right, and bottom only
-- Section dividers: #2d4a6e, 1px, full width, 28px margin top and bottom
 - Typography: Poppins (section headers #5b9bd5, body white) + Lora italic (#cccccc accents)
-- Page numbers: bottom right, #555555, 20px from all edges
-- Text clearance: 20px minimum from ALL borders on ALL pages including top edge — applies to every element on every page type
-- Previous error (now fixed in code): grey was placed inside content area instead of as outer wrap only
+- Text clearance: 20px minimum from ALL borders on ALL pages including top edge
 
-Plain context PDF (Posterity Project Context.pdf) — auto-generated on every npm run sync. Standard format, no styling.
+**Plain context PDF (Posterity Project Context.pdf)** — auto-generated on every `npm run sync`. Standard format, no styling.
 
-Frozen files (never restyle or restructure):
+**Frozen files (never restyle or restructure):**
 - Plain context PDF (Posterity Project Context.pdf) and CONTEXT_for_posterity.md are structurally frozen. Layout exists to make moving between sources easier. Never restyle or restructure these two files.
 - All other PDFs generated going forward must match the stylized PDF's final design parameters.
+
+**Claude in Chrome PDF verification note:** Claude in Chrome can only watch Cursor via the cloud agents dashboard in Chrome, not the local Cursor app. PDF visual verification happens by opening the generated file directly.
 
 ---
 
@@ -545,9 +549,10 @@ Items here are not important enough or worth addressing right now. They are not 
 - posterity.admin@gmail.com created as official admin email — confirm full setup
 - Google Docs MCP not syncing correctly — Posterity Project context doc showing 1KB in Google Drive, full context not writing through. Needs investigation next session.
 - Rule 26 scroll fix — MCP tab navigates to wrong Claude tab. Needs different implementation.
-- Stylized PDF visual corrections pending — three visual issues remain on Posterity_Stylized_Context.pdf: (1) POSTERITY small caps not positioned top-left on cover, (2) hero text "Your Voice. Forever." sitting too low, (3) no uniform grey border clearance on all page edges. Fix prompt is written and ready to run.
-- Stylized PDF corrections prompt is written and ready — next session first task.
-- Priority Zero Bridge Documentation PDF pending — Markdown exists at Project Documents/Priority_Zero_Bridge_Documentation.md. Styled PDF generation pending next session after stylized context PDF is fixed. Cover hero: "The Bridge." Style must match Layout A.
+- Stylized PDF cover fix pending — cover hero needs to be 96px, cover must be full bleed black with no grey (fix: margin -32px -32px 0 -32px on .cover-page). Prompt written and ready. Run next session first.
+- Stylized PDF visual verification pending — verify PDF visually via Project Documents folder after each run.
+- Priority Zero Bridge Documentation PDF pending — Markdown exists at Project Documents/Priority_Zero_Bridge_Documentation.md. Styled PDF generation pending after stylized context PDF cover is confirmed correct. Cover hero: "The Bridge." Style must match Layout A.
+- Stage 3 Stripe build resumes after stylized PDF is confirmed correct.
 - Cursor cloud agents blank page — environment not yet configured. Page loads blank at cursor.com/dashboard/cloud-agents. Diagnostic prompt written and ready. Do not configure until investigated.
 - All stage builds (Stage 3 through Stage 6) permanently tabled until work order is complete. No build work until further notice.
 - Stripe build paused indefinitely — resumes only after full work order completion.
@@ -781,7 +786,7 @@ Closed June 2026. The Claude ↔ Cursor bridge is live and verified.
 ---
 
 **1. Stylized PDF corrections**
-Three visual issues remain on Posterity_Stylized_Context.pdf: (1) POSTERITY small caps not positioned top-left on cover, (2) hero text "Your Voice. Forever." sitting too low, (3) no uniform grey border clearance on all page edges. Fix prompt is written and ready. Next session first task.
+Cover fix remaining: hero must be 96px, cover must be full bleed black (no grey — fix via margin: -32px -32px 0 -32px on .cover-page). Section dividers and page separator stripe locked. Prompt written and ready. Next session first task. Verify visually via Project Documents folder after each run.
 
 ---
 

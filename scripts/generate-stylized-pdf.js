@@ -8,7 +8,7 @@ const MarkdownIt = require("markdown-it");
 const md = new MarkdownIt({ html: true, linkify: true, typographer: true });
 
 const INPUT_MD = path.join(__dirname, "..", "CONTEXT_for_posterity.md");
-const OUTPUT_PDF = "C:\\Users\\jerth\\OneDrive\\Documents\\Important\\Posterity_Stylized_Context.pdf";
+const OUTPUT_PDF = path.join(__dirname, "..", "Project Documents", "Posterity_Stylized_Context.pdf");
 
 // ---------------------------------------------------------------------------
 // 1. Read and convert markdown
@@ -144,7 +144,7 @@ const html = `<!DOCTYPE html>
   .cover-hero {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
-    font-size: 52px;
+    font-size: 72px;
     line-height: 1.1;
     color: #ffffff;
   }
@@ -305,11 +305,12 @@ const html = `<!DOCTYPE html>
     color: #5b9bd5;
   }
 
-  /* ── Section dividers — stays inside content column, never touches wrap ── */
+  /* ── Section dividers — midnight/ice/midnight stripe inside content column ── */
   hr.section-divider {
     border: none;
-    border-top: 1px solid #2d4a6e;
-    margin: 28px 0;
+    height: 11px;
+    background: linear-gradient(to bottom, #0A2540 0px, #0A2540 5px, #5B9BD5 5px, #5B9BD5 6px, #0A2540 6px, #0A2540 11px);
+    margin: 24px 0;
     width: 100%;
   }
 
