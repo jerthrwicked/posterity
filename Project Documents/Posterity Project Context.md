@@ -546,7 +546,8 @@ Items here are not important enough or worth addressing right now. They are not 
 - Google Docs MCP not syncing correctly — Posterity Project context doc showing 1KB in Google Drive, full context not writing through. Needs investigation next session.
 - Rule 26 scroll fix — MCP tab navigates to wrong Claude tab. Needs different implementation.
 - Stylized PDF visual corrections pending — three visual issues remain on Posterity_Stylized_Context.pdf: (1) POSTERITY small caps not positioned top-left on cover, (2) hero text "Your Voice. Forever." sitting too low, (3) no uniform grey border clearance on all page edges. Fix prompt is written and ready to run.
-- PDF corrections are next in queue immediately after Priority Zero bidirectional loop is confirmed working.
+- Stylized PDF corrections prompt is written and ready — next session first task.
+- Priority Zero Bridge Documentation PDF pending — Markdown exists at Project Documents/Priority_Zero_Bridge_Documentation.md. Styled PDF generation pending next session after stylized context PDF is fixed. Cover hero: "The Bridge." Style must match Layout A.
 - Cursor cloud agents blank page — environment not yet configured. Page loads blank at cursor.com/dashboard/cloud-agents. Diagnostic prompt written and ready. Do not configure until investigated.
 - All stage builds (Stage 3 through Stage 6) permanently tabled until work order is complete. No build work until further notice.
 - Stripe build paused indefinitely — resumes only after full work order completion.
@@ -634,9 +635,15 @@ Items here are not important enough or worth addressing right now. They are not 
 - All six MCP servers connected and active in Cursor (filesystem, gdocs, github, posterity, stripe, supabase)
 - Stylized PDF visual corrections partially complete — POSTERITY small caps top-left ✓, blue rule on cover ✓, hero font size corrected to 52px ✓. Top border clearance and hero vertical position still pending.
 - ask_posterity confirmed fully working — Cursor Agent can call Claude via MCP and receive accurate answers based on full project context. Verified with Legacy tier pricing question; returned correct $899/year answer.
-- Priority Zero Step 1 complete — ask_posterity is live and verified.
-- Priority Zero Step 2 scoped — build receive_task and post_result tools in posterity-mcp/index.mjs for true bidirectional Claude ↔ Cursor loop. receive_task writes Claude tasks to cursor-inbox.md for Cursor to read and execute. post_result writes Cursor results to cursor-outbox.md for Claude to read.
-- Priority Zero remains open until receive_task and post_result are built and the full bidirectional loop is verified.
+- Priority Zero complete and closed — ask_posterity, receive_task, post_result, and local API route all built and verified.
+- Priority Zero Step 1 complete — ask_posterity live and verified ✅
+- Priority Zero Step 2 complete — receive_task and post_result tools built and verified ✅
+- Priority Zero Step 3 complete — local API route app/api/cursor-inbox/route.js built and verified ✅ (localhost only, never deploy)
+- Priority Zero Step 4 complete — Claude in Chrome bridge test verified ✅ — {"success":true,"message":"Task written to cursor-inbox.md"}
+- MCP server renamed from posterity to claude-cursor-bridge in posterity-mcp/index.mjs and .cursor/mcp.json.
+- Bridge files created in project root: cursor-inbox.md and cursor-outbox.md. Both are in .gitignore.
+- Priority Zero bridge documentation created: Project Documents/Priority_Zero_Bridge_Documentation.md. Styled PDF generation pending next session after stylized context PDF is fixed.
+- Bridge Documentation PDF build notes locked — cover hero "The Bridge.", style matches Layout A, all section content documented and ready for next session build.
 - Rule 31 added — first Cursor Agent prompt each session must include: "If npm run dev is not already running, start it first."
 
 ---
@@ -659,7 +666,7 @@ Installed MCP Servers (all configured in Cursor):
 - filesystem — direct access to local project files
 - gdocs — Google Docs integration (Project Context doc + Session Log doc)
 - github — GitHub repository tools (26 tools, personal access token, no expiration)
-- posterity — custom local project MCP server (C:\Users\jerth\posterity\posterity-mcp\index.mjs) — NOTE: name is confusing, needs renaming to clarify its function (tabled)
+- claude-cursor-bridge — custom local project MCP server (C:\Users\jerth\posterity\posterity-mcp\index.mjs) exposing ask_posterity, receive_task, and post_result
 - stripe — Stripe API tools (22 tools, 2 prompts enabled)
 - supabase — Supabase database tools (29 tools, personal access token sbp_...)
 
@@ -757,26 +764,24 @@ New Price IDs to be generated when Stripe is updated. Update codebase and Vercel
 
 ## Work Order
 
-ALL STAGE BUILDS PERMANENTLY TABLED until this work order is complete. No build work until further notice.
+Priority Zero is complete and closed. Stage builds remain tabled until the remaining work order items are complete.
 
 ---
 
 **PRIORITY ZERO — Fix the broken system**
-Everything below is blocked until the workflow functions. This comes first.
+Closed June 2026. The Claude ↔ Cursor bridge is live and verified.
 - Priority Zero Step 1 — ask_posterity live and verified ✅
-- Priority Zero Step 2 — receive_task and post_result tools built and verified ❌ (next build)
-- Current implementation is one-way only: Cursor Agent can call Claude through ask_posterity and receive accurate context-based answers.
-- True completion requires a bidirectional loop: Claude must be able to push tasks to Cursor and receive responses.
-- Agreed solution: extend posterity-mcp/index.mjs with two new tools — receive_task and post_result.
-- receive_task: Claude writes a task to cursor-inbox.md; Cursor reads and executes it.
-- post_result: Cursor writes result to cursor-outbox.md; Claude reads it.
-- Priority Zero remains open until the bidirectional loop is built and verified.
-- Everything else remains blocked until Step 2 is complete.
+- Priority Zero Step 2 — receive_task and post_result tools built and verified ✅
+- Priority Zero Step 3 — local API route app/api/cursor-inbox/route.js built and verified ✅ (localhost only, never deploy)
+- Priority Zero Step 4 — Claude in Chrome bridge test verified ✅ — {"success":true,"message":"Task written to cursor-inbox.md"}
+- MCP server renamed from posterity to claude-cursor-bridge in posterity-mcp/index.mjs and .cursor/mcp.json.
+- Bridge files cursor-inbox.md and cursor-outbox.md created in project root and added to .gitignore.
+- Priority Zero fully complete and closed.
 
 ---
 
 **1. Stylized PDF corrections**
-Three visual issues remain on Posterity_Stylized_Context.pdf: (1) POSTERITY small caps not positioned top-left on cover, (2) hero text "Your Voice. Forever." sitting too low, (3) no uniform grey border clearance on all page edges. Fix prompt is written and ready to run. PDF corrections are next in queue immediately after Priority Zero bidirectional loop is confirmed working.
+Three visual issues remain on Posterity_Stylized_Context.pdf: (1) POSTERITY small caps not positioned top-left on cover, (2) hero text "Your Voice. Forever." sitting too low, (3) no uniform grey border clearance on all page edges. Fix prompt is written and ready. Next session first task.
 
 ---
 

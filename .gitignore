@@ -48,3 +48,7 @@ next-env.d.ts
 
 # Session notes (appended to Google Doc on sync, then reset)
 session-notes.md
+
+# Cursor-Claude bidirectional MCP bridge files
+cursor-inbox.md
+cursor-outbox.md
