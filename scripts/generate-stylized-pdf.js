@@ -74,11 +74,9 @@ const html = `<!DOCTYPE html>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   /* ── Page setup ── */
-  /* @page :first targets page 1 (cover) — stays full bleed, zero margin.
-   * @page targets all other pages — 20px top margin enforces clearance rule.
-   * Puppeteer's margin option is omitted from pdf() so CSS @page controls. */
+  /* @page stays at 0. Puppeteer's PDF margin option creates the uniform
+   * 32px grey wrap around every page. */
   @page { size: A4; margin: 0; }
-  @page :not(:first) { margin-top: 32px; }
 
   /*
    * body background = #3a3a3a (the grey wrap frame).
@@ -105,15 +103,24 @@ const html = `<!DOCTYPE html>
     print-color-adjust: exact;
   }
 
-  /* ── Cover page — full bleed black, position:relative for absolute children ── */
+  /* ── Cover page ──
+   * height: calc(297mm - 64px) compensates for Puppeteer's universal
+   * top/bottom margins so the cover still fills the visible page area.
+   * display: flex + padding-top: 89mm positions the hero at ~30% down from top. */
   .cover-page {
     width: 100%;
-    height: 297mm;
+    height: calc(297mm - 64px);
     background: #000000;
     break-after: page;
     page-break-after: always;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 89mm;
+    padding-left: 60px;
+    padding-right: 60px;
   }
 
   /* "POSTERITY" anchored top-left: 60px from left, 60px from top */
@@ -129,12 +136,9 @@ const html = `<!DOCTYPE html>
     color: #ffffff;
   }
 
-  /* Hero group anchored at 89mm from top */
+  /* Hero group — no absolute positioning, flows naturally inside flex cover */
   .cover-hero-group {
-    position: absolute;
-    top: 89mm;
-    left: 60px;
-    right: 60px;
+    /* left/right padding inherited from .cover-page */
   }
 
   .cover-hero {
@@ -192,8 +196,14 @@ const html = `<!DOCTYPE html>
    */
   .content-wrapper {
     margin: 0 32px;
-    padding: 52px 40px 32px 40px;
+    padding: 0 40px 32px 40px;
     background: #000000;
+  }
+
+  /* padding-top: 32px on the first-child inner div adds clearance at the start
+   * of the content column on the first content page only. */
+  .content-inner {
+    padding-top: 32px;
   }
 
   /* ── Typography ── */
@@ -359,7 +369,9 @@ const html = `<!DOCTYPE html>
 
 <!-- ═══════════════════ CONTENT ═══════════════════ -->
 <div class="content-wrapper">
-${sectioned}
+  <div class="content-inner">
+    ${sectioned}
+  </div>
 </div>
 
 </body>
@@ -389,8 +401,9 @@ ${sectioned}
   const pdfBuffer = await page.pdf({
     format: "A4",
     printBackground: true,
-    // margin intentionally omitted — CSS @page rules control margins per page type
-    // (@page :first = cover, margin:0 full bleed; @page = all others, margin-top:20px)
+    // Uniform 32px margin creates the grey wrap on every page.
+    // Cover compensates via height: calc(297mm - 64px).
+    margin: { top: "32px", bottom: "32px", left: "32px", right: "32px" },
     displayHeaderFooter: false,
   });
 

@@ -545,8 +545,8 @@ Items here are not important enough or worth addressing right now. They are not 
 - posterity.admin@gmail.com created as official admin email — confirm full setup
 - Google Docs MCP not syncing correctly — Posterity Project context doc showing 1KB in Google Drive, full context not writing through. Needs investigation next session.
 - Rule 26 scroll fix — MCP tab navigates to wrong Claude tab. Needs different implementation.
-- Stylized PDF top border clearance — unresolved after three Cursor attempts. @page margin approach and Puppeteer margin option both failed to produce equal grey wrap on all four sides of interior pages. Detailed fix prompt written and ready for next session.
-- Stylized PDF cover hero position — unresolved. top: 30%, top: 89mm, and flexbox approaches all attempted. Hero still rendering too low (~40-45% down page instead of 30%). Fix prompt written and ready for next session.
+- Stylized PDF visual corrections pending — three visual issues remain on Posterity_Stylized_Context.pdf: (1) POSTERITY small caps not positioned top-left on cover, (2) hero text "Your Voice. Forever." sitting too low, (3) no uniform grey border clearance on all page edges. Fix prompt is written and ready to run.
+- PDF corrections are next in queue immediately after Priority Zero bidirectional loop is confirmed working.
 - Cursor cloud agents blank page — environment not yet configured. Page loads blank at cursor.com/dashboard/cloud-agents. Diagnostic prompt written and ready. Do not configure until investigated.
 - All stage builds (Stage 3 through Stage 6) permanently tabled until work order is complete. No build work until further notice.
 - Stripe build paused indefinitely — resumes only after full work order completion.
@@ -633,6 +633,11 @@ Items here are not important enough or worth addressing right now. They are not 
 - Cursor upgraded to Pro Max ($60/month) — Sonnet 4.6 Max active
 - All six MCP servers connected and active in Cursor (filesystem, gdocs, github, posterity, stripe, supabase)
 - Stylized PDF visual corrections partially complete — POSTERITY small caps top-left ✓, blue rule on cover ✓, hero font size corrected to 52px ✓. Top border clearance and hero vertical position still pending.
+- ask_posterity confirmed fully working — Cursor Agent can call Claude via MCP and receive accurate answers based on full project context. Verified with Legacy tier pricing question; returned correct $899/year answer.
+- Priority Zero Step 1 complete — ask_posterity is live and verified.
+- Priority Zero Step 2 scoped — build receive_task and post_result tools in posterity-mcp/index.mjs for true bidirectional Claude ↔ Cursor loop. receive_task writes Claude tasks to cursor-inbox.md for Cursor to read and execute. post_result writes Cursor results to cursor-outbox.md for Claude to read.
+- Priority Zero remains open until receive_task and post_result are built and the full bidirectional loop is verified.
+- Rule 31 added — first Cursor Agent prompt each session must include: "If npm run dev is not already running, start it first."
 
 ---
 
@@ -668,6 +673,7 @@ Claude Console (platform.claude.com) — Anthropic API dashboard. Holds API cred
 ## Session Workflow
 
 Initiation chain — all work begins here, in this order:
+0. First Cursor Agent prompt each session starts with: "If npm run dev is not already running, start it first."
 1. Jeremy and Claude brainstorm in Claude.ai → decision reached
 2. Claude writes Cursor Agent prompt
 3. Jeremy pastes prompt into Cursor
@@ -685,7 +691,7 @@ Jeremy's role: brainstorming, creative decisions, approvals. Not execution, not 
 
 End of session: Jeremy pastes end-of-session prompt into Cursor Agent → Cursor runs npm run sync (updates CONTEXT_for_posterity.md, appends to Session Log, regenerates plain PDF) → commits and pushes to GitHub on Jeremy's approval.
 
-g = go/approved, d = done
+Locked shortcuts: g or + = go/approved, n or - = no, m = more, * = instruction release confirmation
 
 ---
 
@@ -757,15 +763,20 @@ ALL STAGE BUILDS PERMANENTLY TABLED until this work order is complete. No build 
 
 **PRIORITY ZERO — Fix the broken system**
 Everything below is blocked until the workflow functions. This comes first.
-- Read posterity-mcp/index.mjs
-- Edit to route ask_posterity live to Claude API with full context
-- Rename the posterity-mcp index file to something clear once pathway confirmed working
-- Verify full back-and-forth loop functions before moving on
+- Priority Zero Step 1 — ask_posterity live and verified ✅
+- Priority Zero Step 2 — receive_task and post_result tools built and verified ❌ (next build)
+- Current implementation is one-way only: Cursor Agent can call Claude through ask_posterity and receive accurate context-based answers.
+- True completion requires a bidirectional loop: Claude must be able to push tasks to Cursor and receive responses.
+- Agreed solution: extend posterity-mcp/index.mjs with two new tools — receive_task and post_result.
+- receive_task: Claude writes a task to cursor-inbox.md; Cursor reads and executes it.
+- post_result: Cursor writes result to cursor-outbox.md; Claude reads it.
+- Priority Zero remains open until the bidirectional loop is built and verified.
+- Everything else remains blocked until Step 2 is complete.
 
 ---
 
 **1. Stylized PDF corrections**
-Two pending fixes: top border clearance + hero vertical position. Prompt written and ready.
+Three visual issues remain on Posterity_Stylized_Context.pdf: (1) POSTERITY small caps not positioned top-left on cover, (2) hero text "Your Voice. Forever." sitting too low, (3) no uniform grey border clearance on all page edges. Fix prompt is written and ready to run. PDF corrections are next in queue immediately after Priority Zero bidirectional loop is confirmed working.
 
 ---
 
@@ -1003,10 +1014,13 @@ Claude never edits, paraphrases, restructures, or improves approved copy without
 **Rule 30 — No Action Without Confirmation**
 Claude never builds, codes, or generates any file without explicit confirmation. Silence is not confirmation. Explicit go signal required every time. Claude always responds before building.
 
-**Rule 31 — Branch Notification**
+**Rule 31 — First Cursor Agent Prompt**
+At the first Cursor Agent prompt each session, include a reminder line at the top: "If npm run dev is not already running, start it first."
+
+**Rule 32 — Branch Notification**
 Claude notifies Jeremy when branch usage is warranted for a given task. Jeremy makes the final decision. Branches are never created automatically.
 
-**Rule 32 — Context Language**
+**Rule 33 — Context Language**
 "context" always refers to the layout context — CONTEXT_for_posterity.md — the editable working file. This applies in every scenario without exception.
 
 ---
