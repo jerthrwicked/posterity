@@ -6,7 +6,7 @@ const SIZES = { sm: 16, md: 22, lg: 30, xl: 42 };
 // Relies on app tokens: --font-sans, --text-primary, --brand-ice (sage), --black.
 export function Wordmark({ size = "md", tone = "white", withMark = false, className = "", style, ...rest }) {
   const fs = SIZES[size] || SIZES.md;
-  const markSize = Math.round(fs * 1.7);
+  const markSize = Math.round(fs * 2.2);
   const inkColor = tone === "ice" ? "var(--brand-ice)" : tone === "dark" ? "var(--black)" : "var(--text-primary, #ffffff)";
   return (
     <span

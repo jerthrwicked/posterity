@@ -9,7 +9,7 @@
     "lint": "eslint",
     "sync": "node sync-context.js",
     "generate-pdf": "node scripts/generate-pdf.js",
-    "generate-stylized": "node scripts/generate-stylized-pdf.js"
+    "generate-stylized": "node pdf-pipeline/generate-stylized-pdf.js"
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.7.0",

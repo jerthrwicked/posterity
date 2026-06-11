@@ -1,0 +1,205 @@
+<!-- @dsCard group="Brand" viewport="794x1123" name="Stylized PDF — Print Template" subtitle="Unified investor/doc PDF shell — Geist/Lora, black + ice" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Posterity — Stylized Document</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink:        #ffffff;
+    --sage:       #93ab99;
+    --dusk:       #586494;
+    --dusk-deep:  #1b2138;
+    --mist:       #cccccc;
+    --deep:       #16241e;
+    --line:       #2c3f35;
+    --faint:      #6b7280;
+    --canvas:     #000000;
+    --frame:      #a6aec0;
+    --wrap:       #3a3a3a;
+    --code-bg:    #111827;
+    --code-ink:   #9ca3af;
+    --table-zebra:#f5f5f5;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @page { size: A4; margin: 0; }
+
+  html { background: var(--frame); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body {
+    font-family: 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-size: 11px;
+    line-height: 1.75;
+    color: var(--ink);
+    background: var(--frame);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .doc { background: transparent; }
+
+  .cover-page {
+    position: relative;
+    height: 297mm;
+    margin: 0;
+    background: var(--canvas);
+    break-after: page;
+    page-break-after: always;
+    overflow: hidden;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .cover-page::after {
+    content: "";
+    position: absolute;
+    left: 50%; bottom: -20%;
+    width: 150%; height: 60%;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, rgba(88,100,148,0.32), transparent 68%);
+    pointer-events: none;
+  }
+  .cover-brand {
+    position: absolute; top: 60px; left: 60px;
+    font-family: 'Geist', sans-serif; font-weight: 600;
+    font-size: 13px; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--ink);
+  }
+  .cover-hero-group { margin-top: 92mm; position: relative; }
+  .cover-hero {
+    font-family: 'Geist', sans-serif; font-weight: 700;
+    font-size: 72px; line-height: 1.1; letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .cover-tagline {
+    font-family: 'Lora', Georgia, serif; font-style: italic;
+    font-size: 17px; color: var(--mist); margin-top: 24px;
+  }
+  .cover-rule { width: 120px; height: 1px; background: var(--dusk); border: none; margin-top: 32px; }
+  .cover-meta {
+    font-family: 'Geist Mono', ui-monospace, monospace; font-weight: 400;
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--faint); margin-top: 18px;
+  }
+
+  .content-wrapper {
+    margin: 0;
+    padding: 10mm;
+    background: var(--frame);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  .content-inner {
+    background: var(--canvas);
+    padding: 12mm;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  h1 { display: none; }
+
+  h2 {
+    font-family: 'Geist', sans-serif; font-weight: 600;
+    font-size: 18px; color: var(--sage);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-top: 26px; margin-bottom: 12px;
+    break-after: avoid; page-break-after: avoid;
+  }
+  h3 {
+    font-family: 'Geist', sans-serif; font-weight: 600;
+    font-size: 14px; color: var(--ink);
+    margin-top: 18px; margin-bottom: 8px;
+    break-after: avoid; page-break-after: avoid;
+  }
+  h4 {
+    font-family: 'Geist', sans-serif; font-weight: 600;
+    font-size: 12px; color: var(--mist);
+    margin-top: 14px; margin-bottom: 6px;
+  }
+  p { margin-bottom: 10px; }
+  em, i { font-family: 'Lora', Georgia, serif; font-style: italic; color: var(--mist); }
+  strong { font-weight: 600; color: var(--ink); }
+  a { color: var(--sage); text-decoration: none; }
+
+  code {
+    font-family: 'Geist Mono', ui-monospace, monospace; font-size: 10px;
+    background: var(--code-bg); color: var(--code-ink);
+    padding: 1px 5px; border-radius: 3px;
+  }
+  pre {
+    background: var(--code-bg); color: var(--code-ink);
+    padding: 12px 16px; border-radius: 6px; font-size: 10px; line-height: 1.6;
+    margin: 12px 0; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  pre code { background: none; padding: 0; }
+
+  ul, ol { padding-left: 22px; margin-bottom: 10px; }
+  li { margin-bottom: 5px; line-height: 1.7; }
+  li::marker { color: var(--dusk); }
+
+  hr.section-divider { border: none; height: 1px; background: var(--dusk); margin: 24px 0; }
+
+  .section-block { break-inside: auto; }
+
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; border-radius: 6px; overflow: hidden; }
+  thead tr { background: var(--sage); }
+  thead th {
+    font-family: 'Geist', sans-serif; font-weight: 600; font-size: 11px;
+    color: var(--canvas); padding: 9px 12px; text-align: left; letter-spacing: 0.02em;
+  }
+  tbody tr { background: #ffffff; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+  tbody td {
+    font-family: 'Geist', sans-serif; font-weight: 400; font-size: 11px;
+    color: #111827; padding: 9px 12px;
+  }
+  blockquote {
+    border-left: 2px solid var(--sage); padding: 2px 0 2px 16px; margin: 14px 0;
+    font-family: 'Lora', Georgia, serif; font-style: italic; color: var(--mist);
+  }
+
+  @media screen {
+    html { background: #1b1b1d; }
+    body { max-width: 794px; margin: 28px auto; box-shadow: 0 18px 60px rgba(0,0,0,0.55); }
+  }
+
+  @media print {
+    .doc { max-width: none; margin: 0; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <div class="cover-page">
+    <div class="cover-brand">POSTERITY</div>
+    <div class="cover-hero-group">
+      <div class="cover-hero">Your Voice.<br />Forever.</div>
+      <div class="cover-tagline">Your legacy, on your terms.</div>
+      <hr class="cover-rule" />
+      <div class="cover-meta">Project Context &middot; June 2026 &middot; Jeremy Grego, Founder</div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="content-inner">
+<!-- CONTENT:START -->
+      <div class="section-block preamble">
+        <p>Posterity lets people record the things that matter and schedule them to reach the
+        people they love — across years, milestones, and the quiet days in between.</p>
+      </div>
+<!-- CONTENT:END -->
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

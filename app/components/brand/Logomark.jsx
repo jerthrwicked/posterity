@@ -3,7 +3,7 @@ import React from "react";
 // The Posterity swallow — wings spread, deeply forked tail. Drawn in a 120×120 space, centered in the 200×200 seal.
 const SWALLOW = "M60 36 C72 26 92 20 110 22 C96 34 80 46 66 54 C65 58 64 62 63 66 L69 94 L60 77 L51 94 L57 66 C56 62 55 58 54 54 C40 46 24 34 10 22 C28 20 48 26 60 36 Z";
 
-export function Logomark({ size = 40, seal = true, star = true, doubleRing = true, ringWidth = 2, className = "", style, ...rest }) {
+export function Logomark({ size = 48, seal = true, star = true, doubleRing = true, ringWidth = 2, className = "", style, ...rest }) {
   return (
     <svg
       width={size}
