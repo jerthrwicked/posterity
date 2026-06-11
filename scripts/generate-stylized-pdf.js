@@ -160,7 +160,7 @@ const html = `<!DOCTYPE html>
   .cover-rule {
     width: 120px;
     height: 1px;
-    background: #5b9bd5;
+    background: #93ab99;
     border: none;
     margin-top: 32px;
   }
@@ -213,7 +213,7 @@ const html = `<!DOCTYPE html>
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
     font-size: 18px;
-    color: #5b9bd5;
+    color: #93ab99;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-top: 24px;
@@ -254,7 +254,7 @@ const html = `<!DOCTYPE html>
   }
 
   a {
-    color: #5b9bd5;
+    color: #93ab99;
     text-decoration: none;
   }
 
@@ -298,18 +298,18 @@ const html = `<!DOCTYPE html>
   }
 
   ul li::marker {
-    color: #5b9bd5;
+    color: #93ab99;
   }
 
   ol li::marker {
-    color: #5b9bd5;
+    color: #93ab99;
   }
 
   /* ── Section dividers — midnight/ice/midnight stripe inside content column ── */
   hr.section-divider {
     border: none;
     height: 11px;
-    background: linear-gradient(to bottom, #0A2540 0px, #0A2540 5px, #5B9BD5 5px, #5B9BD5 6px, #0A2540 6px, #0A2540 11px);
+    background: linear-gradient(to bottom, #0f1512 0px, #0f1512 5px, #93ab99 5px, #93ab99 6px, #0f1512 6px, #0f1512 11px);
     margin: 24px 0;
     width: 100%;
   }
