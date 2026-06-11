@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { Wordmark } from '../components/brand/Wordmark'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -25,7 +26,9 @@ export default function Login() {
     <main className="min-h-screen bg-black text-white flex items-center justify-center px-6">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
-          <a href="/" className="text-2xl font-bold tracking-widest">POSTERITY</a>
+          <a href="/" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none", color: "inherit" }}>
+            <Wordmark size="lg" withMark />
+          </a>
           <p className="text-gray-400 mt-2">Welcome back</p>
         </div>
         <div className="bg-gray-900 rounded-2xl p-8 flex flex-col gap-4">

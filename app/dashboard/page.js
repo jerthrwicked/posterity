@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { Wordmark } from '../components/brand/Wordmark'
 
 export default function Dashboard() {
   const [user, setUser] = useState(null)
@@ -36,7 +37,7 @@ export default function Dashboard() {
   return (
     <main className="min-h-screen bg-black text-white">
       <nav className="flex justify-between items-center px-8 py-6 border-b border-gray-800">
-        <h1 className="text-2xl font-bold tracking-widest">POSTERITY</h1>
+        <Wordmark size="sm" withMark />
         <button onClick={handleLogout} className="text-gray-400 hover:text-white transition text-sm">
           Log Out
         </button>

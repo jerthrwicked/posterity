@@ -1,11 +1,24 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+import { Wordmark } from "./brand/Wordmark";
+
+const NAV_MENU = [
+  {
+    id: "explore",
+    items: [
+      { label: "How it works", href: "/" },
+      { label: "Plans", href: "/pricing" },
+    ],
+  },
+];
 
 export default function GlobalNav() {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
   const menuRef = useRef(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data?.user ?? null));
@@ -17,64 +30,68 @@ export default function GlobalNav() {
 
   useEffect(() => {
     function handleClickOutside(e) {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setOpen(false);
-      }
+      if (menuRef.current && !menuRef.current.contains(e.target)) setOpen(false);
+    }
+    function handleKeyDown(e) {
+      if (e.key === "Escape") setOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
   return (
     <nav className="flex justify-between items-center px-8 py-6 bg-black">
-      <a href="/" className="text-2xl font-bold tracking-widest text-white">POSTERITY</a>
+      <a href="/" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none", color: "inherit" }}>
+        <Wordmark size="md" withMark />
+      </a>
 
-      <div className="relative" ref={menuRef}>
+      <div className="navmenu" ref={menuRef}>
         <button
           onClick={() => setOpen((v) => !v)}
-          aria-label="Open menu"
+          aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
-          className="flex flex-col justify-center items-center w-12 h-12 gap-[6px]"
+          className={`navmenu__toggle${open ? " is-open" : ""}`}
         >
-          <span
-            className={`block w-8 h-[2.5px] bg-white rounded-full transition-all duration-200 origin-center ${
-              open ? "rotate-45 translate-y-[8.5px]" : ""
-            }`}
-          />
-          <span
-            className={`block w-8 h-[2.5px] bg-white rounded-full transition-all duration-200 ${
-              open ? "opacity-0 scale-x-0" : ""
-            }`}
-          />
-          <span
-            className={`block w-8 h-[2.5px] bg-white rounded-full transition-all duration-200 origin-center ${
-              open ? "-rotate-45 -translate-y-[8.5px]" : ""
-            }`}
-          />
+          <span className="navmenu__bar" />
+          <span className="navmenu__bar" />
+          <span className="navmenu__bar" />
         </button>
 
         {open && (
-          <div className="absolute right-0 top-14 bg-gray-950 border border-gray-800 rounded-2xl overflow-hidden min-w-[180px] z-50 shadow-xl shadow-black/50">
-            <a
-              href="/pricing"
-              onClick={() => setOpen(false)}
-              className="block px-6 py-4 text-sm text-gray-300 hover:text-white hover:bg-gray-900 transition"
-            >
-              Plans
-            </a>
-            <a
-              href={user ? "/dashboard" : "/login"}
-              onClick={() => setOpen(false)}
-              className="block px-6 py-4 text-sm text-gray-300 hover:text-white hover:bg-gray-900 transition border-t border-gray-800"
-            >
-              {user ? "Account" : "Login"}
-            </a>
+          <div className="navmenu__panel">
+            {NAV_MENU.map((group) => (
+              <div key={group.id} className="navmenu__group">
+                {group.items.map((item) => (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    className={`navmenu__item${pathname === item.href ? " is-current" : ""}`}
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            ))}
+
+            <div className="navmenu__group">
+              <a
+                href={user ? "/dashboard" : "/login"}
+                onClick={() => setOpen(false)}
+                className="navmenu__item"
+              >
+                {user ? "Account" : "Login"}
+              </a>
+            </div>
+
             {!user && (
-              <div className="px-4 py-3 border-t border-gray-800">
+              <div className="navmenu__cta">
                 <a
                   href="/signup"
                   onClick={() => setOpen(false)}
