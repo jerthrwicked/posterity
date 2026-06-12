@@ -30,17 +30,20 @@ export default function Home() {
       </section>
 
       {/* Trust strip */}
+      {/* Trust strip — outer div just centers; inner block left-aligns items as a unit */}
       <div
-        className="flex flex-wrap justify-center items-center gap-x-12 gap-y-4 px-6 py-8"
+        className="flex justify-center px-6 py-8"
         style={{ borderTop: "1px solid #262626", borderBottom: "1px solid #262626" }}
       >
-        <div className="flex items-center gap-3">
-          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#93ab99" }} />
-          <span className="text-xs font-mono uppercase tracking-widest text-gray-400">Fully automated delivery</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#93ab99" }} />
-          <span className="text-xs font-mono uppercase tracking-widest text-gray-400">Begins January 1</span>
+        <div className="flex flex-col items-start gap-3 max-w-xs sm:flex-row sm:items-center sm:max-w-none sm:gap-x-12">
+          <div className="flex items-start sm:items-center gap-3">
+            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-0.5 sm:mt-0" style={{ background: "#93ab99" }} />
+            <span className="text-xs font-mono tracking-widest text-gray-400">Fully automated delivery</span>
+          </div>
+          <div className="flex items-start sm:items-center gap-3">
+            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-0.5 sm:mt-0" style={{ background: "#93ab99" }} />
+            <span className="text-xs font-mono tracking-widest text-gray-400">Begins January 1st following account activation</span>
+          </div>
         </div>
       </div>
 
