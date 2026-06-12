@@ -37,11 +37,11 @@ export default function Home() {
       >
         <div className="flex flex-col items-start gap-3 max-w-xs sm:flex-row sm:items-center sm:max-w-none sm:gap-x-12">
           <div className="flex items-start sm:items-center gap-3">
-            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-0.5 sm:mt-0" style={{ background: "#93ab99" }} />
+            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[5px] sm:mt-0" style={{ background: "#93ab99" }} />
             <span className="text-xs font-mono tracking-widest text-gray-400">Fully automated delivery</span>
           </div>
           <div className="flex items-start sm:items-center gap-3">
-            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-0.5 sm:mt-0" style={{ background: "#93ab99" }} />
+            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[5px] sm:mt-0" style={{ background: "#93ab99" }} />
             <span className="text-xs font-mono tracking-widest text-gray-400">Begins January 1st following account activation</span>
           </div>
         </div>
