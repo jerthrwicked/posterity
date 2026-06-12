@@ -5,7 +5,8 @@
   --foreground: #171717;
 
   /* ── Semantic text tokens ── */
-  --text-primary: #ffffff;
+  --text-primary:       #ffffff;
+  --text-accent-serif:  #cccccc;
 
   /* ── Brand color tokens ── */
   --brand-ice:        #93ab99;
@@ -36,6 +37,22 @@
   --font-lora: var(--font-lora);
 }
 
+/* Override Tailwind's default blue-tinted gray with the hueless neutral ramp.
+   Every text-gray-* / bg-gray-* / border-gray-* utility now resolves to true neutral. */
+@theme {
+  --color-gray-50:  oklch(98.5% 0 0);
+  --color-gray-100: oklch(97% 0 0);
+  --color-gray-200: oklch(92.2% 0 0);
+  --color-gray-300: oklch(87% 0 0);
+  --color-gray-400: oklch(70.8% 0 0);
+  --color-gray-500: oklch(55.6% 0 0);
+  --color-gray-600: oklch(43.9% 0 0);
+  --color-gray-700: oklch(37.1% 0 0);
+  --color-gray-800: oklch(26.9% 0 0);
+  --color-gray-900: oklch(20.5% 0 0);
+  --color-gray-950: oklch(14.5% 0 0);
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -49,6 +66,13 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* ── Serif accent — Lora italic at mist #CCCCCC, reusable across hero/note/pricing ── */
+.serif-accent {
+  font-family: var(--font-lora, Georgia, serif);
+  font-style: italic;
+  color: var(--text-accent-serif);
+}
+
 /* ── Nav menu ── */
 .navmenu { position: relative; }
 .navmenu__toggle { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; width: 44px; height: 44px; padding: 0; background: none; border: none; cursor: pointer; }
@@ -56,11 +80,11 @@ body {
 .navmenu__toggle.is-open .navmenu__bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
 .navmenu__toggle.is-open .navmenu__bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .navmenu__toggle.is-open .navmenu__bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-.navmenu__panel { position: absolute; right: 0; top: calc(100% + 0.75rem); min-width: 200px; background: var(--surface-overlay, #0a0a0a); border: 1px solid var(--border-subtle, #1f2937); border-radius: 12px; overflow: hidden; z-index: 50; box-shadow: 0 24px 60px -20px rgba(0,0,0,0.85); animation: navmenu-in 0.16s ease both; }
+.navmenu__panel { position: absolute; right: 0; top: calc(100% + 0.75rem); min-width: 200px; background: var(--surface-overlay, #0a0a0a); border: 1px solid var(--border-subtle, #262626); border-radius: 12px; overflow: hidden; z-index: 50; box-shadow: 0 24px 60px -20px rgba(0,0,0,0.85); animation: navmenu-in 0.16s ease both; }
 @keyframes navmenu-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
-.navmenu__group { display: flex; flex-direction: column; padding: 0.4rem 0; border-top: 1px solid var(--border-subtle, #1f2937); }
+.navmenu__group { display: flex; flex-direction: column; padding: 0.4rem 0; border-top: 1px solid var(--border-subtle, #262626); }
 .navmenu__group:first-child { border-top: none; }
-.navmenu__item { padding: 0.7rem 1.25rem; font-size: 0.875rem; color: var(--text-muted, #9ca3af); cursor: pointer; transition: color 0.15s ease, background 0.15s ease; text-decoration: none; display: block; }
+.navmenu__item { padding: 0.7rem 1.25rem; font-size: 0.875rem; color: var(--text-muted, #a3a3a3); cursor: pointer; transition: color 0.15s ease, background 0.15s ease; text-decoration: none; display: block; }
 .navmenu__item:hover { color: var(--brand-ice, #93ab99); background: rgba(147,171,153,0.08); }
 .navmenu__item.is-current { color: #fff; }
-.navmenu__cta { padding: 0.65rem 0.9rem 0.9rem; border-top: 1px solid var(--border-subtle, #1f2937); }
+.navmenu__cta { padding: 0.65rem 0.9rem 0.9rem; border-top: 1px solid var(--border-subtle, #262626); }
