@@ -88,3 +88,25 @@ body {
 .navmenu__item:hover { color: var(--brand-ice, #93ab99); background: rgba(147,171,153,0.08); }
 .navmenu__item.is-current { color: #fff; }
 .navmenu__cta { padding: 0.65rem 0.9rem 0.9rem; border-top: 1px solid var(--border-subtle, #262626); }
+
+/* ── Phase vertical timeline (mobile ≤879px) ── */
+@media (max-width: 879px) {
+  .phases-timeline-item {
+    position: relative;
+    padding: 0 0 2.25rem 2rem;
+  }
+  .phases-timeline-item:last-child {
+    padding-bottom: 0;
+  }
+  /* Per-item segment: pip-center to pip-center, ends at last pip */
+  .phases-timeline-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 0.5rem;
+    bottom: -0.5rem;
+    width: 2px;
+    background: #262626;
+    z-index: 0;
+  }
+}

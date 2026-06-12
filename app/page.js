@@ -82,8 +82,8 @@ export default function Home() {
         <h2 className="text-2xl font-bold text-center mb-2">Six Phases. One Journey.</h2>
         <p className="text-gray-500 text-sm text-center mb-12">Every Posterity account moves through six carefully designed phases.</p>
 
-        {/* Layer 1 — Tracker: connected line + pips + uppercase labels (md+ only) */}
-        <div className="hidden md:block">
+        {/* Layer 1 — Tracker: connected line + pips + uppercase labels (≥880px only) */}
+        <div className="hidden min-[880px]:block">
           <div className="relative">
             {/* Track line: left/right = 1/12 of width so endpoints land on pip centers */}
             <div
@@ -119,19 +119,38 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Hairline divider between tracker and detail grid (md+ only) */}
-        <div className="hidden md:block h-px mt-8 mb-10" style={{ background: "#262626" }} />
+        {/* Hairline divider between tracker and detail grid (≥880px only) */}
+        <div className="hidden min-[880px]:block h-px mt-8 mb-10" style={{ background: "#262626" }} />
 
-        {/* Layer 2 — Detail grid: 3-col × 2-row (→ 1-col on mobile) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-8">
+        {/* Layer 2 — Detail grid: 3-col × 2-row (→ vertical timeline on mobile) */}
+        <div className="phases-timeline grid grid-cols-1 min-[880px]:grid-cols-3 gap-x-10 gap-y-0 min-[880px]:gap-y-8">
           {PHASES.map((phase, i) => (
-            <div key={phase.name} className="flex flex-col gap-1.5">
-              <p className="text-[11px] font-mono text-gray-500 tracking-wider">
-                {String(i + 1).padStart(2, "0")}
-              </p>
-              <p className="font-semibold" style={{ fontSize: "17px", color: PHASE_HUES[i] }}>
-                {phase.name}
-              </p>
+            <div key={phase.name} className="phases-timeline-item flex flex-col gap-1.5">
+              {/* Number + name row — pip is anchored inside so it always tracks this row */}
+              <div className="flex items-baseline gap-2" style={{ position: "relative" }}>
+                {/* Mobile pip — vertically centered on this row, hidden at ≥880px */}
+                <div
+                  className="min-[880px]:hidden"
+                  style={{
+                    position: "absolute",
+                    left: "-2rem",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    width: "12px",
+                    height: "12px",
+                    borderRadius: "50%",
+                    background: PHASE_HUES[i],
+                    zIndex: 1,
+                    ...(i === 2 ? { boxShadow: "0 0 0 4px rgba(123,143,151,0.28)" } : {}),
+                  }}
+                />
+                <p className="text-[11px] font-mono text-gray-500 tracking-wider">
+                  {String(i + 1).padStart(2, "0")}
+                </p>
+                <p className="font-semibold" style={{ fontSize: "17px", color: PHASE_HUES[i] }}>
+                  {phase.name}
+                </p>
+              </div>
               <p className="text-xs text-gray-400 leading-relaxed mt-1">{phase.copy}</p>
             </div>
           ))}
@@ -163,7 +182,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="text-gray-600 py-10 text-sm border-t border-gray-900 px-8 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+      <footer className="text-gray-600 py-10 text-sm border-t border-gray-900 px-8 flex flex-row justify-between items-center">
         <div style={{ display: "inline-flex", alignItems: "center", gap: "0.6em", color: "#ffffff" }}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="36" height="36" aria-hidden="true">
             <circle cx="100" cy="100" r="90" fill="none" stroke="#ffffff" strokeWidth="6" />
@@ -173,7 +192,8 @@ export default function Home() {
           </svg>
           <span style={{ fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", lineHeight: 1, fontSize: 16 }}>Posterity</span>
         </div>
-        <p>© 2026 Posterity. All rights reserved.</p>
+        <p className="hidden sm:block">© 2026 Posterity. All rights reserved.</p>
+        <p className="sm:hidden">© 2026 Posterity</p>
       </footer>
     </main>
   );

@@ -33,7 +33,7 @@ const PLANS = [
     price: "$249",
     priceId: "price_1Tcvj2BcdnR2VoDgt4oZu8VA",
     border: "border-gray-600",
-    flag: "Most chosen",
+    badge: "Most chosen",
     featured: true,
     description: "Monthly moments across the year — birthdays, anniversaries, ordinary Tuesdays.",
     bullets: [
@@ -92,21 +92,23 @@ export default function PlanCards() {
                 ...(plan.featured ? { boxShadow: "var(--glow-presence)" } : {}),
               }}
             >
-              {plan.flag && (
-                <p
-                  className="font-semibold uppercase tracking-wider mb-2"
-                  style={{ fontSize: "10px", color: "var(--brand-ice)" }}
-                >
-                  {plan.flag}
-                </p>
-              )}
-
               {plan.badge ? (
-                <div className="flex items-start justify-between mb-3">
+                <div className="flex justify-between items-start mb-3">
                   <h2 className="text-xl font-bold">{plan.name}</h2>
                   <span
-                    className="font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30 rounded-full whitespace-nowrap ml-3 mt-0.5"
-                    style={{ fontSize: "11px", padding: "0.25rem 0.75rem" }}
+                    style={{
+                      background: "rgba(147,171,153,0.14)",
+                      color: "#93ab99",
+                      border: "1px solid rgba(147,171,153,0.32)",
+                      borderRadius: "999px",
+                      padding: "0.35rem 0.7rem",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      lineHeight: 1,
+                      whiteSpace: "nowrap",
+                      marginLeft: "0.75rem",
+                      marginTop: "2px",
+                    }}
                   >
                     {plan.badge}
                   </span>

@@ -58,7 +58,7 @@ export default function Pricing() {
       </section>
 
       {/* Footer */}
-      <footer className="text-gray-600 py-10 text-sm border-t border-gray-900 px-8 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+      <footer className="text-gray-600 py-10 text-sm border-t border-gray-900 px-8 flex flex-row justify-between items-center">
         <div style={{ display: "inline-flex", alignItems: "center", gap: "0.6em", color: "#ffffff" }}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="36" height="36" aria-hidden="true">
             <circle cx="100" cy="100" r="90" fill="none" stroke="#ffffff" strokeWidth="6" />
@@ -68,7 +68,8 @@ export default function Pricing() {
           </svg>
           <span style={{ fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", lineHeight: 1, fontSize: 16 }}>Posterity</span>
         </div>
-        <p>© 2026 Posterity. All rights reserved.</p>
+        <p className="hidden sm:block">© 2026 Posterity. All rights reserved.</p>
+        <p className="sm:hidden">© 2026 Posterity</p>
       </footer>
 
     </main>
