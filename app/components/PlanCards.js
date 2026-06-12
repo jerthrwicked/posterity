@@ -10,8 +10,8 @@ const PLANS = [
     border: "border-gray-800",
     description: "Your legacy starts here. Unlimited time to build your account before you commit.",
     bullets: [
-      "Legacy builder — build now, activate later",
-      "Your content held safely until you're ready",
+      "Legacy builder — build now, initiate later",
+      "Safely store your content until your account becomes active",
     ],
   },
   {
