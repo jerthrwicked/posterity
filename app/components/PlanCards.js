@@ -33,7 +33,7 @@ const PLANS = [
     price: "$249",
     priceId: "price_1Tcvj2BcdnR2VoDgt4oZu8VA",
     border: "border-gray-600",
-    badge: "Most chosen",
+    badge: "Most popular",
     featured: true,
     description: "Monthly moments across the year — birthdays, anniversaries, ordinary Tuesdays.",
     bullets: [
@@ -48,7 +48,7 @@ const PLANS = [
     price: "$899",
     priceId: "price_1TeTj5BcdnR2VoDgtfA9O3z8",
     border: "border-gray-700",
-    badge: "Limited",
+    badge: "Limited availability",
     description: "A message every week — a full, living presence that lasts the whole year through.",
     bullets: [
       "52 messages, posts, or shares per plan year",
