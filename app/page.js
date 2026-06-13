@@ -4,9 +4,9 @@ const PHASE_HUES = ["#93ab99", "#879d98", "#7b8f97", "#708096", "#647295", "#586
 
 const PHASES = [
   { name: "Horizon", copy: "Your legacy starts here. Build your account before committing." },
-  { name: "Planning", copy: "Your account is funded. Content continues to build while your account waits." },
-  { name: "Abeyance", copy: "A period of careful waiting before your legacy begins its journey." },
-  { name: "Active", copy: "Content is delivered according to your calendar, to the people you chose." },
+  { name: "Planning", copy: "Some or all of the plans within your account have received funding. Content continues to be created and refined." },
+  { name: "Abeyance", copy: "A period of waiting between the triggering of your account and its activation." },
+  { name: "Active", copy: "Your account is live. The custom content you\u2019ve created is delivered to your loved ones in the exact way, at the exact time you designed it to be." },
   { name: "Twilight", copy: "A neutral, free year. If you choose, trusted contacts can gather and download approved content within your account." },
   { name: "Posterity", copy: "Optional. Should you wish it, the approved portions of your account become a permanent archive — your legacy, living on." },
 ];
@@ -38,11 +38,11 @@ export default function Home() {
         <div className="flex flex-col items-start gap-3 max-w-xs sm:flex-row sm:items-center sm:max-w-none sm:gap-x-12">
           <div className="flex items-start sm:items-center gap-3">
             <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[5px] sm:mt-0" style={{ background: "#93ab99" }} />
-            <span className="text-xs font-mono tracking-widest text-gray-400">Fully automated delivery</span>
+            <span className="font-sans font-medium text-gray-400" style={{ fontSize: "0.875rem", letterSpacing: "0.04em" }}>Fully automated delivery</span>
           </div>
           <div className="flex items-start sm:items-center gap-3">
             <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[5px] sm:mt-0" style={{ background: "#93ab99" }} />
-            <span className="text-xs font-mono tracking-widest text-gray-400">Begins January 1st following account activation</span>
+            <span className="font-sans font-medium text-gray-400" style={{ fontSize: "0.875rem", letterSpacing: "0.04em" }}>Begins January 1st following account activation</span>
           </div>
         </div>
       </div>
