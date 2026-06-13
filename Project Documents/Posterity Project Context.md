@@ -436,7 +436,7 @@ Full pricing analysis: https://drive.google.com/file/d/1nnJhh0fyngr8HbgPDchzJMzb
 - Refund window: 1 year from initiation
 - Data retention: all account data retained 1 year following end of Active Phase (free, included). After that: paid storage option to maintain account in Twilight or Posterity. No payment: account enters deletion grace period.
 - 30-day free trial: account locked after 30 days, message informs customer they must fund a plan or subscribe to Horizon to continue. Content saved throughout.
-- Tax compliance (Phase 6)
+- Tax compliance (Phase 6) — Stripe-native approach, no processor switch needed. Integration options: TaxJar (taxjar.com) or Avalara (avalara.com) — both bolt onto Stripe and handle sales tax calculation and remittance automatically. Evaluate at Phase 6 build time. No action required until Phase 6.
 - Service time limit legal documentation (5yr guaranteed, unlimited optional) — lawyer input needed
 - Formal escrow language — lawyer review Phase 6
 - Lawyer input required before Phase 5 financial build begins
@@ -465,7 +465,7 @@ Financial automation requires lawyer review before Phase 5 build begins. No fina
 
 ## Marketing
 - Core angle: life chapters not dates
-- Hero line: "Your voice. Forever."
+- Hero line: "Your Voice. Forever."
 - Supporting line: "Your legacy, on your terms"
 - The six account phases are a core brand differentiator and selling point. Phase language removes all clinical terminology from the product entirely and should be prominent in marketing materials, the onboarding walkthrough, and the user dashboard.
 - The Posterity Phase is the ultimate expression of the product vision — a key marketing and investor talking point.
@@ -484,26 +484,46 @@ Financial automation requires lawyer review before Phase 5 build begins. No fina
 
 ## Design Phase (Phase 6)
 - App appearance fine-tuning
-- Logo design
-- Claude design first, Canva as backup
+- Swallow Seal is locked and live — inline vector SVG, mono only, three variants: full seal (hero/large), compact seal (nav/footer), bare swallow (favicon/app icon)
+- Brand colors locked: sage #93AB99 primary accent, dusk #586494 secondary jewel, deep neutral-green depth tokens, true-neutral grey text ramp
+- Typefaces locked: Geist (facts/UI), Lora italic (emotion/serif lines), Geist Mono (labels/eyebrows)
+- Marketing website fully rebuilt and live at posterity-seven.vercel.app
+
+---
+
+## Website Design Standards
+
+All future website additions must follow these locked design standards. No exceptions without explicit approval from Jeremy.
+
+- Canvas: pure black #000000. Everything floats on black.
+- Primary accent: sage #93AB99. Dusk #586494 secondary jewel — reserved for phase progression and PDF accents only.
+- Neutral text/surface ramp: true-neutral grey (no blue cast). --gray-950 #0a0a0a through --white #ffffff.
+- Typefaces: Geist (all UI, marketing, facts) · Lora italic #cccccc (one emotional serif line per view, feelings only) · Geist Mono (tracked uppercase eyebrows, labels, metadata). Never use Poppins.
+- Logo: Swallow Seal, inline vector SVG, mono only (currentColor). Full seal for hero/large placements. Compact seal (single ring, no star) for nav and footer. Bare swallow for favicon and app icons. Never raster. Never recolor.
+- Cards: 16px radius, 1px gray-800 border. Featured cards add sage presence glow + brand border.
+- Buttons: fully pill. Outline button inverts on hover (transparent → white fill, white → black text). Never scale-bounce.
+- Motion: 200ms cubic-bezier(0.4,0,0.2,1). Calm, never bouncy. Always respect prefers-reduced-motion.
+- Mobile breakpoints: required on every visual change automatically. Test at 375px viewport minimum.
+- Phase colors (sage → dusk in order): Horizon #93ab99 · Planning #879d98 · Abeyance #7b8f97 · Active #708096 · Twilight #647295 · Posterity #586494.
+- Copy voice: calm, warm, second person. Geist carries facts. Lora carries feelings. One serif line per view maximum. Never clinical language. Never mention death directly in customer-facing copy.
 
 ---
 
 ## PDF Design Standards
 
-**Stylized investor PDF (Posterity_Stylized_Context.pdf) — LOCKED DESIGN RULES:**
-- Output path: `path.join(__dirname, "..", "Project Documents", "Posterity_Stylized_Context.pdf")`
+All future PDFs must match these locked parameters. No exceptions without explicit approval from Jeremy.
+
+**Stylized investor PDF (Posterity_Stylized_Context.pdf) — LOCKED DESIGN RULES (sage/dusk rebrand, June 2026):**
+- Single source of truth: pdf-pipeline/stylized-template.html. The generator (generate-stylized-pdf.js) injects sectioned markdown between the CONTENT:START / CONTENT:END markers — never edit the design anywhere but the template.
 - Generated manually via `npm run generate-stylized` only. Never auto-generated on sync.
-- Grey side gutters: 32px Puppeteer margin left and right
-- Cover: full bleed black, no grey. Fix via `margin: -32px -32px 0 -32px` on `.cover-page` (cover fix prompt written, not yet executed — run next session)
-- Cover hero: 96px, line-height 1.1, Poppins 700
-- POSTERITY brand: absolute, top 60px, left 60px, 13px, letter-spacing 0.28em
-- Blue page separator: midnight/ice/midnight — #0A2540 5px / #5B9BD5 1px / #0A2540 5px. Applied as `.content-wrapper` border-top only — NOT on `hr.section-divider`
-- Section dividers (`hr.section-divider`): thin 1px #2d4a6e line, margin 24px 0
-- Wrap color: #3a3a3a — outer frame only, never content fill
-- Content area: always #000000 black on all interior pages
-- Typography: Poppins (section headers #5b9bd5, body white) + Lora italic (#cccccc accents)
-- Text clearance: 20px minimum from ALL borders on ALL pages including top edge
+- Type: Geist (body + section headers) · Lora italic #cccccc (emotional accents) · Geist Mono (meta/eyebrows). Poppins is retired.
+- Palette: sage #93ab99 = H2 headers, links, table-header fill, blockquote rule. dusk #586494 = cover halo + cover rule, section dividers, and list bullets (li::marker). mist #cccccc = Lora italic accents. canvas #000000 = content area on every interior page. frame #a6aec0 = page gutter/frame.
+- Cover: true full-bleed black (no grey), one full A4 page. Low-center dusk radial halo. POSTERITY brand top 60px / left 60px, 13px, 0.28em tracking. Cover hero Geist 700, 72px, line-height 1.1, letter-spacing -0.02em. Tagline Lora italic 17px mist. Cover rule 120×1px solid dusk. Meta Geist Mono 9px, 0.2em.
+- H2 section headers: Geist 600, 18px, sage.
+- Section dividers (hr.section-divider): solid dusk, 1px, margin 24px 0. One per H2 boundary; the generator strips the source markdown's own `---`/`<hr>` rules so dividers never double.
+- Page frame: `@page { margin: 0 }` — the template paints its own frame: .content-wrapper = 10mm #a6aec0 gutter wrapping .content-inner = black with 12mm text padding, box-decoration-break: clone so the frame re-applies on every page. The cover bleeds full black on page one. Puppeteer renders A4, printBackground: true, margins top/bottom 14mm and left/right 13mm. Save-as-PDF needs "Background graphics" ON.
+- Tables: sage header fill, white / #f5f5f5 zebra rows. Blockquote: 2px sage left rule, Lora italic mist.
+- RETIRED — do not build to these: the ice-era spec (midnight #0A2540 / ice #5B9BD5 separators, 32px grey side gutters, Poppins, the unexecuted cover-fix). The rebrand replaced all of it.
 
 **Plain context PDF (Posterity Project Context.pdf)** — auto-generated on every `npm run sync`. Standard format, no styling.
 
@@ -818,19 +838,23 @@ Work through full context until everything matches Jeremy's vision.
 ---
 
 **6. Legal Preparation Package**
-Full legal prep required before any collaborator is given access to the project. Collaborator access is currently paused pending completion of this work.
-
 Items to be researched and produced:
 - Copyright: what qualifies in Posterity, what to file now vs. later, registration process and cost
 - Patent: whether the automation system, trigger logic, and check-in workflow constitute patentable process IP — patent application summary document to be written
-- NDA: collaborator NDA template written and ready before access is granted
 - Full consultation prep package: everything above compiled and ready to bring to a lawyer
 - Research PDF package: multiple styled PDFs summarizing research across all legal topic areas
 
 Key open questions for legal consultation:
 - File copyright now on existing creative work or wait until product is more complete
 - Whether patent application is warranted and on what specifically
-- How to structure collaborator access legally without damaging a personal relationship
+
+---
+
+## Stage 3 Build Roadmap
+- PayPal added as a payment method via Stripe's native PayPal integration — no separate PayPal account or API needed, handled through Stripe dashboard
+- PayPal supports recurring subscriptions including Horizon $9.99/year
+- PayPal recurring renewals via Stripe require dedicated sandbox testing before launch — renewal reliability differs from card billing
+- Open intake confirmed — no approval gating at launch, cold traffic from day one
 
 ---
 
@@ -1048,7 +1072,10 @@ This section stores all approved brand copy for use throughout the app, marketin
 "Your Posterity account will become a living representation of the legacy you created."
 
 **Approved copy — Hero line:**
-"Your voice. Forever."
+"Your Voice. Forever."
+
+**Approved copy — Plans page sub-line:**
+"Pay for your plan — or plans — when you're ready."
 
 **Approved copy — Supporting line:**
 "Your legacy, on your terms."
