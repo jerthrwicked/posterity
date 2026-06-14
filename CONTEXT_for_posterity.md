@@ -481,7 +481,6 @@ Customers can build, test, preview, and adjust their legacy content at any time 
 - The Posterity Phase is the ultimate expression of the product vision — a key marketing and investor talking point.
 - Full automation is a key selling point and investor talking point.
 - January 1 delivery start is a marketing and trust-building point — Posterity is thoughtful about when content is delivered, not just that it is delivered. Content lands when our customers decided their recipients would be ready to receive it, not in the immediate fog of grief.
-- "Your legacy is reaching the ones you love." (Active Phase emotional line)
 - Upgrade savings story: more messages/videos = lower cost per unit
   - Premium saves 24.5% vs Basic rate
   - Legacy saves 28.3% vs Basic rate
@@ -514,25 +513,22 @@ All marketing language is reviewed against approved Brand Copy. Anything origina
 ---
 
 ## Legacy Completion Moment
-When users complete building all of the content within their account, the following sequence fires.
 
-A message from the founder, going out only to users who finish building an account, surfaces as an elegant link in previously unoccupied space within the user profile, and a parallel email goes out simultaneously. A system-unique notification takes over the user profile screen. This trigger immediately follows the publishing of the final available post within a user's account, as well as the window within the notification.
+When a customer publishes the final available post within their account, a sequence fires.
 
-"Congratulations" — in a color the user will not have seen up until now — slowly materializes as the user profile transitions into brighter, never-before-seen colors. This transition takes as much as 20 seconds to cycle. A click-here link appears in a previously unoccupied spot in the user profile. At this point the entire color palette has changed. The entire color scheme transitions from the app's signature austere dark tones and austere palette to a brighter color scheme with an elegant patterned theme interspersed symmetrically.
+A notification takes over the user profile screen. "Congratulations" — in a color the customer will not have seen up until now — slowly materializes as the entire palette transitions: the app's signature dark tones give way to brighter, never-before-seen colors with an elegant patterned theme interspersed symmetrically. The transition takes as long as 20 seconds to complete. A link appears in previously unoccupied space within the profile — opening the founder message. That same message arrives simultaneously by email.
 
-While this is not a technical part of the Posterity journey, it does represent a significant milestone. The user has completed the building of their legacy. They have walked a path that will often take years, or even decades. In many cases they will have relived tough experiences. Some have bared the deepest parts of themselves to loved ones that they knew would be hearing their words for the last time. However, everyone's Posterity journey is unique. Some will have mostly shared happy memories. Others might have done a bit of everything.
+This is not a technical milestone. It is a human one. The customer has walked a path that can span years or even decades — revisiting memories, baring the deepest parts of themselves to people who may hear their words for the last time. They have built something that will outlast them. The completion of that deserves to be marked.
 
-The moment is delivered simultaneously through the user profile and an email notification. The email and in-app message are beautifully written. Much of Posterity's core messaging is present, but worded in a way unique to anything the user has seen up until that moment.
+The in-app notification and the email are both written specifically for this moment, carrying Posterity's core voice in language the customer hasn't encountered anywhere else in the product. Copy to be written in a dedicated brand pass.
 
 **Implementation specs (Stage 4 / Stage 5):**
 - Trigger: publication of the final available post within the account
-- Color transition duration: up to 20 seconds, full cycle
-- "Click here" link appears in previously unoccupied space within the user profile
-- Color palette: austere dark → bright never-before-seen colors with patterned theme symmetrically interspersed
-- Notification UI takes over the user profile screen
-- Email fires simultaneously
-- Both message and email beautifully written; Posterity's core messaging present in unique phrasing
-- Copy to be written in dedicated brand pass
+- Notification takes over the user profile screen
+- Color transition: up to 20 seconds, full cycle — app's dark tones → brighter, never-before-seen colors with symmetrically interspersed patterned theme
+- Link appears in previously unoccupied space within the profile — opening the founder message
+- Founder message arrives simultaneously by email
+- Both pieces written specifically for this moment; copy to be written in dedicated brand pass
 
 ---
 
@@ -543,7 +539,7 @@ This section stores all approved brand copy for use throughout the app, marketin
 "Before you move forward on your legacy journey, you first must go back. Back through the memories, friendships, love, connection, brilliance, creations, accomplishments — all the uniqueness that made you you. The little and big things that make life feel well-lived. You'll relive your past, so you can carry it into the future."
 
 **Approved copy — Product explanation:**
-"With Posterity, you create a custom tailored legacy that will — on your terms — reach whatever goal or goals you design for it. Do you want your plans to slowly tell a story, one person at a time, to those you think need to hear it? Do you want all of them to not realize you were telling a story the entire time, with a final post to everyone you know? The only limit is your creativity. As you journey back through your life to create your legacy content, you are creating an account that will journey forward. It can be a secret, a confession, a reminder, a remembrance, a photo album — it can solely be a way for your loved ones to relive the joy you've shared together. Your legacy is whatever you want it to be, and it starts now."
+"With Posterity, you create a custom tailored legacy that will — on your terms — reach whatever goal or goals you design for it. Do you want your plans to slowly unfold an interconnected story, shared across 52 messages to 52 of your closest friends? Perhaps you want to let them know they all have a piece of your tale in a final Facebook post, and that they will need to work with one another piece it back together. Maybe—in the multitude of comments that will likely ensue—they will not only reconnect with each other, but also reconnect with the legacy you left in all of their lives. The only limit is your creativity, and as you journey back through your life to create your legacy, you are building an account that will journey forward. Your Posterity account can be a secret, a confession, a reminder, a remembrance, a photo album — it can solely be a way for your loved ones to relive the joy you've shared together. Your legacy is whatever you want it to be, and it starts now."
 
 **Approved copy — Posterity Phase:**
 "Your Posterity account will become a living representation of the legacy you created."
@@ -551,14 +547,8 @@ This section stores all approved brand copy for use throughout the app, marketin
 **Approved copy — Hero line:**
 "Your Voice. Forever."
 
-**Approved copy — Plans page sub-line:**
-"Pay for your plan — or plans — when you're ready."
-
 **Approved copy — Supporting line:**
 "Your legacy, on your terms."
-
-**Approved copy — Active Phase emotional line:**
-"Your legacy is reaching the ones you love."
 
 Note: This section will expand as copy is written and approved for each area of the app. Eventually this context document will evolve into a full sales and vision document encompassing the product philosophy, automation systems, brand ethos, and investor narrative. (Stage 6)
 
