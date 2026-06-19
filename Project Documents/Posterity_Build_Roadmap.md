@@ -232,6 +232,7 @@ Deferred. Cannot be finalized until Content Builder, User Profiles, and all deli
 ## STAGE 5 — Admin Dashboard, Operations, and Financial Automation
 
 ### Operational Dashboard
+- Priority System architecture pass — the operational dashboard runs on a three-stage equation chain (Need, Urgency, Age) producing a 1-to-n rank per task. Math foundation is drafted (see The Priority System document). Architecture pass uses Opus 4.8 + Extended Thinking per Rule 27. First task in the Stage 5 dashboard build.
 - All tasks in priority order — auto-generated from delivery events and manually creatable
 - Task fields: label, description, file type, delivery method, social platform, post date, creation date, priority level, target completion date, visual snapshot
 - Admin calendar view across all dates

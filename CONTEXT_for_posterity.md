@@ -309,11 +309,27 @@ All voice, SMS, and MMS communication runs through Twilio. Email runs through th
 - For Custom (Build Your Own) plans: admin sets custom account parameters first, customer builds content after parameters are established following contact. Customer initiates but account goes straight to Planning Phase — no standard Horizon building phase.
 - Manual input panel in admin dashboard required for both Grace and Custom account setup
 - Custom and Grace tiers use Contact Us buttons on pricing page — no public checkout
-- Grace plan details in onboarding FAQ only — not in main onboarding flow
+- Grace plan details in the Posterity Guide only — not in main onboarding flow
 
 ---
 
 ## Admin & Operations (Stage 5)
+
+### The Priority System (Reference)
+
+The operational dashboard runs on a three-stage priority equation chain producing a 1-to-n positional rank per task. The chain combines a predetermined Need value (per task type from the Master Weight Table), a time-pressure Urgency coefficient (read from the appropriate binary path table — 8-hour or 24-hour), and a system-wide Age coefficient (Patience), then performs a cross-task comparison to produce each task's dashboard position.
+
+The binary path applies to all scheduled posts during their active delivery window, not just to missed posts. Time pressure accumulates from the moment a post becomes active for the day. For non-post task types, the Urgency coefficient defaults to 1.
+
+Full mathematical foundation, variable definitions, equation derivations, weight tables, coefficient tables, recalculation cadence, worked examples, and brand-copy artifacts are documented separately in The Priority System foundation document:
+
+https://docs.google.com/document/d/1Tq4c--LbY2K4iJgcBgQ8bayiTNwnNCYDnhOOGPadrjQ/edit?usp=sharing
+
+The Priority System architecture pass is the first task within the Stage 5 dashboard build. Architecture pass uses Opus 4.8 + Extended Thinking per Rule 27. The build item is tracked in Posterity_Build_Roadmap.md under Stage 5 → Operational Dashboard.
+
+[FLAG FOR REVIEW — TABLED FOR NEXT SESSION: All math rephrasing and equation restructuring from the June 14 session are explicitly tabled until a fresh-head review session can be conducted. The foundation document linked above contains a dedicated Open Architectural Questions subsection enumerating every pending decision, including the Stage 3 arithmetic issue (the current formula produces negative values for realistic queue states) and the requirement that an alternative ranking mechanism be implemented if the candidate solution does not resolve cleanly. Terminology refinements that do not affect the math may proceed as identified, but any rephrasing that would change the equations is held for next session.]
+
+---
 
 **Operational Dashboard**
 All tasks displayed in priority order. Tasks are auto-generated from content delivery events and can also be created manually for voicemails, inquiries, and general operations.
@@ -332,28 +348,35 @@ All tasks displayed in priority order. Tasks are auto-generated from content del
 
 **Task Management:**
 - Admin calendar view showing all tasks across all dates
-- Push back options: 1 day, bottom of priority list, manual date selection
+[FLAG FOR REVIEW: With likely hundreds of active tasks, a calendar view may not be feasible. Alternative under consideration: single dashboard with all tasks listed in priority order, possibly in columns. Resolve during dashboard design brainstorm before Stage 5 build.]
+- Push back options: increment-based priority lowering (up/down arrows that automatically integrate with the priority math), manual date selection. 'Bottom of priority list' is not implemented as a feature — low-priority tasks naturally settle to the bottom of the queue through the Priority System math, and may take days or weeks to climb. The increment-based lowering exists for staff to manually deprioritize a task that the math considers more urgent than operational reality warrants.
 - Tasks unassigned by default — any staff member can claim
 - Assignment toggle (on/off) controlled by Director level
-- Once claimed: locked to that staff member until complete or reassigned
+[FLAG FOR REVIEW: Meaning unclear. Possible interpretations: (a) toggle for whether tasks can be auto-assigned vs claim-only, (b) toggle for whether assignment as a feature exists at all, (c) toggle for whether a specific staff member is currently in an assignable state. Resolve during dashboard design brainstorm.]
+- Once claimed or assigned by management: tasks are locked to that staff member until complete, reassigned, or flagged for management review.
+
+**Task Claim and Review System:**
+[FLAG FOR REVIEW: This system is referenced throughout Admin & Operations but not defined in detail. Needs full specification covering: how tasks are claimed (button click, drag, automated assignment), how management assigns tasks, how staff flag tasks for management review, what 'review' means in workflow terms (return to queue, escalate, override, complete on staff's behalf), and how claim/assignment/review interacts with the Priority System sort order. Resolve during dashboard design brainstorm.]
 
 **Pay Per Task System:**
 - Built into admin dashboard
 - On/off toggle controlled by Director level
 - Tracks tasks completed per staff member
 - Video tasks weighted higher than text (mirrors 2x unit weight)
-- Used for pay calculation for part-time and casual staff
+- Used for pay calculation, with potential for full automation linking task completion to payroll. Employee type designations to be defined as the team grows.
 
 **Admin Access Tiers:**
+Operational access refers to the staff-facing dashboard surfaces: task queue, claim and assignment, post execution, customer contact, voicemail handling, and all day-to-day operational work. Operational access does not include any financial surfaces (fund release schedules, audit logs, payroll, Stripe configuration) or any Director-level configuration surfaces (access tier management, Priority System table editing, recalculation cadence configuration).
+
 - Director — full access including financial dashboard, user management, and all settings
-- Manager — full operational access, no financial dashboard
+- Manager — full access to the operational dashboard (task queue, claim system, assignment, post execution, customer contact). No access to the financial dashboard. Cannot view audit logs, fund release schedules, payroll automation, or any Director-level configuration. Cannot edit access tier assignments for staff below them.
 - Staff — content posting and customer inquiries only
-- Multiple profiles creatable at each access level
+- Multiple profiles can be created within each access level
 
 **Financial Dashboard (Director only):**
 - Completely separate from operational dashboard
 - No employee access to customer funds — audit logs only
-- Automated year-by-year fund release via server-side cron job (Mercury Bank)
+- Automated annual fund release from Trust Account to Operating Account via Mercury Bank cron schedule. See Automation Summary for the complete list of automated processes.
 - Admin dashboard alerts for any automation failures
 
 **Automated Admin Notifications**
@@ -365,9 +388,11 @@ Automated admin notifications fire on the following triggers:
 
 *Content & posting*
 - Post execution deadline approaching (configurable lead time per piece)
+[FLAG FOR REVIEW: Definition unclear — does this refer to the time before a scheduled post's window opens, or the time before the window closes? Configurable by whom and at what granularity? Resolve in dashboard architecture brainstorm.]
 - Post execution failed (API error, credential issue, content rejection)
 - Content upload error or rejection
 - Calendar setup completed for any plan year
+[FLAG FOR REVIEW: 'Setup' may not be the right word here. Suggested alternatives: 'configuration completed,' 'mapping completed,' 'calendar defined.' Resolve during copy review.]
 - Customer attempts to edit content after edit window closed
 
 *Phase transitions*
@@ -414,7 +439,7 @@ Automated admin notifications fire on the following triggers:
 **Other:**
 - Manual input panel for Build Your Own and Grace accounts
 - Grace access code generation system (unique codes for Grace storage fee assignment)
-- Manual override Post Manually button for API failures and general posting workarounds
+- Manual override — Post Manually button. Used by staff to publish content directly when the automated posting system cannot complete the task. Covers Meta API failures, Buffer outages, credential issues that block automated delivery, and any other case where automation cannot complete the post within its delivery window. Logs the override action with timestamp, staff member, task ID, and reason.
 - Simultaneous post processing
 - Voicemail (via Twilio) + outbound SMS notifications
 - Posterity email account
@@ -444,14 +469,14 @@ Full automation is a core selling point and key investor talking point. The syst
 (Deferred — content and flow cannot be finalized until the Content Builder, User Profiles, and all delivery systems are complete, since new requirements will emerge during those builds. Revisit timing before Stage 4 build begins.)
 
 - Step-by-step onboarding walkthrough triggered on first login
-- Onboarding FAQ available within the app for reference after initial walkthrough, with option to replay walkthrough at any time (also accessible via AI chatbot)
+- Posterity Guide available within the app for reference after initial walkthrough, with option to replay walkthrough at any time (also accessible via AI chatbot)
 - Explain all six account phases during onboarding
 - The six phases should feel like a natural, fluid progression to the customer — not a technical system. Each phase mirrors a stage of their own end of life journey: building their legacy, living with it in place, the quiet waiting, the moment their voice reaches the people they love — and lives on in Posterity.
 - Phase language displayed in user profile dashboard so customers always know which phase their account is in
 - AI chatbot for customer setup guidance, product explanations, and general questions
 - Encourage customers to double-check and test everything before finalizing
 - Early Posterity planning strongly recommended
-- Grace plan details and guidance included in onboarding FAQ only — not in main onboarding flow
+- Grace plan details and guidance included in the Posterity Guide only — not in main onboarding flow
 
 ---
 
@@ -516,7 +541,7 @@ All marketing language is reviewed against approved Brand Copy. Anything origina
 
 When a customer publishes the final available post within their account, a sequence fires.
 
-A notification takes over the user profile screen. "Congratulations" — in a color the customer will not have seen up until now — slowly materializes as the entire palette transitions: the app's signature dark tones give way to brighter, never-before-seen colors with an elegant patterned theme interspersed symmetrically. The transition takes as long as 20 seconds to complete. A link appears in previously unoccupied space within the profile — opening the founder message. That same message arrives simultaneously by email.
+A notification takes over the user profile screen. 'Congratulations' — in a color the customer will not have seen up until now — slowly materializes as the entire palette transitions: the app's signature dark tones give way to brighter, never-before-seen colors with an elegant patterned theme interspersed symmetrically. The transition takes as long as 20 seconds to complete. A link appears in previously unoccupied space within the profile — opening the founder message. That same message arrives simultaneously by email.
 
 This is not a technical milestone. It is a human one. The customer has walked a path that can span years or even decades — revisiting memories, baring the deepest parts of themselves to people who may hear their words for the last time. They have built something that will outlast them. The completion of that deserves to be marked.
 
@@ -536,10 +561,10 @@ The in-app notification and the email are both written specifically for this mom
 This section stores all approved brand copy for use throughout the app, marketing materials, onboarding, and investor documents. Copy stored here has been reviewed and approved. Use these as the source of truth for all written customer-facing language.
 
 **Approved copy — Onboarding opening:**
-"Before you move forward on your legacy journey, you first must go back. Back through the memories, friendships, love, connection, brilliance, creations, accomplishments — all the uniqueness that made you you. The little and big things that make life feel well-lived. You'll relive your past, so you can carry it into the future."
+"Before you move forward on your legacy journey, you must first go back. Back through the memories, friendships, love, and brilliance. Your creations and your accomplishments: All the uniqueness that made you—You. The little and big things that make life feel well-lived. Relive your past, so you can carry it into the future with Posterity."
 
 **Approved copy — Product explanation:**
-"With Posterity, you create a custom tailored legacy that will — on your terms — reach whatever goal or goals you design for it. Do you want your plans to slowly unfold an interconnected story, shared across 52 messages to 52 of your closest friends? Perhaps you want to let them know they all have a piece of your tale in a final Facebook post, and that they will need to work with one another piece it back together. Maybe—in the multitude of comments that will likely ensue—they will not only reconnect with each other, but also reconnect with the legacy you left in all of their lives. The only limit is your creativity, and as you journey back through your life to create your legacy, you are building an account that will journey forward. Your Posterity account can be a secret, a confession, a reminder, a remembrance, a photo album — it can solely be a way for your loved ones to relive the joy you've shared together. Your legacy is whatever you want it to be, and it starts now."
+"With Posterity, you create a custom tailored legacy that will — on your terms — reach whatever goal or goals you design for it. Do you want your plans to slowly unfold an interconnected story, shared across 52 messages to 52 of your closest friends? Perhaps you want to let them know they all have a piece of your tale in a final Facebook post, and that they will need to work with one another to piece it all together. Maybe—in the multitude of comments that will likely ensue—they will not only reconnect with each other, but also rediscover the legacy you left in all of their lives. The only limit is your creativity, and as you journey back through your life to create your legacy, you are building an account that will journey forward. Your Posterity account can be a secret, a confession, a reminder, a remembrance, a photo album — it can solely be a way for your loved ones to relive the joy you've shared together. Your legacy is whatever you want it to be, and it starts now."
 
 **Approved copy — Posterity Phase:**
 "Your Posterity account will become a living representation of the legacy you created."
@@ -631,6 +656,7 @@ Horizon Builds is where creative sparks live until they're ready to become reali
 Any builder can add to Horizon Builds during a session. Claude surfaces new items at session start. Items that graduate into a stage move to the roadmap during the next context update. Adding a Horizon Builds item earns creativity points on your Posterity ID.
 
 Current Horizon Builds:
+- Operational Dashboard rework — full system redesign covering: employee access tier system (debug, build, customer contact, management request), system-wide task overload flag with escalating notification cadence (30min → 5min based on time of day + pending post count), automated task weight + acceleration math tied to plan tier (Basic > Premium > Legacy by post-significance logic, Custom < Legacy, Grace < Custom), missed-call/missed-message auto-task generation with accelerated weight escalation, on-demand pay-per-post worker pool with email/text 'want to work' yes/no acceptance and timed login windows (hour/day/week toggles), competitive task-claim environment within login windows, automated payroll withdrawal from operational account at end of workday during low-usage hours, business-hours posting guarantee with customer-set overflow rule (after-hours OR next-day priority bump), login enforcement restricting system access to approved work windows, tiered flag system (flag for review, flag for fix, etc.) auto-inserted on the priority incremental ladder. Starting equation draft: (Weight + Age + Priority₀) ➔ Acceleration ➔ Acceleration(Weight + Age) = Priority₁... — needs math review and full system architecture pass. Likely the first task within the Stage 5 dashboard build. Affects: Admin & Operations (full rewrite, automation-failure-only alerts become a separate notification tier), Notification System (Horizon Builds notification brainstorm absorbs this), User Profiles (posting hours toggle in account creation), Marketing (business hours guarantee statement), Brand Copy (potential public equation artifact). Use Opus 4.8 + Extended Thinking for the architecture pass — multi-phase decision per Rule 27.
 - Dependency tree visual document (build item map with color-coded arrows showing dependencies between all build items)
 - Collaboration MCP suite (tier calculator, point tracker, notification pusher, Posterity ID generator)
 - Simultaneous session detection
@@ -644,7 +670,8 @@ Current Horizon Builds:
 - Claude as Cursor MCP (direct API connection) — custom MCP that routes Cursor Agent questions through Claude.ai context
 - Cursor web agent interface — Claude can access cursor.com/agents via Chrome; evaluate direct prompt execution
 - Stylized PDF auto-edit MCP — extend claude-cursor-bridge with generate_stylized_pdf, verify_pdf_visual, and read_layout_context tools. Adds after the Priority Zero polling gap is closed (Cursor Agent manual receive_task call → automatic polling).
-- Notification system full design — admin dashboard inbound communication surfacing, customer-facing notification UI, opt-in/out controls, channel priority logic. Needs a dedicated brainstorm session before any notification-related build work.
+- Notification system full design — admin dashboard inbound communication surfacing, customer-facing notification UI, opt-in/out controls, channel priority logic. Likely absorbed into the Operational Dashboard rework above. Hold this entry until the dashboard architecture pass clarifies what remains as a standalone notification design.
+- Priority System refinement brainstorm — resolve all open architectural questions in the Priority System foundation document. Specifically requires: (1) decision on Stage 2b's existence (the Acceleration → Weight identity rename), (2) replacement of Stage 3 arithmetic with a working formula that produces clean 1-to-n integer output, with an alternative ranking mechanism implemented if the rank-by-counting candidate does not resolve, (3) decision on whether the binary path's output should be renamed Weight, (4) decision on where the Age Coefficient enters the chain, (5) resolution of the protective inversion contradiction between the Master Weight Table and the marketing claim, (6) confirmation of T_A advancement schedule, (7) decision on T_A behavior at positions not listed in the table, (8) decision on T_A maximum position behavior, (9) confirmation of T_B advancement rule, (10) tuning of all first-pass values in the Master Weight Table, both Binary Tick Coefficient Tables, and the Age Coefficient Table. Use Opus 4.8 + Extended Thinking. Single multi-hour session, rested head. Estimated to be the largest single brainstorm session remaining before Stage 5 build.
 
 ---
 
@@ -709,6 +736,8 @@ Items here are not important enough or worth addressing right now. They are not 
 - Business Email Setup — The current admin email (posterity.admin@gmail.com) is a personal Gmail account. Evaluate Google Workspace to establish a professional business email address, for example admin@posterity.app, to replace it before Posterity has any public-facing presence. No action until the domain name is finalized.
 - Context Condensation via Linked Documents — As the context grows, large inactive sections (such as the Collaboration System) should be condensed into a summary with a live link to a full external document. The context retains enough to understand the section and locate the full document. The build roadmap and build log are the first applications of this approach. No further action until another section becomes large enough to warrant it or begins to affect context quality.
 - Stylized PDF text-block border — top and bottom borders on .content-inner only, inside the grey gutter, matching the locked sage/dusk design — applies to content area only, never the grey side margins.
+- Stage 3 arithmetic resolution — the Priority System foundation document has a known issue where R = n − Σ X_j produces negative values for realistic queue states. Conceptual structure of Stage 3 (cross-task comparison producing 1-to-n integer rank) is correct, but the specific formula needs replacement. Candidate solution (rank-by-counting form: R = count of tasks with higher X value + 1) is drafted in the foundation document but requires rested-head validation before adoption. An alternative ranking mechanism must be implemented if the candidate solution does not resolve the issue.
+- Priority System equation rephrasing — multiple math rephrasing options surfaced during the June 14 session that would change the equation chain's variable assignments or operations. All such rephrasing is tabled until a fresh-head session can evaluate them holistically. Terminology cleanup that does not affect the math is permitted; equation restructuring is not.
 
 ---
 
@@ -781,7 +810,7 @@ Plan Mode is the default for any task touching existing files: CC proposes what 
 
 End of session flow under Claude Code: Claude.ai compiles the context update plus any roadmap and build log changes. Jeremy hands these to CC. CC writes the context update exactly as given, applies the roadmap and build log changes exactly as given, runs npm run sync, commits, states exactly what will be pushed, and waits for Jeremy's go signal before pushing.
 
-Critical setup note: the ANTHROPIC_API_KEY environment variable must be cleared or disabled before running Claude Code. If active, CC bills against Anthropic Console API credits instead of the Claude Max subscription. Cursor Pro+ subscription remains active until CC is confirmed working efficiently.
+Critical setup note: the ANTHROPIC_API_KEY environment variable must be cleared or disabled before running Claude Code. If active, CC bills against Anthropic Console API credits instead of the Claude Max subscription. Cursor Pro+ subscription remains active until Claude Code is confirmed working efficiently. Once Claude Code is confirmed as the stable execution layer for the project, Cursor will be retired and Claude Code will be the sole code execution tool.
 
 Claude.ai remains the sole author of all context, roadmap, and build log updates. CC never has editorial authority over these documents — only execution authority.
 
@@ -819,6 +848,7 @@ Locked shortcuts: g or + = go/approved, n or - = no, m = more, * = instruction r
 - npm run generate-stylized — manual only, never called automatically. Outputs investor PDF to C:\Users\jerth\posterity\Project Documents\Posterity_Stylized_Context.pdf. Run only when stylized PDF changes are needed.
 - Visual verification of stylized PDF happens via Claude in Chrome after every generate-stylized run before PDF is shared or moved anywhere.
 - Stylized PDF corrections go to Cursor Agent. Claude in Chrome confirms visually after each run.
+- Note: A dedicated Claude design session is required before the PDF Pipeline is finalized. Pipeline structure, scripts, and design tokens are currently locked through the sage/dusk rebrand of June 2026, but full finalization (including any updates to generation logic, output paths, or design parameters) is pending that session.
 
 **Session Start:**
 - Claude reads CONTEXT_for_posterity.md in full at session start
@@ -931,7 +961,7 @@ Contact for: repository access, Google Docs service account key, Supabase creden
 | Stripe | Payments (card + PayPal via Stripe's native integration) |
 | Vercel | Hosting |
 | GitHub | Code storage |
-| Cursor | AI-assisted code editor |
+| Cursor | AI-assisted code editor. Current execution layer for the Posterity project; slated to be replaced by Claude Code pending successful Claude Code implementation. Cursor Pro+ subscription remains active until Claude Code is confirmed working efficiently. |
 | Buffer | Social media posting (admin side, post account activation) |
 | Twilio | Phone number + voicemail + SMS/MMS |
 | FFmpeg.wasm | Video compression (Stage 4) |
@@ -966,6 +996,7 @@ Contact for: repository access, Google Docs service account key, Supabase creden
 - Build Roadmap (interim GitHub link): https://github.com/jerthrwicked/posterity/blob/main/Project%20Documents/Posterity_Build_Roadmap.md
 - Build Log (interim GitHub link): https://github.com/jerthrwicked/posterity/blob/main/Project%20Documents/Posterity_Build_Log.md
 - Note: both Build Roadmap and Build Log links above are interim GitHub links to be replaced with Google Doc links once the Google Docs MCP is repaired.
+- Priority System foundation document: https://docs.google.com/document/d/1Tq4c--LbY2K4iJgcBgQ8bayiTNwnNCYDnhOOGPadrjQ/edit?usp=sharing
 
 ---
 
@@ -1129,6 +1160,9 @@ Claude notifies Jeremy when branch usage is warranted for a given task. Jeremy m
 
 **Rule 34 — No Shorthand and Context Clarity**
 Never use shorthand, abbreviations, or compressed references anywhere in the context or in responses. Every term and reference is written in full. Nothing is added to the context that cannot be explained in plain language at the moment of writing it. If it cannot be explained clearly, it is flagged to Jeremy before being added. The single accepted abbreviation in this project is CC for Claude Code.
+
+**Rule 35 — Compilation Permission**
+Claude never compiles output into a deliverable (a context update, a Cursor prompt, a foundation document, a build artifact, or any other compiled output) without first asking for explicit permission. Drafts and exploration are fine. Compilation requires a confirmed go signal.
 
 ---
 
