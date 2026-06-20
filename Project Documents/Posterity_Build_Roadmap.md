@@ -231,8 +231,47 @@ Deferred. Cannot be finalized until Content Builder, User Profiles, and all deli
 
 ## STAGE 5 — Admin Dashboard, Operations, and Financial Automation
 
+## Stage 5 Prerequisites — Required Brainstorm Sessions
+
+The following three sessions must be completed before any Stage 5 admin dashboard code is written. They gate the build in sequence. Session 1 gates Sessions 2 and 3.
+
+### Session 1 — Priority System Math Resolution
+
+Resolve all nine open architectural questions from the Priority System foundation document (https://docs.google.com/document/d/1Tq4c--LbY2K4iJgcBgQ8bayiTNwnNCYDnhOOGPadrjQ/edit?usp=sharing). Uses Opus 4.8 + Extended Thinking per Rule 27.
+
+Open questions to resolve:
+1. Stage 2b existence — whether the Acceleration → Weight identity rename is a real stage or should be dropped entirely
+2. Stage 3 arithmetic — replace the current formula (R = n − Σ X_j, produces negative values) with a working 1-to-n integer output. Candidate: rank-by-counting form R = |{t ∈ T : X_t > X_i}| + 1. An alternative must be implemented if the candidate fails — hard implementation gate
+3. Binary path output naming — whether V(T_B) output should be renamed Weight, restructuring the chain to N × W = A
+4. Age Coefficient placement — Stage 2 (alongside Need and Urgency) or Stage 3 (as currently drafted)
+5. Protective inversion contradiction — marketing claim (Grace posts higher Need than Legacy) contradicts Master Weight Table (Grace at bottom). One must change
+6. T_A advancement schedule — once per recalculation iteration, pending confirmation
+7. T_A behavior at unlisted positions — interpolation, rounding, or full-population
+8. T_A maximum position — likely cap at last table value, pending confirmation
+9. T_B advancement rule — likely computed at each iteration by mapping real-world elapsed time to track position, pending confirmation
+
+Nothing in Sessions 2 or 3 proceeds until Session 1 is complete.
+
+### Session 2 — Priority System Implementation Architecture
+
+Evaluate and select the recalculation engine approach. Recommended starting point: pg_cron via Supabase (the recalculation math is a database operation; running it at the database level avoids Vercel serverless execution time limits and keeps computation close to the data).
+
+Session scope:
+- Evaluate pg_cron, Vercel Cron Jobs, Inngest, Trigger.dev, Railway
+- Variable cadence implementation: the schedule requires a variable-interval approach (15 min opening / 25 min midday / 5 min final hour), not a fixed cron expression
+- Queue scale thresholds: define when pg_cron performance needs evaluation and when a dedicated worker becomes necessary
+- Confirm admin dashboard build scope: task list in Rank order from Supabase, task cards with label/description/visual snapshot, Delivery vs Operational task separation, Upcoming Tasks popup, claim and assignment controls, push-back increment arrows, Director/Manager/Staff access tier gating
+- Confirm no third-party admin dashboard tooling required
+
+Requires Session 1 complete.
+
+### Session 3 — Master Weight Table Refinement
+
+Fine-tune all first-pass Need values from the foundation document. Every value in the current Master Weight Table is first-pass and subject to change. This session produces the locked production values stored in the database at runtime. Can run in parallel with Session 2 or immediately following Session 1.
+
+---
+
 ### Operational Dashboard
-- Priority System architecture pass — the operational dashboard runs on a three-stage equation chain (Need, Urgency, Age) producing a 1-to-n rank per task. Math foundation is drafted (see The Priority System document). Architecture pass uses Opus 4.8 + Extended Thinking per Rule 27. First task in the Stage 5 dashboard build.
 - All tasks in priority order — auto-generated from delivery events and manually creatable
 - Task fields: label, description, file type, delivery method, social platform, post date, creation date, priority level, target completion date, visual snapshot
 - Admin calendar view across all dates

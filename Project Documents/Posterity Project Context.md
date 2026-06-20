@@ -315,24 +315,91 @@ All voice, SMS, and MMS communication runs through Twilio. Email runs through th
 
 ## Admin & Operations (Stage 5)
 
-### The Priority System (Reference)
+### The Priority System
 
-The operational dashboard runs on a three-stage priority equation chain producing a 1-to-n positional rank per task. The chain combines a predetermined Need value (per task type from the Master Weight Table), a time-pressure Urgency coefficient (read from the appropriate binary path table — 8-hour or 24-hour), and a system-wide Age coefficient (Patience), then performs a cross-task comparison to produce each task's dashboard position.
+The Priority System is a confirmed component of the Stage 5 admin dashboard build. It is not optional, not tabled, and not under consideration — it is the only approach that correctly models Posterity's operational needs. No existing tool (ticketing platforms, support software, operations dashboards) maps to the specific combination of scheduled legacy content delivery, binary-path time pressure, customer-specific delivery windows, and cross-account operational events that Posterity manages. The decision to build the Priority System was made and locked June 2026.
 
-The binary path applies to all scheduled posts during their active delivery window, not just to missed posts. Time pressure accumulates from the moment a post becomes active for the day. For non-post task types, the Urgency coefficient defaults to 1.
+The Priority System determines the order of every task on the operational dashboard. Every active task is assigned a Rank — an integer from 1 (most urgent) to n (least urgent, where n is the total count of active tasks). Staff see tasks in Rank order. The Rank is computed by a three-stage equation chain that runs on a defined recalculation cadence throughout the business day and writes updated rank integers to the database between iterations.
 
-Full mathematical foundation, variable definitions, equation derivations, weight tables, coefficient tables, recalculation cadence, worked examples, and brand-copy artifacts are documented separately in The Priority System foundation document:
+**Task Categories**
+
+The dashboard operates with two distinct task categories:
+
+Delivery Tasks — scheduled post tasks. Exist because a customer's legacy is being executed during the Active phase. Time-bound, binary-path-driven, tied to a specific delivery window (8-hour or 24-hour per customer preference). The Urgency coefficient climbs as the window narrows, from 1.0 at the start of the window to 12.0 (8-hour track) or 3.5 (24-hour track) at the end. Delivery tasks include both message posts and video posts; the dashboard and all task counts distinguish between the two.
+
+Operational Tasks — everything that is not a scheduled post. General inquiries, voicemails, missed customer calls, trusted contact actions, automation failures, check-in events, refund requests, payment failures, backup credential issues, Grace and Custom consultation requests, and all other events requiring staff response. Not time-bound in the same way as delivery tasks. Urgency defaults to 1.0 for all operational tasks; they climb the queue through their Need value and Age coefficient only.
+
+**The Upcoming Tasks Button**
+
+A button visible on the admin dashboard at all access levels. Opens a live-updated popup showing the full queue snapshot at the current moment. The popup contains:
+
+- Total tasks currently in the queue
+- Delivery tasks count, broken down by message posts and video posts
+- Operational tasks count
+- Next 7 days — each day listed individually with delivery task count (messages and videos shown separately)
+- Next 30 days — total delivery task count for the month
+
+The popup is live-updated from the Priority System recalculation engine. The numbers always reflect the current queue state at the moment the button is pressed.
+
+**How the System Works — Plain-English Summary**
+
+Every task enters the system with a predetermined Need value assigned by Posterity's team in the Master Weight Table. Need is subjective, static, and never recomputed at runtime — Stage 1 (the loop-off) seals it against recursion by multiplying it by a structural constant (T_S = 1), which is a deliberate architectural choice that prevents the system from entering an infinite loop.
+
+In Stage 2, Need is multiplied by Urgency — the time-pressure coefficient read from the appropriate binary path table at the task's current binary tick position (T_B). For delivery tasks, this coefficient climbs as the delivery window narrows. For operational tasks it is 1.0. The product is Acceleration — how fast this task is climbing the queue right now.
+
+In Stage 3, each task's Acceleration is scaled by a Patience Coefficient (α(T_A)) — a system-wide age multiplier that grows as the task ages in the queue, read from the Age Coefficient Table at the task's current Age Tick position (T_A). This produces a per-task Comparison Value. All active tasks' Comparison Values are then sorted and ranked against each other to produce each task's final 1-to-n Rank. Stage 3 is the only cross-task operation in the system.
+
+The system is deterministic and transparent. Every value is either a predetermined number from the Master Weight Table or a configured coefficient from a published table. There is no machine learning and no opaque scoring. Any staff member, customer, or investor can read the math and verify the result.
+
+**Mathematical Foundation Document**
+
+Full mathematical foundation — variable definitions, equation derivations, the three-stage chain with all substages, the Master Weight Table (30+ task types across six categories), the Binary Tick Coefficient Tables (8-hour and 24-hour tracks, 12 positions each), the Age Coefficient Table, the Recalculation Cadence schedule, worked examples, Open Architectural Questions, brand-copy artifacts, marketing implications, and build implications — is documented in full at:
 
 https://docs.google.com/document/d/1Tq4c--LbY2K4iJgcBgQ8bayiTNwnNCYDnhOOGPadrjQ/edit?usp=sharing
 
-The Priority System architecture pass is the first task within the Stage 5 dashboard build. Architecture pass uses Opus 4.8 + Extended Thinking per Rule 27. The build item is tracked in Posterity_Build_Roadmap.md under Stage 5 → Operational Dashboard.
+The document is foundation-ready. Nine open architectural questions require resolution before implementation (see Required Brainstorm Sessions below). The math is locked through Stage 2a. Stages 2b and 3 have substantive open questions documented in the foundation document's Open Architectural Questions section.
 
-[FLAG FOR REVIEW — TABLED FOR NEXT SESSION: All math rephrasing and equation restructuring from the June 14 session are explicitly tabled until a fresh-head review session can be conducted. The foundation document linked above contains a dedicated Open Architectural Questions subsection enumerating every pending decision, including the Stage 3 arithmetic issue (the current formula produces negative values for realistic queue states) and the requirement that an alternative ranking mechanism be implemented if the candidate solution does not resolve cleanly. Terminology refinements that do not affect the math may proceed as identified, but any rephrasing that would change the equations is held for next session.]
+**Required Brainstorm Sessions (gating the Stage 5 build in sequence)**
+
+Three brainstorm sessions must be completed before the admin dashboard build begins. They run in sequence — Session 1 gates Sessions 2 and 3.
+
+Session 1 — Priority System Math Resolution. Resolve all nine open architectural questions from the foundation document:
+- Stage 2b existence: whether the Acceleration → Weight identity rename is a real stage or should be dropped
+- Stage 3 arithmetic: replace the current formula (produces negative values) with a working 1-to-n integer output. Candidate fix is the rank-by-counting form (R = count of tasks with higher Comparison Value + 1). An alternative must be implemented if the candidate fails — this is a hard implementation gate
+- Whether the binary path output should be renamed Weight, restructuring the chain to N × W = A
+- Where the Age Coefficient enters the chain (Stage 2 alongside Need and Urgency, or Stage 3 as currently drafted)
+- Protective inversion contradiction: the marketing claim (Grace posts carry higher Need than Legacy posts) contradicts the current Master Weight Table (Grace sits at the bottom). One must change
+- T_A advancement schedule: recommended once per recalculation iteration, pending confirmation
+- T_A behavior at positions not listed in the table: interpolation, rounding, or full-population — must be decided before implementation
+- T_A maximum position behavior: likely cap at last value, pending confirmation
+- T_B advancement rule: most likely computed at each iteration by mapping real-world elapsed time to track position, pending confirmation
+
+Uses Opus 4.8 + Extended Thinking per Rule 27. Nothing else proceeds until this session is complete.
+
+Session 2 — Priority System Implementation Architecture. Evaluate and select the recalculation engine approach before any dashboard code is written:
+- pg_cron (Supabase-native, recommended starting point — the recalculation math is fundamentally a database operation; running it at the database level avoids Vercel serverless execution time limits and keeps computation close to the data)
+- Vercel Cron Jobs (simple but subject to execution time limits at scale)
+- Inngest or Trigger.dev (dedicated background job services, more infrastructure overhead but most reliable for complex scheduled work)
+- Railway (persistent worker option)
+- Variable cadence implementation: the schedule (every 15 minutes opening, every 25 minutes midday, every 5 minutes final hour) requires a variable-interval scheduler, not a fixed cron expression — how this is handled depends on the engine choice
+- Queue scale thresholds: define when pg_cron performance needs evaluation and when a dedicated worker becomes necessary
+
+Requires Session 1 to be complete first.
+
+Session 3 — Master Weight Table Refinement. Fine-tune all first-pass Need values from the foundation document against real operational judgment. Every value in the current Master Weight Table is explicitly first-pass and subject to change. This session produces the locked production values that will be stored in the database and used at runtime. Can run in parallel with Session 2 or immediately following Session 1.
+
+**Implementation Path (post-brainstorm)**
+
+Once all three sessions are complete, the admin dashboard build is standard Next.js component work. The recalculation engine (likely pg_cron via Supabase) runs independently and writes Rank integers to the database at each iteration. The dashboard reads those integers and renders the task list in Rank order. The complexity is in the engine, not the display layer. No third-party admin dashboard tooling is required or appropriate — no existing platform models Posterity's operational needs.
+
+**Brand and Investor Note**
+
+The Priority System is a public artifact and a brand differentiator. Posterity is the only legacy platform whose operational prioritization is built on transparent, published math. The system was designed from first principles by the founder using critical reasoning and formalized with Claude as a notation translator — a process that would cost $30,000–$45,000 on the open market (conceptual design, weight table bottom-up design, mathematical formalization, implementation, and validation). The math belongs on the operations page of the live site and in investor materials. Full brand-copy artifacts and marketing angles are documented in the foundation document.
 
 ---
 
 **Operational Dashboard**
-All tasks displayed in priority order. Tasks are auto-generated from content delivery events and can also be created manually for voicemails, inquiries, and general operations.
+Tasks are displayed in Rank order as generated by the Priority System recalculation engine. The Priority System runs continuously through the business day, sorting the live queue as tasks enter, age, and resolve. See The Priority System subsection above for full detail. Tasks fall into two categories: Delivery Tasks (scheduled post tasks executing a customer's legacy during the Active phase) and Operational Tasks (all non-post events requiring staff response). The Upcoming Tasks button opens a live-updated popup with the full queue snapshot — total tasks, delivery vs operational breakdown, next 7 days by day with message and video counts, and next 30 days total.
 
 **Task Fields:**
 - Label (auto-generated or manually entered)
@@ -671,7 +738,6 @@ Current Horizon Builds:
 - Cursor web agent interface — Claude can access cursor.com/agents via Chrome; evaluate direct prompt execution
 - Stylized PDF auto-edit MCP — extend claude-cursor-bridge with generate_stylized_pdf, verify_pdf_visual, and read_layout_context tools. Adds after the Priority Zero polling gap is closed (Cursor Agent manual receive_task call → automatic polling).
 - Notification system full design — admin dashboard inbound communication surfacing, customer-facing notification UI, opt-in/out controls, channel priority logic. Likely absorbed into the Operational Dashboard rework above. Hold this entry until the dashboard architecture pass clarifies what remains as a standalone notification design.
-- Priority System refinement brainstorm — resolve all open architectural questions in the Priority System foundation document. Specifically requires: (1) decision on Stage 2b's existence (the Acceleration → Weight identity rename), (2) replacement of Stage 3 arithmetic with a working formula that produces clean 1-to-n integer output, with an alternative ranking mechanism implemented if the rank-by-counting candidate does not resolve, (3) decision on whether the binary path's output should be renamed Weight, (4) decision on where the Age Coefficient enters the chain, (5) resolution of the protective inversion contradiction between the Master Weight Table and the marketing claim, (6) confirmation of T_A advancement schedule, (7) decision on T_A behavior at positions not listed in the table, (8) decision on T_A maximum position behavior, (9) confirmation of T_B advancement rule, (10) tuning of all first-pass values in the Master Weight Table, both Binary Tick Coefficient Tables, and the Age Coefficient Table. Use Opus 4.8 + Extended Thinking. Single multi-hour session, rested head. Estimated to be the largest single brainstorm session remaining before Stage 5 build.
 
 ---
 
@@ -736,8 +802,6 @@ Items here are not important enough or worth addressing right now. They are not 
 - Business Email Setup — The current admin email (posterity.admin@gmail.com) is a personal Gmail account. Evaluate Google Workspace to establish a professional business email address, for example admin@posterity.app, to replace it before Posterity has any public-facing presence. No action until the domain name is finalized.
 - Context Condensation via Linked Documents — As the context grows, large inactive sections (such as the Collaboration System) should be condensed into a summary with a live link to a full external document. The context retains enough to understand the section and locate the full document. The build roadmap and build log are the first applications of this approach. No further action until another section becomes large enough to warrant it or begins to affect context quality.
 - Stylized PDF text-block border — top and bottom borders on .content-inner only, inside the grey gutter, matching the locked sage/dusk design — applies to content area only, never the grey side margins.
-- Stage 3 arithmetic resolution — the Priority System foundation document has a known issue where R = n − Σ X_j produces negative values for realistic queue states. Conceptual structure of Stage 3 (cross-task comparison producing 1-to-n integer rank) is correct, but the specific formula needs replacement. Candidate solution (rank-by-counting form: R = count of tasks with higher X value + 1) is drafted in the foundation document but requires rested-head validation before adoption. An alternative ranking mechanism must be implemented if the candidate solution does not resolve the issue.
-- Priority System equation rephrasing — multiple math rephrasing options surfaced during the June 14 session that would change the equation chain's variable assignments or operations. All such rephrasing is tabled until a fresh-head session can evaluate them holistically. Terminology cleanup that does not affect the math is permitted; equation restructuring is not.
 
 ---
 
@@ -1175,6 +1239,8 @@ This section stores instructions that exist for Claude's operational benefit —
 - "Plan year" vs "calendar year": when referring to delivery cadence, always use plan year (Year 1, Year 2, etc.). Customers are choosing plan years, not calendar years — a Premium plan assigned to Year 1, a Legacy plan to Year 2, skipping Year 3, Basic to Year 4. Plan years count from account activation forward.
 - Account vs plan terminology (Rule 5 reinforcement): accounts shift phases. Plans live inside accounts. Never use "plan" in a phase context.
 - When in doubt about whether something belongs in customer-facing sections vs Claude Operating Notes: if it tells the product story, it goes in the product sections. If it tells Claude how to behave or how to display things, it goes here.
+- pg_cron — a Postgres extension available in Supabase that runs scheduled jobs directly within the database on a defined time interval. In the context of the Priority System, pg_cron is the candidate mechanism for running the recalculation engine — the server-side process that fires a full iteration of the three-stage equation chain across all active tasks in the queue and writes updated Rank positions back to the database. Because the recalculation math is fundamentally a database operation (read task records, compute Comparison Values, write Rank integers), running it at the database level via pg_cron is more efficient than running it as a serverless function (which would require fetching data, computing externally, and writing back). pg_cron avoids the execution time limits of Vercel serverless functions and keeps the recalculation logic close to the data it operates on. Evaluation of pg_cron vs. alternative approaches (Vercel Cron Jobs, Inngest, Trigger.dev, Railway) is covered in the Pre-Stage 5 Priority System Implementation Architecture brainstorm session.
+- Delivery Tasks and Operational Tasks — the two task categories used throughout the admin dashboard and Priority System. Delivery Tasks are scheduled post tasks that exist because a customer's legacy is being executed during the Active phase — time-bound, binary-path-driven, tied to a specific delivery window. Operational Tasks are all non-post events requiring staff response (inquiries, voicemails, automation failures, trusted contact actions, check-ins, refund requests, payment failures, and so on) — not delivery-window-bound, Urgency defaults to 1.0. These terms are used in the dashboard UI, the Upcoming Tasks popup, and all admin-facing language. Never use 'post tasks' and 'non-post tasks' in customer or staff-facing copy — always use Delivery Tasks and Operational Tasks.
 
 ---
 
