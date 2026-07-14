@@ -24,6 +24,10 @@ product decisions; Claude Code executes.
 
 ## Our documents (`BUILD/`)
 
+- **`BUILD/CHANGELOG.md`** — ⚠️ **update this at the end of every session, before you stop.** We
+  never push to Jeremy's repo, so this file — not GitHub — is the only record he gets of what
+  changed. Flag database changes separately from code changes: the DB ones are live on his project
+  and are not undone by a `git reset`.
 - **`BUILD/CODE_AUDIT.md`** — what is actually built, verified line by line. Read before believing
   any roadmap.
 - **`BUILD/BUILD_ORDER.md`** — what to build, in order. Does not replace Jeremy's roadmap.

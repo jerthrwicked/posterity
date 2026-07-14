@@ -19,6 +19,7 @@ not edited by us.
 
 | File | What it is |
 |---|---|
+| `CHANGELOG.md` | **Everything we've changed.** Since we never push to Jeremy's repo, this is the only record he gets — keep it current, and keep database changes visibly separate from code changes. |
 | `CODE_AUDIT.md` | What is *actually built*, verified by reading every line. Read this before believing any roadmap. |
 | `BUILD_ORDER.md` | What to build, in order, grounded in the audit. Does not replace Jeremy's roadmap. |
 | `POSTERITY_SOCIAL.md` | The Posterity Social spec (Jeremy's, 2026-07-13) plus the open questions and risks it raises. |
