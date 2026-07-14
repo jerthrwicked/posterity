@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Rule 1: if you changed the app or the database, you update the changelog.
+#
+# We never push to Jeremy's repo. BUILD/CHANGELOG.md is the ONLY record he gets
+# that his own project changed. A rule in CLAUDE.md is a request; this is a wall.
+set -euo pipefail
+
+STAGED="$(git diff --cached --name-only)"
+
+# Does this commit touch anything Jeremy would want to know about?
+SUBSTANTIVE="$(printf '%s\n' "$STAGED" | grep -E '^(app/|lib/|proxy\.js$|supabase/migrations/|scripts/)' || true)"
+[ -n "$SUBSTANTIVE" ] || exit 0
+
+# Did it also update the changelog?
+printf '%s\n' "$STAGED" | grep -qx 'BUILD/CHANGELOG.md' && exit 0
+
+cat >&2 <<'MSG'
+
+  ✗ COMMIT BLOCKED — BUILD/CHANGELOG.md was not updated.
+
+  This commit changes code or the database, but leaves the changelog alone.
+
+  We never push to Jeremy's repo. He will not see this commit, this diff, or a
+  pull request. BUILD/CHANGELOG.md is the ONLY record he gets that his own
+  project changed. If it isn't in that file, from his side it did not happen.
+
+  Files in this commit that he'd want to know about:
+MSG
+printf '      %s\n' $SUBSTANTIVE >&2
+cat >&2 <<'MSG'
+
+  Update BUILD/CHANGELOG.md and stage it, then commit again.
+  Mark DATABASE changes separately from code changes — the DB ones are live on
+  his Supabase and are not undone by a git reset.
+
+  (--no-verify exists. Reaching for it here is doing the exact thing this hook
+   is here to prevent.)
+
+MSG
+exit 1

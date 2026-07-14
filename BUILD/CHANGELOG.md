@@ -17,6 +17,14 @@ Anything under **Pending** has not been done.
 
 ## 2026-07-13
 
+### Added — this changelog, and a hook that makes it mandatory
+- **`BUILD/CHANGELOG.md`** (this file).
+- **Rule 1 in `CLAUDE.md`**: update the changelog on every change, no exceptions.
+- **`scripts/hooks/pre-commit`** — enforces it. Any commit touching `app/`, `lib/`, `proxy.js`,
+  `supabase/migrations/`, or `scripts/` **is rejected** unless `BUILD/CHANGELOG.md` is updated too.
+  A rule in a markdown file is a request; this is a wall. Install per clone with
+  `bash scripts/install-hooks.sh`.
+
 ### 🗄️ Database — two migrations applied to the live project
 The database **was completely empty**: zero tables, no migration history, nothing. It is not empty
 now.

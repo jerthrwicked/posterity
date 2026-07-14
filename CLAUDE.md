@@ -1,5 +1,27 @@
 @AGENTS.md
 
+# 🔴 RULE 1 — UPDATE `BUILD/CHANGELOG.md`. EVERY TIME. NO EXCEPTIONS.
+
+**If you changed anything in this repo or in the database, you update `BUILD/CHANGELOG.md` before
+you stop. This is not a nice-to-have and it is not optional.**
+
+**Why it is a hard rule, and not a habit:** we work on the `walker/build` branch and **we never push
+to Jeremy's repo.** He will never see a commit, a diff, or a pull request. GitHub will never tell
+him anything happened. **`BUILD/CHANGELOG.md` is the only record he gets that his own project
+changed.** If it is not in that file, from his point of view it did not happen — and he is the owner
+of this product.
+
+It matters most for the database. Code sits on a branch and can be thrown away with a `git reset`.
+**The migrations are live on his Supabase the moment they run.** Always mark database changes
+separately from code changes, so he never has to squint to see which ones are already real.
+
+**This is enforced.** A pre-commit hook rejects any commit that touches `app/`, `lib/`, `proxy.js`,
+or `supabase/migrations/` without also touching `BUILD/CHANGELOG.md`. If you find yourself reaching
+for `--no-verify`, you are about to do the exact thing this rule exists to prevent. Don't.
+*(Install the hook in a fresh clone with `bash scripts/install-hooks.sh`.)*
+
+---
+
 ## Project memory — read this first
 
 **The gap between the documents and the code is the most important fact about this project.**
