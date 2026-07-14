@@ -1,95 +1,68 @@
 # Posterity — Changelog
 
-Every change Walker + Claude have made, newest first.
+Everything Walker + Claude have changed. Newest first.
 
-**Read this first, Jeremy.** We work on the `walker/build` branch and **never push to your repo** —
-so this file, not GitHub, is the record of what changed. Two kinds of change appear below and they
-are not equally reversible:
+**Jeremy — read this first.** We work on the `walker/build` branch and **never push to your repo**, so
+GitHub will not tell you anything happened. **This file is the only record you get.** Two kinds of
+change appear below, and they are not equally reversible:
 
-- 🗄️ **DATABASE** — applied to your live Supabase (`vypytfmutmeyfwmkapjg`). **Real, and already in
-  effect.** Undoing these takes a migration, not a `git reset`.
-- 📄 **CODE / DOCS** — local only, on a branch. Nothing is deployed. Nothing reaches your repo
-  unless you ask for it.
+- 🗄️ **DATABASE** — applied to your live Supabase (`vypytfmutmeyfwmkapjg`). **Already in effect.**
+  Undoing these takes a migration, not a `git reset`.
+- 📄 **CODE / DOCS** — local, on a branch. Nothing is deployed, nothing reaches your repo.
 
-Anything under **Pending** has not been done.
+**Decisions only you can make are collected under [Findings](#-findings--decisions-only-jeremy-can-make).**
 
 ---
 
-## 2026-07-13
+# 2026-07-13
 
-### ⚠️ CORRECTION — we were wrong about Meta. It is not being replaced.
-Earlier today our documents stated that the Meta/Instagram integration was **dead**, replaced by
-Posterity Social. **That was false.** Claude inferred it from a secondhand summary and wrote it into
-the project's memory as a settled decision — even though it flatly contradicted Jeremy's own context
-document. It should have been raised with him as a question. It was not.
+## 🗄️ Database — two migrations, applied and live
 
-**Jeremy has confirmed:** Facebook and Instagram **remain** the delivery platforms, published via
-**Buffer** (direct API "gonna be an option" later). **Posterity Social is an additional layer, not a
-substitute.** The context document's "Social Media Integration" section **stands.**
+The database **was completely empty**: zero tables, no migration history, nothing had ever run. It is
+not empty now.
 
-**No code was affected.** The repo never contained a single line of Meta integration, so nothing was
-removed and nothing needs restoring. The error lived only in `BUILD/` and `CLAUDE.md`, and all of it
-is now corrected. It is recorded here rather than quietly edited away, because a project whose
-documents already ran ahead of its code cannot also have documents that quietly rewrite themselves.
+| Migration | What it does |
+|---|---|
+| `20260713000000_initial_schema.sql` | **The first migration this project has ever had.** 14 tables, RLS on every one, 6 enums. |
+| `20260713120000_account_on_signup.sql` | A trigger on `auth.users` that creates the account row **in the same transaction as the user**. Plus a backfill. |
 
-The **risks** we raised about Meta are unchanged and now sit in `POSTERITY_SOCIAL.md` under *"Meta
-delivery — the risks Buffer does not remove."* The short version, for Jeremy: **Buffer is itself a
-Graph API client**, so it changes who writes the API code, not what Meta permits or what expires. A
-**~60-day access token** against a **30-year promise** means ~160 re-authorizations over a long
-account — each one a login to the customer's Facebook, including after they die. And **any relative
-can have the account memorialized**, which locks it permanently against all posting, outside anyone's
-control. Conclusion is not "drop Meta" — it is **"Meta can't be the channel we *guarantee*."**
-Email/SMS is the spine; Meta is the bonus channel. That is why delivery is built email-first.
+**The schema uses the product's own vocabulary**, from `CONTEXT_for_posterity.md`: accounts move
+through the six **phases**; only accounts shift phases and plans move with them; one plan = one
+delivery **year**. Two choices worth knowing:
 
-### Added — this changelog, and a hook that makes it mandatory
-- **`BUILD/CHANGELOG.md`** (this file).
-- **Rule 1 in `CLAUDE.md`**: update the changelog on every change, no exceptions.
-- **`scripts/hooks/pre-commit`** — enforces it. Any commit touching `app/`, `lib/`, `proxy.js`,
-  `supabase/migrations/`, or `scripts/` **is rejected** unless `BUILD/CHANGELOG.md` is updated too.
-  A rule in a markdown file is a request; this is a wall. Install per clone with
-  `bash scripts/install-hooks.sh`.
+- **`account_phase_events` is append-only.** The phase history of a legacy has to be auditable
+  forever.
+- **`trigger_confirmations` stores *both* verification steps as columns** — so a trigger must be
+  **proven**, never inferred.
 
-### 🗄️ Database — two migrations applied to the live project
-The database **was completely empty**: zero tables, no migration history, nothing. It is not empty
-now.
+**The backfill mattered:** there was already **one auth user with no account row** — someone who could
+log in and had nothing to log in to. That is exactly the orphan the trigger now prevents. Fixed.
 
-- **`20260713000000_initial_schema.sql`** — the first migration this project has ever had. **14
-  tables, RLS on every one, 6 enums.** Built from `CONTEXT_for_posterity.md`, using the product's own
-  vocabulary: accounts move through the six **phases**; only accounts shift phases and plans move
-  with them; one plan = one delivery **year**. Two deliberate choices worth knowing:
-  `account_phase_events` is **append-only** (the phase history of a legacy must be auditable
-  forever), and `trigger_confirmations` stores **both** verification steps as columns — so a trigger
-  must be *proven*, never inferred.
-- **`20260713120000_account_on_signup.sql`** — a trigger on `auth.users` that creates the account row
-  **in the same transaction as the user**, so it cannot be skipped by a dropped connection or a
-  closed tab. Also **backfilled one orphaned user** who already existed in `auth.users` with no
-  account — they could log in and had nothing to log in to.
-- A test signup was created and deleted. Current state: **1 auth user, 1 account, no test data.**
+A test signup was created and deleted. **Current state: 1 auth user, 1 account, no test data.**
+
+## ✅ Code — Posterity can now sign up a user
+
+It could not, at any point before today.
 
 ### Added
-- **`proxy.js`** — a real, server-side auth gate. (Next 16 renamed `middleware` → `proxy`.) It
-  refreshes the Supabase session and redirects signed-out visitors. Next's own docs call proxy an
-  *optimistic* check and say it "should not be used as a full session management or authorization
-  solution" — so the dashboard **re-checks server-side**, with RLS underneath both. Three layers on
-  purpose.
-- **`lib/supabase/client.js`** and **`lib/supabase/server.js`** — cookie-based auth via
-  `@supabase/ssr`.
+- **`proxy.js`** — a real server-side auth gate. (Next 16 renamed `middleware` → `proxy`.) Refreshes
+  the session, redirects signed-out visitors. **Verified: `GET /dashboard` signed out now returns 307
+  before a byte of HTML is served.**
+- **`lib/supabase/client.js`**, **`lib/supabase/server.js`** — cookie-based auth (`@supabase/ssr`).
 - **`app/auth/callback/route.js`** — where the email-confirmation link lands.
 - **`app/dashboard/LogoutButton.jsx`**.
 - **`scripts/`** — `sb.sh` (run SQL against the live DB), `fetch-supabase-keys.sh`,
-  `add-stripe-key.sh`, `stripe-prices.py`, `test-signup.py`.
-- **`BUILD/`** — `README.md`, `CODE_AUDIT.md`, `BUILD_ORDER.md`, `POSTERITY_SOCIAL.md`, this file.
-- Dependency: **`@supabase/ssr`**.
+  `add-stripe-key.sh`, `stripe-prices.py`, `test-signup.py`, `install-hooks.sh`, `hooks/pre-commit`.
 
 ### Changed
-- **`app/signup/page.js` — it now signs people up.** It was a **copy of the pricing page**: its
-  function was literally named `Pricing()`, it quoted **the wrong prices**, and its buttons linked to
-  itself. **No account could ever be created.** Replaced with a real form. Verified end to end:
-  signup → auth user → account in **horizon** → phase event recorded.
-- **`app/dashboard/page.js`** — now a server component reading **real data** (phase, content,
-  recipients, trusted contacts, plans) instead of hardcoded zeros.
+- **`app/signup/page.js` — it signs people up now.** It *was a copy of the pricing page*: its function
+  was literally named `Pricing()`, it quoted the **wrong prices**, and its buttons linked to itself.
+  **No account could ever be created.** Replaced with a real form. Verified end to end: signup → auth
+  user → account in **horizon** → phase event recorded.
+- **`app/dashboard/page.js`** — a server component on **real data** (phase, content, recipients,
+  trusted contacts, plans) instead of hardcoded zeros.
 - **`app/login/page.js`**, **`app/components/GlobalNav.js`** — moved to the cookie-based client.
-- **`CLAUDE.md`** — project memory, git rules, the live risks.
+- **`package.json`** — added `@supabase/ssr`.
 
 ### Removed
 - **The "✓ I'm Still Here" check-in button.** It was **wired to nothing** — no `onClick`, no handler.
@@ -97,23 +70,60 @@ now.
   only means something alongside the trigger it holds back, so **both halves ship together in Phase
   1.2, or neither does.**
 - **`app/api/cursor-inbox/route.js`** — a route that wrote client-supplied data to disk. Its first
-  line read *"LOCAL ONLY — never deploy this route"*, and it was committed to the repo, so it
-  deployed. A route cannot be defended by a comment.
+  line read *"LOCAL ONLY — never deploy this route"*, and it was committed, so it deployed. A route
+  cannot be defended by a comment.
 - **`lib/supabase.js`** — the old browser client. See below.
 
-### Why the auth gate was fake, and it wasn't laziness
+### Why the auth gate was fake — and it wasn't laziness
 The old client kept the session in **`localStorage`, where the server can never see it.** A
-server-side gate wasn't merely missing — it was **impossible**. The client-side
-`window.location` redirect was the only thing that *could* have been written. Moving auth to cookies
-is what unblocked it. `GET /dashboard` while signed out now returns **307 before a byte of HTML is
-served** — tested, not assumed.
+server-side gate wasn't merely missing, it was **impossible**; the client-side `window.location`
+redirect was the only thing that *could* have been written. Moving auth to cookies is what unblocked
+it. There are now **three layers on purpose** — proxy redirects, the page re-checks server-side, RLS
+sits under both — because Next's own docs are explicit that proxy is an *optimistic* check and "should
+not be used as a full session management or authorization solution."
+
+## 📄 Documents — `BUILD/`
+
+Our documents live in `BUILD/`. **Everything outside it — `Project Documents/`,
+`CONTEXT_for_posterity.md`, the PDFs — is Jeremy's, and we do not edit it.**
+
+| File | What it is |
+|---|---|
+| `CHANGELOG.md` | This file. |
+| `CODE_AUDIT.md` | What is *actually built*, verified line by line. |
+| `BUILD_ORDER.md` | What to build, in order. Does **not** replace `Posterity_Build_Roadmap.md`. |
+| `POSTERITY_SOCIAL.md` | The Posterity Social spec + its open questions. |
+| **`META_DELIVERY.md`** | **Jeremy: this is the one to read.** |
+
+**Rule 1, now enforced:** `scripts/hooks/pre-commit` **rejects** any commit touching `app/`, `lib/`,
+`proxy.js`, `supabase/migrations/`, or `scripts/` that doesn't also update this changelog. A rule in
+a markdown file is a request; a hook is a wall.
+
+## ⚠️ A correction we made mid-session: Meta is NOT being replaced
+
+Earlier today our documents said the Meta/Instagram integration was **dead**, replaced by Posterity
+Social. **That was false.** It was inferred from a secondhand summary and written into project memory
+as a settled decision — even though it flatly contradicted Jeremy's own context document, which is
+precisely the moment it should have been raised with him as a question instead.
+
+**Jeremy confirmed:** Facebook and Instagram **remain** the delivery platforms, published via
+**Buffer** (direct API "gonna be an option" later). **Posterity Social is an additional layer, not a
+substitute.** His "Social Media Integration" section **stands**.
+
+**No code was affected** — the repo never contained a single line of Meta integration, so nothing was
+removed and nothing needs restoring. The error lived only in `BUILD/` and `CLAUDE.md`, and all of it
+is corrected.
+
+It is recorded here rather than quietly edited away. A project whose documents already run years ahead
+of its code cannot also have documents that silently rewrite themselves.
 
 ---
 
-## 🔴 Findings for Jeremy — things we found, did not touch, and cannot decide
+# 🔴 Findings — decisions only Jeremy can make
 
-### The site displays one price and charges another
-The price IDs hardcoded in `PlanCards.js` resolve to **the wrong amounts**:
+*We found these, did not act on them, and cannot decide them.*
+
+## 1. The site displays one price and charges another
 
 | Plan | The page shows | Stripe actually charges | |
 |---|---|---|---|
@@ -122,47 +132,81 @@ The price IDs hardcoded in `PlanCards.js` resolve to **the wrong amounts**:
 | Premium | $249 | **$99, one-time** | ❌ |
 | Legacy | $899 | **$299, one-time** | ❌ |
 
-$39 / $99 / $299 are exactly the numbers on the stale `/signup` page — that page was not just a
+$39 / $99 / $299 are **exactly the numbers on the stale `/signup` page** — so that page wasn't just a
 leftover, it was **the truth about what Stripe was set up to charge.** Someone buying Legacy sees
-$899 and is billed **$299**. Every plan but Horizon is also a **one-time** price, so the annual
-plans **never renew**.
+**$899** and is billed **$299**. Every plan but Horizon is also a **one-time** price, so the annual
+plans **never renew** — including the $9.99 storage fee that pays to hold content for decades.
 
-*(Likely mercy: those are **test-mode** IDs. If production runs a live key they don't resolve there
-at all, so checkout would error rather than undercharge. Unconfirmed — we don't have the live key
-and don't want it.)*
+*Likely mercy:* those are **test-mode** price IDs. If production runs a live key they don't resolve
+there at all, so checkout would **error rather than undercharge**. Unconfirmed — we don't have the
+live key and don't want it.
 
-### The checkout cannot be fixed by adding a webhook
+**Your own doc says the fix is easy:** *"any re-pricing post-review is a Stripe Price ID swap, not a
+code rebuild."* Agreed — and `lib/plans.js` (queued) is what makes that true.
+
+## 2. The checkout cannot be fixed by adding a webhook
+
 `app/api/create-checkout-session/route.js` sends Stripe **no user identity** — no
 `client_reference_id`, no `customer_email`, no `metadata`. A `checkout.session.completed` event would
-arrive with **nothing that identifies who paid.** The famous gap ("there's no webhook") understates
-it: even a perfect webhook would have nothing to attach the money to. It also takes the **price ID
-from the client**, unvalidated, and **requires no auth.**
+arrive carrying **nothing that identifies who paid.** So "there's no webhook" **understates it**: even
+a perfect webhook would have nothing to attach the money to. **Fix the checkout first.**
 
-### Two risks that outrank any build task
-1. **A check-in false positive is extinction-level** — a living customer's goodbye messages sent to
-   their family. Unrecoverable. Design the safeguards *before* the feature.
-2. **Consumer health data.** Posterity Social will store *"user X has Stage 4 pancreatic cancer."*
-   HIPAA likely doesn't apply, but **Washington's My Health My Data Act** does — and it carries a
-   **private right of action**, meaning individuals can sue directly. Worth a lawyer's hour before
-   launch.
+It also takes the **price ID from the client**, unvalidated, and **requires no auth**.
+
+> **Until this is fixed: if checkout is live anywhere public, turn it off.** It takes money and
+> records nothing.
+
+## 3. Meta delivery — the one failure his fallback chain can't absorb
+**Full note: `META_DELIVERY.md`.**
+
+**Credit first:** the four-layer chain — Buffer → Meta Business API → direct platform login (stored
+password + Posterity-controlled 2FA) → manual override — is well built, and it **answers the
+token-expiry problem** we raised. Staff who can log in can re-authorize Buffer indefinitely. The
+register's verdict that the Meta API is *"an inconvenience, not a risk"* **is correct for the risk it
+names.**
+
+**The gap:** every layer depends on the same single thing — **being able to log in.** One event
+removes it permanently, for all four at once: **memorialization.** A memorialized account **cannot be
+logged into by anyone** — not with the password, not with the 2FA, not by Meta support. The stored
+credentials go inert. **Any person can trigger it** with an obituary link. **The word "memorial"
+appears nowhere in the project documents.**
+
+And it isn't a footnote: the people most likely to report a death to Facebook are **close family** —
+**exactly the recipients Posterity delivers to** — and a man's posts appearing on his wall months after
+his funeral is the single most likely thing to prompt that report. **The more effective the product
+is, the more likely it ends itself.**
+
+**Not "drop Meta."** It's that **Meta cannot be the channel Posterity *guarantees*.** The context doc
+already concedes the principle — *"failure to provide credentials… will not cancel service"* — so the
+ask is small:
+1. **Every content item carries a recipient email or phone.** A **schema decision, cheap right now**,
+   expensive once there's content in the database.
+2. **Detect memorialization** and treat it as terminal for that channel (a memorialized profile is
+   publicly marked *"Remembering"*).
+3. **One line in the contract:** *"If a platform becomes unavailable, your message is delivered by
+   email or text instead."*
+
+## 4. A check-in false positive is extinction-level
+A living customer's goodbye messages sent to their family. Unrecoverable. **Design the safeguards
+before the feature** — and build the check-in and the trigger together, never one alone.
+
+## 5. Consumer health data has teeth
+Once Posterity Social stores *"user X has Stage 4 pancreatic cancer"*: HIPAA likely doesn't apply, but
+**Washington's My Health My Data Act** does — and it carries a **private right of action**, meaning
+individuals can sue directly. Worth a lawyer's hour before launch; far cheaper to design for than to
+retrofit.
 
 ---
 
-## Pending
+# Pending
 
-- **Stripe — deliberately untouched.** Waiting on the new prices. Then: `lib/plans.js` as the single
+- **Stripe — deliberately untouched**, because Jeremy is repricing. Then: `lib/plans.js` as the single
   source of truth, a **server-side** plan→price map (the browser should never name a price),
-  `mode: 'subscription'`, auth on the route, and the webhook. **Until that ships, if checkout is live
-  anywhere public, turn it off** — it takes money and records nothing.
+  `mode: 'subscription'`, auth on the route, and the webhook. **~1 hour once the numbers land.**
 - **Needed from Jeremy:**
-  1. **The sub-tag pool card** — the Posterity Social spec cut off mid-sentence at "Communication &
-     Relationships."
-  2. **A decision on the Meta failure modes** — not whether to use Meta (that's settled, we're using
-     it), but whether the customer contract will say plainly that *"if a platform becomes
-     unavailable, your message is delivered by email or text instead."* Cheap to write now,
-     impossible to retrofit after the first failed delivery.
-
-  *(Resolved: "who receives a delivery?" — Facebook, Instagram, email, and SMS, per the context
-  document. The walled garden governs Posterity Social, not delivery.)*
+  1. **The sub-tag pool card** — the Posterity Social spec cut off mid-sentence at *"Communication &
+     Relationships."*
+  2. **A call on the Meta fallback** (Finding 3) — not *whether* to use Meta, that's settled, but
+     whether the contract will say plainly that an unavailable platform falls back to email or text.
 - **Phase 1:** content creation · the check-in/trigger system · **email-first** delivery · a real
   dashboard.

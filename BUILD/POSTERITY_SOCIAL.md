@@ -114,56 +114,25 @@ it is now answered.)*
 
 ---
 
-## 🔴 META DELIVERY — THE RISKS BUFFER DOES NOT REMOVE
+## 🔴 META DELIVERY — see **`META_DELIVERY.md`**
 
-Jeremy plans to publish via **Buffer** rather than build against the Meta API. That's a reasonable
-call about *engineering effort*, and it does save real work. But it is worth being precise about
-what it does and does not change, because two of the three hard problems are untouched by it.
+Delivery risk has its own note now, because it outgrew this file and because it is the one Jeremy
+should read directly: **`BUILD/META_DELIVERY.md`**.
 
-**Buffer is a Meta API client.** It publishes to Facebook and Instagram *through* the Graph API using
-Buffer's own app credentials, under Meta's Platform Terms. Choosing Buffer changes **who writes the
-API code**. It does not change what Meta permits, and it does not change what expires.
+The short version. His fallback chain is four layers deep — Buffer → Meta Business API → direct
+platform login (stored password + Posterity-controlled 2FA) → manual override — and it is genuinely
+well built. **It answers the token-expiry problem** (staff who can log in can re-authorize Buffer
+forever), and his register's verdict that the Meta API is *"an inconvenience, not a risk"* is correct
+for the risk he named.
 
-### 1. A 60-day token against a 30-year promise 🔴 *(the hard one)*
-For Buffer to post to a customer's account, that account is connected by **OAuth** — someone signs in
-and authorizes it. Meta's long-lived tokens last **roughly 60 days** and then need re-authorization
-from an active session.
+**But all four layers depend on one thing: being able to log in.** And one event removes that
+permanently, for all four at once — **memorialization**, which any relative can trigger with an
+obituary link, which locks the account against all posting forever, and which **appears nowhere in
+the project documents.** Worse, the recipients Posterity delivers to *are* the people most likely to
+report the death — so the more effective the product is, the more likely it ends itself.
 
-Posterity's horizon is decades. A man subscribes at 52 and dies at 79: over those 27 years his
-connection expires **on the order of 160 times**, and every renewal needs someone to log into his
-Facebook account. After he dies, the only candidate is Posterity — using the stored credentials and
-the Posterity-controlled 2FA the context document already calls for. **Buffer does not remove that
-requirement. It relocates it.** This is an architecture problem, not a lawyer problem.
-
-### 2. Memorialization, which nobody at Posterity controls 🔴
-**Any relative can report a death to Meta**, and Meta will memorialize the profile. A memorialized
-account is **locked — nothing can post to it, by anyone, ever.** It is outside Posterity's control
-*and* outside the customer's. One well-meaning cousin can end a paid delivery plan that was supposed
-to run for years, and there is no appeal and no workaround.
-
-### 3. The credential store 🟠
-The context document has Posterity **generating and storing each customer's Facebook/Instagram
-password in Supabase**, with their **2FA pointed at a Posterity-controlled email and phone**. If that
-table is breached, it is a mass account takeover of hundreds of real people, living and dead. If it
-is built, it needs to be treated as the most sensitive data in the company — envelope encryption,
-separate key custody, strict access logging — not a column in a table.
-
-Also: **Instagram scheduled publishing requires a Business or Creator account**, not a personal one.
-Most customers will have a personal account.
-
-### What follows from this, and it is not "don't do it"
-**Meta cannot be the channel Posterity *guarantees*.** Token expiry and memorialization can both kill
-a delivery through no fault of anyone at the company. So:
-
-- **Email and SMS are the guaranteed spine.** Every piece of content must be deliverable without
-  Meta. This is also why the build order does **email first** — not because Meta is unimportant, but
-  because a promise that can be revoked by a stranger cannot be the foundation under one.
-- **Meta is a bonus channel that works when it works** — and it will often work.
-- **The customer contract should say so plainly.** "If a platform becomes unavailable, your message
-  is delivered by email or text instead" is honest, cheap to write now, and impossible to retrofit
-  after the first failure.
-
-That framing keeps Meta *and* keeps the promise truthful. It is Jeremy's decision either way.
+Conclusion is not "drop Meta." It is **"Meta cannot be the channel Posterity guarantees."** Email/SMS
+is the spine; Meta is the bonus channel. Hence email-first delivery.
 
 ---
 

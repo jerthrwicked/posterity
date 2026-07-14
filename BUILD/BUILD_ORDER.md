@@ -134,19 +134,18 @@ acceptable default (Q4). Design it deliberately.
 
 **🔴 Check-in false positives.** See 1.2. The highest-risk logic in the app.
 
-**🔴 Meta delivery has two failure modes that Buffer does not remove.** Jeremy has confirmed Meta
-stays — Facebook and Instagram remain the delivery platforms, published via Buffer. Buffer saves
-real engineering effort, but it is itself a Graph API client, so it changes *who writes the API
-code*, not what Meta permits or what expires:
-   - **A 60-day token against a 30-year promise.** Meta's long-lived tokens need re-authorization
-     from an active session roughly every 60 days. Over a 27-year account that's ~160 renewals, each
-     requiring a login to the customer's Facebook account — including after they die.
-   - **Memorialization.** Any relative can report a death; Meta then **locks the account and nothing
-     can post to it, ever.** Outside Posterity's control and the customer's.
+**🔴 Meta delivery — one failure mode his fallback chain cannot absorb.** Full note:
+**`META_DELIVERY.md`**. Meta stays; Jeremy's four-layer chain (Buffer → API → direct login → manual
+override) is well built and **does** answer the token-expiry problem. But all four layers depend on
+being able to **log in**, and **memorialization** — which any relative can trigger, which locks the
+account against all posting forever, and which appears **nowhere in his documents** — removes that
+permanently. The recipients Posterity delivers to are the people most likely to report the death, so
+the product's success is what triggers it.
 
-   **What follows is not "don't do it."** It is: **Meta cannot be the channel Posterity guarantees.**
-   Email/SMS is the spine that always works; Meta is the bonus channel that usually will. This is
-   exactly why 1.3 builds **email first**. Full detail in `POSTERITY_SOCIAL.md`.
+   **Not "drop Meta."** It is: **Meta cannot be the channel Posterity guarantees.** Email/SMS is the
+   spine; Meta is the bonus channel. That is exactly why **1.3 builds email first**, and why every
+   content item must carry a recipient email/phone — a **schema decision that is cheap now** and
+   expensive once there is content in the database.
 
 **🟠 Consumer health data** once Posterity Social stores a diagnosis — Washington's My Health My Data
 Act carries a private right of action. See Phase 3.

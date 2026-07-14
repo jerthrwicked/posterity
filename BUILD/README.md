@@ -23,6 +23,7 @@ not edited by us.
 | `CODE_AUDIT.md` | What is *actually built*, verified by reading every line. Read this before believing any roadmap. |
 | `BUILD_ORDER.md` | What to build, in order, grounded in the audit. Does not replace Jeremy's roadmap. |
 | `POSTERITY_SOCIAL.md` | The Posterity Social spec (Jeremy's, 2026-07-13) plus the open questions and risks it raises. |
+| `META_DELIVERY.md` | **Hand this one to Jeremy.** What his Meta fallback chain covers (more than we credited), and the single event that defeats all four layers at once — which isn't in any of his documents. |
 
 ## The one thing to carry into every session
 
