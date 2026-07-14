@@ -104,6 +104,7 @@ export default async function Dashboard() {
             hint={counts.recipients === 1 ? 'recipient added' : 'recipients added'}
           />
           <Card
+            href="/dashboard/trusted-contacts"
             title="Trusted Contacts"
             blurb="The people who can speak for your account."
             value={counts.contacts}

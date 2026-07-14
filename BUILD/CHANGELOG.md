@@ -24,6 +24,8 @@ now leads to two pages that work:
 - **`/dashboard/recipients`** — add the people your legacy is for, once, and reuse them.
 - **`/dashboard/legacy`** — write a message, choose who it's for, choose the date it arrives, and
   choose whether it stays in Posterity afterward. It saves, it lists, it deletes.
+- **`/dashboard/trusted-contacts`** — name the people who can speak for your account, write each of
+  them a private note, and set which one is primary.
 
 Media upload (video/photo) is **not** here — it needs Supabase Storage and client-side compression,
 and it's the next slice. Text messages are the spine of the product and they work end to end.
@@ -43,6 +45,7 @@ not empty now.
 | `20260713000000_initial_schema.sql` | **The first migration this project has ever had.** 14 tables, RLS on every one, 6 enums. |
 | `20260713120000_account_on_signup.sql` | A trigger on `auth.users` that creates the account row **in the same transaction as the user**. Plus a backfill. |
 | `20260713140000_fallback_and_legacy.sql` | **A recipient must have an email or a phone.** And every account gets its primary legacy at signup. |
+| `20260713160000_trusted_contacts.sql` | **A trusted contact must have an email or a phone.** And promoting a primary happens in one transaction, in the database. |
 
 ### Why the recipient constraint matters — this is Finding 3, enforced
 `recipients.email` and `recipients.phone` were **both nullable**, so a customer could add a recipient
@@ -56,6 +59,29 @@ rejected.
 
 This was free to add **while the table was empty**. Once there is real content, adding it means
 backfilling recipients whose customers may already be gone. It was now or never.
+
+### Trusted contacts — reachability, and one primary
+Same constraint on `trusted_contacts`, and **the stakes are higher**. An unreachable *recipient* means
+a message doesn't land. An unreachable *trusted contact* means **the six-notification escalation has
+nowhere to go** — nobody can confirm, nobody can be told, and the account either fires on non-response
+alone or never fires at all. Both are bad, and neither is a thing to discover at the moment it matters.
+
+Promoting a primary now runs in **one database transaction** (`set_primary_trusted_contact`), because
+`trusted_contacts_one_primary` is a unique partial index: clearing the old primary and setting the new
+one must happen together. As two round-trips from the app, a failure between them leaves a customer
+with **no primary contact and no sign anything went wrong.**
+
+The function is **SECURITY INVOKER**, so RLS applies and a customer can only promote a contact on their
+own account. **Tested explicitly** — customer B cannot promote customer A's contact, and A's primary is
+untouched by the attempt. (A `SECURITY DEFINER` function here would have silently bypassed RLS. It's
+the kind of mistake that looks identical in a diff.)
+
+### What is deliberately NOT built: the trusted contact's button
+The invite, the portal, and the **confirmation** are not here. A trusted contact's confirmation is one
+of the three ways the trigger fires — **the single most dangerous input in this product** — and it
+ships with its safeguards (double verification, the escalation, a human-in-the-loop hold) or it does
+not ship. **Naming the people is safe. Letting them press the button is not, yet.** The page says so
+to the customer, in plain words.
 
 **The schema uses the product's own vocabulary**, from `CONTEXT_for_posterity.md`: accounts move
 through the six **phases**; only accounts shift phases and plans move with them; one plan = one
