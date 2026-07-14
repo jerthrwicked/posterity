@@ -26,9 +26,11 @@ now leads to two pages that work:
   choose whether it stays in Posterity afterward. It saves, it lists, it deletes.
 - **`/dashboard/trusted-contacts`** — name the people who can speak for your account, write each of
   them a private note, and set which one is primary.
+- **Video and photo upload**, on the legacy page. Up to 25MB, into a **private** bucket, played back
+  through short-lived signed URLs.
 
-Media upload (video/photo) is **not** here — it needs Supabase Storage and client-side compression,
-and it's the next slice. Text messages are the spine of the product and they work end to end.
+Not yet: **client-side compression** (FFmpeg.wasm) — today an oversized file is rejected with a clear
+message rather than shrunk. And **thumbnails** (`content_items.thumbnail_path` is still unused).
 
 **Verified against the live database as a real signed-in user, so RLS was actually exercised**
 (`scripts/test-legacy-flow.py`, all 8 checks pass): the account and legacy are created automatically,
@@ -46,6 +48,7 @@ not empty now.
 | `20260713120000_account_on_signup.sql` | A trigger on `auth.users` that creates the account row **in the same transaction as the user**. Plus a backfill. |
 | `20260713140000_fallback_and_legacy.sql` | **A recipient must have an email or a phone.** And every account gets its primary legacy at signup. |
 | `20260713160000_trusted_contacts.sql` | **A trusted contact must have an email or a phone.** And promoting a primary happens in one transaction, in the database. |
+| `20260713180000_media_storage.sql` | A **private** `legacy-media` bucket. 25MB ceiling and accepted formats enforced **by the bucket**. Files are keyed to the account by their path. |
 
 ### Why the recipient constraint matters — this is Finding 3, enforced
 `recipients.email` and `recipients.phone` were **both nullable**, so a customer could add a recipient
@@ -75,6 +78,29 @@ The function is **SECURITY INVOKER**, so RLS applies and a customer can only pro
 own account. **Tested explicitly** — customer B cannot promote customer A's contact, and A's primary is
 untouched by the attempt. (A `SECURITY DEFINER` function here would have silently bypassed RLS. It's
 the kind of mistake that looks identical in a diff.)
+
+### Media storage — the bucket is private, and that is not a detail
+What goes in this bucket is **a man's last video to his daughter.** A public bucket means anyone
+holding the URL can watch it, forever — and object URLs leak: into logs, into referrer headers, into a
+forwarded email. So the bucket is **private** and playback runs through **signed URLs that expire in an
+hour**. A link to someone's last words should not outlive the page it was rendered on.
+
+Access is keyed on the **first folder of the object path**, which is the account id
+(`<account_id>/<legacy_id>/<uuid>.<ext>`), so **the path is the permission** and the same boundary that
+protects the rows protects the files.
+
+The 25MB ceiling and the accepted formats are enforced **by the bucket**, not by the browser. A
+client-side size check is a courtesy to the customer; it is not a control.
+
+**Tested by attacking it** (`scripts/test-media.py`, 11/11): customer B **cannot download** A's file,
+**cannot mint a signed URL** for it, **cannot upload into A's folder**, and **cannot list it**. The
+public URL doesn't work. An anonymous request doesn't work. An oversized file and a disallowed type are
+both rejected by the bucket.
+
+> 🟠 **Found while testing, not yet fixed: deleting a user does not delete their files.** The database
+> rows cascade; the objects in storage **do not**. So a deleted account leaves its videos and photos
+> sitting in the bucket. Not urgent (nobody can reach them — they're private and their account is gone)
+> but it is data we said we'd remove, still there. **Belongs to whatever builds account deletion.**
 
 ### What is deliberately NOT built: the trusted contact's button
 The invite, the portal, and the **confirmation** are not here. A trusted contact's confirmation is one
