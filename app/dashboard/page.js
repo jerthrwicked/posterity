@@ -13,14 +13,23 @@ const PHASES = {
   posterity: { name: 'Posterity', line: 'A permanent archive, in the care of your trusted contact.' },
 }
 
-function Card({ title, blurb, value, hint }) {
-  return (
-    <div className="bg-gray-900 rounded-2xl p-8 border border-gray-800">
+function Card({ title, blurb, value, hint, href }) {
+  const body = (
+    <>
       <h3 className="text-xl font-bold mb-2">{title}</h3>
       <p className="text-gray-400 text-sm">{blurb}</p>
       <p className="text-3xl font-bold mt-6">{value}</p>
       <p className="text-gray-600 text-sm">{hint}</p>
-    </div>
+    </>
+  )
+  const base = 'bg-gray-900 rounded-2xl p-8 border border-gray-800 block'
+
+  if (!href) return <div className={base}>{body}</div>
+
+  return (
+    <a href={href} className={`${base} hover:border-gray-600 transition`} style={{ textDecoration: 'none', color: 'inherit' }}>
+      {body}
+    </a>
   )
 }
 
@@ -81,12 +90,14 @@ export default async function Dashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card
+            href="/dashboard/legacy"
             title="My Legacy"
-            blurb="The messages, videos, and photos you're leaving behind."
+            blurb="The messages you're leaving behind."
             value={counts.content}
             hint={counts.content === 1 ? 'piece created' : 'pieces created'}
           />
           <Card
+            href="/dashboard/recipients"
             title="Recipients"
             blurb="The people your legacy is for."
             value={counts.recipients}

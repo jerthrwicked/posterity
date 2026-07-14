@@ -16,7 +16,24 @@ change appear below, and they are not equally reversible:
 
 # 2026-07-13
 
-## 🗄️ Database — two migrations, applied and live
+## ✅ Phase 1.1 — you can write a message now
+
+**Nobody has ever created a single piece of content in Posterity.** That changes here. `/dashboard`
+now leads to two pages that work:
+
+- **`/dashboard/recipients`** — add the people your legacy is for, once, and reuse them.
+- **`/dashboard/legacy`** — write a message, choose who it's for, choose the date it arrives, and
+  choose whether it stays in Posterity afterward. It saves, it lists, it deletes.
+
+Media upload (video/photo) is **not** here — it needs Supabase Storage and client-side compression,
+and it's the next slice. Text messages are the spine of the product and they work end to end.
+
+**Verified against the live database as a real signed-in user, so RLS was actually exercised**
+(`scripts/test-legacy-flow.py`, all 8 checks pass): the account and legacy are created automatically,
+a recipient with no email and no phone is **rejected**, a message saves and reads back with its
+recipient — and **a second customer sees zero of the first customer's messages and recipients.**
+
+## 🗄️ Database — three migrations, applied and live
 
 The database **was completely empty**: zero tables, no migration history, nothing had ever run. It is
 not empty now.
@@ -25,6 +42,20 @@ not empty now.
 |---|---|
 | `20260713000000_initial_schema.sql` | **The first migration this project has ever had.** 14 tables, RLS on every one, 6 enums. |
 | `20260713120000_account_on_signup.sql` | A trigger on `auth.users` that creates the account row **in the same transaction as the user**. Plus a backfill. |
+| `20260713140000_fallback_and_legacy.sql` | **A recipient must have an email or a phone.** And every account gets its primary legacy at signup. |
+
+### Why the recipient constraint matters — this is Finding 3, enforced
+`recipients.email` and `recipients.phone` were **both nullable**, so a customer could add a recipient
+reachable **only by a Facebook handle**. If that account is later memorialized — which **any relative
+can trigger**, and which locks the account against all posting **forever** — that message has
+**nowhere to go.** Not a failed delivery: no delivery is *possible*, and we'd find out on the day it
+was meant to arrive.
+
+The database now **refuses a recipient it could not reach without Meta.** Tested: the insert is
+rejected.
+
+This was free to add **while the table was empty**. Once there is real content, adding it means
+backfilling recipients whose customers may already be gone. It was now or never.
 
 **The schema uses the product's own vocabulary**, from `CONTEXT_for_posterity.md`: accounts move
 through the six **phases**; only accounts shift phases and plans move with them; one plan = one
