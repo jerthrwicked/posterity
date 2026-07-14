@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Posterity — install the git hooks · Walker Brown
 # Install the repo's git hooks. Run once per clone — .git/hooks is not tracked.
 set -euo pipefail
 cd "$(dirname "$0")/.."

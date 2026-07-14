@@ -1,4 +1,4 @@
-# Posterity — Code Audit
+# Posterity — Code Audit · Walker Brown
 **2026-07-13 · Walker + Claude (OptiServer) · verified by reading every line of `app/` and `lib/`**
 
 The entire application is **1,040 lines**: five pages, two API routes, one 6-line Supabase client.

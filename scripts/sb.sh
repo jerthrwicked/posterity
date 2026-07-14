@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Posterity — run SQL against the live Supabase · Walker Brown
 # Run SQL against Jeremy's Posterity Supabase via the Management API.
 #
 # Reads SUPABASE_ACCESS_TOKEN (+ optional SUPABASE_PROJECT_REF) from

@@ -1,4 +1,4 @@
--- Phase 0.2 — an account for every user, guaranteed by the database.
+-- Phase 0.2 — an account for every user, guaranteed by the database · Walker Brown
 --
 -- Signup could create an auth user and then fail to create the account row:
 -- a dropped connection, a closed tab, an RLS mistake. The result is a person

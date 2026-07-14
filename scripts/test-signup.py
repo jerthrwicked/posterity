@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Posterity — end-to-end signup test · Walker Brown
 """End-to-end signup test: hit the real auth endpoint, then check the DB for the account row."""
 import json, os, sys, urllib.request, urllib.error
 

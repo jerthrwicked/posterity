@@ -1,4 +1,4 @@
-# Posterity Social
+# Posterity Social · Walker Brown
 **Spec received 2026-07-13 (Jeremy's, via Walker). Open questions and risks appended by Claude (OptiServer).**
 
 > ✅ **CORRECTED 2026-07-13 — Posterity Social is ADDITIVE. It does not replace Meta.**

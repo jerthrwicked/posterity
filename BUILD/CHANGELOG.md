@@ -1,4 +1,4 @@
-# Posterity — Changelog
+# Posterity — Changelog · Walker Brown
 
 Everything Walker + Claude have changed. Newest first.
 
@@ -98,6 +98,15 @@ Our documents live in `BUILD/`. **Everything outside it — `Project Documents/`
 **Rule 1, now enforced:** `scripts/hooks/pre-commit` **rejects** any commit touching `app/`, `lib/`,
 `proxy.js`, `supabase/migrations/`, or `scripts/` that doesn't also update this changelog. A rule in
 a markdown file is a request; a hook is a wall.
+
+## Attribution
+Every file we authored now carries **Walker Brown** — in the title of each `BUILD/` document, and in
+the header of each file we created (`proxy.js`, `lib/supabase/*`, `app/auth/callback`,
+`app/dashboard/LogoutButton.jsx`, both migrations, and all of `scripts/`).
+
+**Jeremy's files are not signed and not touched.** Neither are the pages of his we rewrote rather than
+created (`app/signup`, `app/login`, `app/dashboard`) — those stay his, with our changes in the git
+history where they belong. Build re-verified after the change.
 
 ## ⚠️ A correction we made mid-session: Meta is NOT being replaced
 

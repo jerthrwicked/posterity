@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Posterity — add the Stripe test key to .env.local · Walker Brown
 # Add Jeremy's Stripe TEST secret key to .env.local.
 # The key is read silently — it never appears on screen, in shell history, or in the transcript.
 set -euo pipefail

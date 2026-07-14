@@ -1,5 +1,6 @@
 'use client'
 
+// Posterity — logout control · Walker Brown
 import { createClient } from '../../lib/supabase/client'
 
 export function LogoutButton() {

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Posterity — fetch the app Supabase keys · Walker Brown
 # Fetch the Posterity app's Supabase keys via the Management API and write them
 # into .env.local. Values are NEVER printed — only the key names and lengths.
 set -euo pipefail

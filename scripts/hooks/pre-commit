@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Posterity — Rule 1 enforcement · Walker Brown
 # Rule 1: if you changed the app or the database, you update the changelog.
 #
 # We never push to Jeremy's repo. BUILD/CHANGELOG.md is the ONLY record he gets

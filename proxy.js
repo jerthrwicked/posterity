@@ -1,3 +1,4 @@
+// Posterity — server-side auth gate · Walker Brown
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 

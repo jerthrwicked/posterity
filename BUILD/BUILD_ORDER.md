@@ -1,4 +1,4 @@
-# Posterity — Working Build Order
+# Posterity — Working Build Order · Walker Brown
 **Authored 2026-07-13 by Walker + Claude (OptiServer), from a read of the actual codebase.
 Revised 2026-07-13 for the Posterity Social pivot.**
 

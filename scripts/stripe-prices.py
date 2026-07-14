@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Posterity — list Stripe test-mode prices · Walker Brown
 """List the prices that exist in Stripe TEST mode. Reads the key from .env.local; never prints it."""
 import json, os, sys, urllib.request
 

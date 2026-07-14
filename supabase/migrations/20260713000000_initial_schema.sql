@@ -1,4 +1,4 @@
--- Posterity — initial schema (Phase 0.1)
+-- Posterity — initial schema (Phase 0.1) · Walker Brown
 --
 -- The database was completely empty before this: zero tables in public, no
 -- migration history. This is the first migration the project has ever had.

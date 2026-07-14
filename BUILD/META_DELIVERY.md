@@ -1,4 +1,4 @@
-# Meta delivery — what Jeremy built, and the one thing it doesn't cover
+# Posterity — Meta Delivery: what Jeremy built, and the one thing it doesn't cover · Walker Brown
 **Walker's notes · 2026-07-13 · read against `Project Documents/Posterity Project Context.md`,
 "Social Media Integration" (lines 256–272) and the Technical Risks register (line 710).**
 

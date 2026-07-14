@@ -1,4 +1,4 @@
-# BUILD/ — Walker's working documents
+# BUILD/ — Walker Brown's working documents
 
 Everything in this folder was written by **Walker + Claude (OptiServer)**. Everything *outside*
 this folder — `Project Documents/`, `CONTEXT_for_posterity.md`, the PDFs — is **Jeremy's** and is
