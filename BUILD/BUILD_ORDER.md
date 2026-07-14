@@ -12,22 +12,33 @@ Findings referenced below are detailed in **`CODE_AUDIT.md`**. The social pivot 
 
 ---
 
-## THE STATE OF THE CODE (verified, not remembered)
+## THE STATE OF THE CODE
+*Updated 2026-07-13, end of session. Verified by testing against the live database, not remembered.*
 
-The whole application is **1,040 lines**. It cannot sign up a user.
+**Where it started today:** a 1,040-line marketing site that **could not sign up a user**, with a
+**completely empty database**.
+
+**Where it is now:** a person can create an account, name the people their legacy is for, write them
+messages, leave them video and photos, and name who can speak for them — and none of it is visible to
+anyone else.
 
 | Thing | Reality |
 |---|---|
-| Landing / pricing pages | ✅ exist |
-| **Database schema** | ✅ **DONE 2026-07-13** — 14 tables, RLS on all. Was completely empty before. |
-| **Signup** | ❌ `app/signup/page.js` is a **copy of the pricing page**, quoting **the wrong prices**, whose buttons link to itself. No account can be created. |
-| Login | ✅ real — but nobody can sign up, so nobody can log in |
-| Dashboard | ⚠️ 79 lines of hardcoded zeros |
-| **Stripe checkout** | 🔴 sends Stripe **no user identity** · takes the **price from the client** · runs in **one-time payment mode** for annual plans · **has no auth** |
+| Landing / pricing pages | ✅ |
+| **Database schema** | ✅ 14 tables + 4 migrations, RLS on all. Was **completely empty** this morning. |
+| **Signup** | ✅ real. The account **and** the primary legacy are created by a database trigger, in the same transaction as the user — they cannot be skipped. |
+| Login | ✅ |
+| **Auth gate** | ✅ `proxy.js` + a server-side re-check on every private page + RLS. Three layers. `/dashboard` signed out **307s before a byte of HTML is served.** |
+| Dashboard | ✅ real data — phase, content, recipients, trusted contacts, plans |
+| **Recipients** | ✅ `/dashboard/recipients`. **Must have an email or a phone** — enforced by the database. |
+| **Content** | ✅ `/dashboard/legacy` — messages, video, photos. Private bucket, signed URLs. |
+| **Trusted contacts** | ✅ `/dashboard/trusted-contacts` — add, note, set primary (one transaction, RLS-safe) |
+| **Stripe checkout** | 🔴 **untouched** — sends Stripe **no user identity** · takes the **price from the client** · **one-time mode** for annual plans · **no auth**. Waiting on Jeremy's new prices. |
 | **Stripe webhook** | ❌ does not exist |
-| Auth gate | ❌ does not exist — no `middleware.js`, no `proxy.js` |
-| Check-in button | 🔴 **has no `onClick`** |
-| Content / recipients / delivery | ❌ none of the actual product exists |
+| Check-in / trigger | ❌ **deliberately not built.** See 1.2 — it ships with its safeguards or not at all. |
+| Delivery engine | ❌ not built |
+| Media compression / thumbnails | ❌ not built (oversized files are rejected, not shrunk) |
+| Account deletion | 🟠 not built — and note that **deleting a user does not delete their files from storage** |
 
 ---
 
@@ -41,12 +52,14 @@ shift phases; one plan = one delivery year). `trigger_confirmations` stores **bo
 steps as columns, so a trigger must be *proven*, never inferred. `account_phase_events` is
 append-only.
 
-**0.2 — A signup that signs people up.** Replace the duplicate-pricing-page at `/signup` with a real
-form: `supabase.auth.signUp` → create the `accounts` row in **horizon** phase. Delete the stale price
-table with it (FINDING 2) — the wrong prices are currently sitting at the primary conversion point.
+**0.2 — A signup that signs people up.** ✅ **DONE.** The account **and** the primary legacy are
+created by a trigger on `auth.users`, in the same transaction as the user — so they cannot be skipped
+by a dropped connection or a closed tab. The one orphaned user that already existed was backfilled.
 
-**0.3 — Server-side auth gate.** A `proxy.js` (Next 16 renamed `middleware` → `proxy`) that gates
-authed routes server-side. The current client-side `window.location` redirect is not protection.
+**0.3 — Server-side auth gate.** ✅ **DONE.** `proxy.js` (Next 16 renamed `middleware` → `proxy`).
+The old client-side redirect wasn't laziness — the session lived in `localStorage`, **where the
+server could never see it**, so a server-side gate was *impossible*. Auth now runs on cookies
+(`@supabase/ssr`). Three layers: proxy redirects, the page re-checks server-side, RLS underneath.
 
 **0.4 — Fix the checkout, *then* write the webhook.** In that order — and the order is the point.
 The checkout currently sends Stripe **nothing that identifies the buyer**, so even a perfect webhook
@@ -58,11 +71,10 @@ would have nothing to attach the money to (FINDING 1).
      account phase, record to `stripe_events`. Verify signatures with `STRIPE_WEBHOOK_SECRET`; write
      with `SUPABASE_SERVICE_ROLE_KEY`.
 
-**0.5 — Delete `app/api/cursor-inbox/route.js`** (FINDING 5), or gate it behind an env var. A route
-that writes client-supplied data to disk should not be protected by a comment saying "never deploy
-this route."
+**0.5 — Delete `app/api/cursor-inbox/route.js`.** ✅ **DONE.** A route that wrote client-supplied data
+to disk, protected by a comment reading *"never deploy this route."*
 
-✅ *Phase 0 done = a person can create an account, pay, and have it stick.*
+⏳ *Phase 0 is done except 0.4 — a person can create an account. They cannot yet pay and have it stick.*
 
 > **Until 0.4 ships: if the Stripe checkout is live anywhere public, turn it off.** It takes money
 > and records nothing.
@@ -70,10 +82,16 @@ this route."
 ---
 
 ## PHASE 1 — THE CORE LOOP
-*The actual product promise. None of it exists today.*
 
-**1.1 — Content creation.** Write a message, attach media, choose a recipient, choose the date. This
-IS the product; everything else is packaging.
+**1.1 — Content creation.** ✅ **DONE** (2026-07-13). Recipients, messages, video, photos, trusted
+contacts. **Before today nobody had ever created a single piece of content in Posterity.**
+   - **Every recipient must have an email or a phone** — the database refuses one we could only reach
+     through a social account (see LIVE RISKS: memorialization). Free to enforce while the table was
+     empty; a backfill across dead customers later.
+   - **Media lives in a private bucket**, keyed to the account by its path, played back through
+     signed URLs that expire in an hour. Tested by attacking it: another customer can't download,
+     sign, list, or upload into it.
+   - **Still to do:** client-side compression (FFmpeg.wasm) and thumbnails.
 
 **1.2 — Trusted contact + the non-response trigger.** 🔴 **The highest-risk logic in the entire app.**
 A false positive sends a living customer's goodbye messages to their family. That failure is

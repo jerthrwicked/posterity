@@ -24,15 +24,38 @@ for `--no-verify`, you are about to do the exact thing this rule exists to preve
 
 ## Project memory — read this first
 
-**The gap between the documents and the code is the most important fact about this project.**
+**The gap between the documents and the code was the most important fact about this project.**
 Posterity has a 108KB context doc, a collaboration system, a PDF pipeline, and a Priority System
-with a mathematical foundation — and as of 2026-07-13 the entire application was **1,040 lines**,
-could not sign up a user, and had a completely empty database. Do not let the volume of planning
-documents imply the product exists. **Check the code. Check the database.**
+with a mathematical foundation — and on the morning of 2026-07-13 the entire application was
+**1,040 lines**, could not sign up a user, and had a **completely empty database**. Do not let the
+volume of planning documents imply the product exists. **Check the code. Check the database.**
 
 **Roles:** Jeremy Grego is the founder/owner. Walker is the builder and has Jeremy's full
 permission, including on Jeremy's Supabase. Claude.ai remains the planning/decision layer for
 product decisions; Claude Code executes.
+
+## Where the build actually is (end of 2026-07-13)
+
+**Phase 0 — done except Stripe.** Real signup (the account *and* the primary legacy are created by a
+database trigger, in the same transaction as the user — they cannot be skipped). Real server-side
+auth gate: `proxy.js` + a re-check on every private page + RLS, three layers. `/dashboard` signed out
+**307s before a byte of HTML is served**.
+
+**Phase 1.1 — done.** `/dashboard/recipients`, `/dashboard/legacy` (messages, video, photos),
+`/dashboard/trusted-contacts`. Media sits in a **private** bucket, keyed to the account by its path,
+played back through signed URLs that expire in an hour.
+
+**Not built, on purpose:** the **check-in and the trigger** (Phase 1.2). A false positive sends a
+living customer's goodbye messages to their family. **It gets designed before it gets written**, and
+the check-in and the trigger ship **together or not at all** — a check-in button wired to nothing is
+exactly what we deleted.
+
+**Not built, blocked:** Stripe (Jeremy is repricing), the delivery engine, media compression,
+thumbnails, account deletion.
+
+**Every migration was tested against the live database as a real signed-in user, so RLS was actually
+exercised** — see `scripts/test-*.py`. Keep doing that. A second customer must never see the first
+one's legacy, and "it looks right" is not evidence.
 
 ## Git — read before you commit
 
@@ -64,9 +87,9 @@ sends Stripe **no user identity at all** — no `client_reference_id`, no `custo
 **price ID from the client** (unvalidated), runs in **`mode: 'payment'`** so annual plans never
 renew, and **has no auth**. Fix the checkout first.
 
-🔴 **The check-in button has no `onClick`** (`app/dashboard/page.js:73`). The most safety-critical
-control in the product does nothing. The trigger doesn't exist either — **the system is "safe" only
-because none of it works.** Build both halves together or neither.
+✅ **The fake check-in button is gone.** It read "✓ I'm Still Here" and was wired to **nothing** — a
+control that lies is worse than one that's absent. It comes back only alongside the trigger it holds
+back (Phase 1.2).
 
 ## The live risks
 
@@ -112,15 +135,30 @@ Supabase project **`vypytfmutmeyfwmkapjg`** (Jeremy's account — Walker's Supab
 Reach it with `bash scripts/sb.sh "<sql>"` or `bash scripts/sb.sh -f file.sql` (reads the token from
 `.env.local`, gitignored). Free tier — pauses after ~7 days idle; the first query wakes it.
 
-Schema: 14 tables, RLS on all, in `supabase/migrations/20260713000000_initial_schema.sql`. It uses
-the product's own vocabulary — accounts move through six **phases** (horizon → planning → abeyance →
-active → twilight → posterity); **only accounts shift phases, plans move with them**; one plan = one
-delivery **year**. The trigger system is deliberately auditable: `trigger_confirmations` stores
-**both** verification steps as columns, so a trigger must be *proven*, never inferred.
+Schema: 14 tables, RLS on all. **Four migrations**, all applied and live:
+1. `20260713000000_initial_schema` — the first migration this project ever had
+2. `20260713120000_account_on_signup` — the account, guaranteed by the database
+3. `20260713140000_fallback_and_legacy` — **a recipient must have an email or a phone**, and every
+   account gets its primary legacy at signup
+4. `20260713160000_trusted_contacts` — reachability + one-primary, in one transaction
+5. `20260713180000_media_storage` — the **private** `legacy-media` bucket
+
+It uses the product's own vocabulary — accounts move through six **phases** (horizon → planning →
+abeyance → active → twilight → posterity); **only accounts shift phases, plans move with them**; one
+plan = one delivery **year**. The trigger system is deliberately auditable: `trigger_confirmations`
+stores **both** verification steps as columns, so a trigger must be *proven*, never inferred.
 `account_phase_events` is append-only. **Clinical language is banned product-wide** — keep it out of
 code and comments too.
 
-**Missing to run the app:** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
-`SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_SITE_URL`.
-Get from Jeremy/Vercel. (The `SUPABASE_ACCESS_TOKEN` in `.env.local` is a **Management API** token —
-it reaches the database via `sb.sh`, but it cannot run the app.)
+**Two constraints worth understanding before you touch them:**
+- **`recipients_reachable_without_meta`** — a recipient must have an email or a phone. Meta can be
+  lost to memorialization, which any relative can trigger and which locks the account against posting
+  forever. A recipient reachable *only* through Facebook is a message with **nowhere to go**.
+- **`trusted_contacts_reachable`** — same, higher stakes: an unreachable trusted contact means the
+  six-notification escalation has nowhere to go at all.
+
+**`.env.local` is complete** — all six values are in it (gitignored). Four came straight from the
+Management API via `scripts/fetch-supabase-keys.sh`. Note the `SUPABASE_ACCESS_TOKEN` there is a
+**Management API** token: it reaches the database via `sb.sh`, but it cannot run the app.
+
+**Never print a secret.** The scripts write straight to `.env.local` and echo only names and lengths.

@@ -271,12 +271,14 @@ is, the more likely it ends itself.**
 **Not "drop Meta."** It's that **Meta cannot be the channel Posterity *guarantees*.** The context doc
 already concedes the principle — *"failure to provide credentials… will not cancel service"* — so the
 ask is small:
-1. **Every content item carries a recipient email or phone.** A **schema decision, cheap right now**,
-   expensive once there's content in the database.
-2. **Detect memorialization** and treat it as terminal for that channel (a memorialized profile is
-   publicly marked *"Remembering"*).
-3. **One line in the contract:** *"If a platform becomes unavailable, your message is delivered by
-   email or text instead."*
+1. ✅ **DONE — every recipient must have an email or a phone.** The database now **refuses** a
+   recipient reachable only through a social account. Done tonight, while the table was empty; a
+   backfill across dead customers later.
+2. ⏳ **Detect memorialization** and treat it as terminal for that channel (a memorialized profile is
+   publicly marked *"Remembering"*). Belongs with the delivery engine.
+3. ⏳ **One line in the contract — Jeremy's call:** *"If a platform becomes unavailable, your message
+   is delivered by email or text instead."* Cheap now. Impossible to retrofit after the first family
+   calls to ask why their father's message never arrived.
 
 ## 4. A check-in false positive is extinction-level
 A living customer's goodbye messages sent to their family. Unrecoverable. **Design the safeguards
@@ -292,13 +294,24 @@ retrofit.
 
 # Pending
 
-- **Stripe — deliberately untouched**, because Jeremy is repricing. Then: `lib/plans.js` as the single
-  source of truth, a **server-side** plan→price map (the browser should never name a price),
-  `mode: 'subscription'`, auth on the route, and the webhook. **~1 hour once the numbers land.**
-- **Needed from Jeremy:**
-  1. **The sub-tag pool card** — the Posterity Social spec cut off mid-sentence at *"Communication &
-     Relationships."*
-  2. **A call on the Meta fallback** (Finding 3) — not *whether* to use Meta, that's settled, but
-     whether the contract will say plainly that an unavailable platform falls back to email or text.
-- **Phase 1:** content creation · the check-in/trigger system · **email-first** delivery · a real
-  dashboard.
+### Blocked on Jeremy
+1. **Stripe prices.** Then it's ~1 hour: `lib/plans.js` as the single source of truth, a
+   **server-side** plan→price map (the browser should never name a price), `mode: 'subscription'`,
+   auth on the route, and the webhook. **Nothing else in the build waits on this.**
+2. **The sub-tag pool card** — the Posterity Social spec cut off mid-sentence at *"Communication &
+   Relationships."*
+3. **The Meta fallback line in the contract** (Finding 3).
+
+### Next, and blocked on nobody
+- **🔴 Phase 1.2 — the check-in and the trigger.** The highest-risk logic in the product, and the
+  reason it isn't built yet. **A false positive sends a living customer's goodbye messages to their
+  family** — unrecoverable, and it would end the company. This gets **designed before it gets
+  written**: the six-notification escalation, the trusted contact's double verification, and a hard
+  human-in-the-loop hold before anything sends. Build the check-in and the trigger **together**, or
+  neither.
+- **Delivery engine — email first.** Not a shortcut: Meta can be lost to a token expiry or a
+  memorialization request, neither of which we control. Email is the channel the promise rests on.
+- **Media compression** (FFmpeg.wasm) and **thumbnails** — today an oversized file is rejected, not
+  shrunk.
+- **Account deletion** — including the storage files, which currently **survive** the deletion of
+  their user.
