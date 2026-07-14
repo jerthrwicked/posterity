@@ -1,10 +1,22 @@
 # Posterity Social
 **Spec received 2026-07-13 (Jeremy's, via Walker). Open questions and risks appended by Claude (OptiServer).**
 
-> ⚠️ **This supersedes the Meta/Instagram integration.** The context document's entire
-> "Social Media Integration" section — Meta Business API, Buffer, stored customer Facebook
-> credentials, Posterity-controlled 2FA, the team logging in to post as deceased customers — is
-> **dead**. See "What the pivot kills" below.
+> ✅ **CORRECTED 2026-07-13 — Posterity Social is ADDITIVE. It does not replace Meta.**
+>
+> An earlier version of this file said the Meta/Instagram integration was dead. **That was wrong.**
+> Claude inferred it from a secondhand summary and wrote it down as settled fact, even though it
+> contradicted Jeremy's own context document. It should have been raised as a question, not recorded
+> as a decision. Jeremy has confirmed:
+>
+> - **Facebook and Instagram remain the delivery platforms** ("Insta and Facebook only as of now").
+> - **Buffer is the intended publishing route**, to avoid building against the Meta API directly.
+>   Direct API is "gonna be an option" later.
+> - **Posterity Social is a second, additional layer** — the living-phase experience — not a
+>   substitute for delivery.
+>
+> The context document's "Social Media Integration" section therefore **stands**. The risks in it are
+> real and are documented below under *Meta delivery — the risks that Buffer does not remove*. They
+> are Jeremy's call to accept; our job is to make sure he's accepting them knowingly.
 
 ---
 
@@ -88,36 +100,78 @@ short tags autofill better.
 
 ---
 
-## WHAT THE PIVOT KILLS (all good)
+## HOW THE TWO LAYERS FIT TOGETHER
 
-1. **The legality risk.** No Meta ToS to violate, no memorialization lock, no "posting as a deceased
-   person" — which was never an approved API use case anywhere.
-2. **A security bomb.** The old design had Posterity *generating and storing every customer's
-   Facebook/Instagram backup password in Supabase*, with their **2FA pointed at a Posterity-controlled
-   email and phone**. A breach of that table would have been a mass account takeover of hundreds of
-   real people, living and dead. This was, honestly, more dangerous than the missing webhook.
-3. **The manual labor model.** "Posterity team posts on behalf of customers" via Buffer, hand-priced
-   at $1.67 per text post and $5.00 per video post. Deliveries can now be automated.
+**Delivery** (what happens after a customer is gone) goes **out** — to Facebook, Instagram, email,
+and SMS, per the context document. **Posterity Social** (what the living phases feel like) stays
+**in** — walled, nothing shared outward.
+
+The walled garden is a rule about **Social**, not about delivery. That resolves what looked like a
+contradiction: a customer's 34-year-old daughter, who has never heard of Posterity, still receives
+her father's message — on his Facebook wall, or by email or text. She was never expected to join a
+paywalled network built for the elderly and the dying. *(This was logged as blocking question Q1;
+it is now answered.)*
+
+---
+
+## 🔴 META DELIVERY — THE RISKS BUFFER DOES NOT REMOVE
+
+Jeremy plans to publish via **Buffer** rather than build against the Meta API. That's a reasonable
+call about *engineering effort*, and it does save real work. But it is worth being precise about
+what it does and does not change, because two of the three hard problems are untouched by it.
+
+**Buffer is a Meta API client.** It publishes to Facebook and Instagram *through* the Graph API using
+Buffer's own app credentials, under Meta's Platform Terms. Choosing Buffer changes **who writes the
+API code**. It does not change what Meta permits, and it does not change what expires.
+
+### 1. A 60-day token against a 30-year promise 🔴 *(the hard one)*
+For Buffer to post to a customer's account, that account is connected by **OAuth** — someone signs in
+and authorizes it. Meta's long-lived tokens last **roughly 60 days** and then need re-authorization
+from an active session.
+
+Posterity's horizon is decades. A man subscribes at 52 and dies at 79: over those 27 years his
+connection expires **on the order of 160 times**, and every renewal needs someone to log into his
+Facebook account. After he dies, the only candidate is Posterity — using the stored credentials and
+the Posterity-controlled 2FA the context document already calls for. **Buffer does not remove that
+requirement. It relocates it.** This is an architecture problem, not a lawyer problem.
+
+### 2. Memorialization, which nobody at Posterity controls 🔴
+**Any relative can report a death to Meta**, and Meta will memorialize the profile. A memorialized
+account is **locked — nothing can post to it, by anyone, ever.** It is outside Posterity's control
+*and* outside the customer's. One well-meaning cousin can end a paid delivery plan that was supposed
+to run for years, and there is no appeal and no workaround.
+
+### 3. The credential store 🟠
+The context document has Posterity **generating and storing each customer's Facebook/Instagram
+password in Supabase**, with their **2FA pointed at a Posterity-controlled email and phone**. If that
+table is breached, it is a mass account takeover of hundreds of real people, living and dead. If it
+is built, it needs to be treated as the most sensitive data in the company — envelope encryption,
+separate key custody, strict access logging — not a column in a table.
+
+Also: **Instagram scheduled publishing requires a Business or Creator account**, not a personal one.
+Most customers will have a personal account.
+
+### What follows from this, and it is not "don't do it"
+**Meta cannot be the channel Posterity *guarantees*.** Token expiry and memorialization can both kill
+a delivery through no fault of anyone at the company. So:
+
+- **Email and SMS are the guaranteed spine.** Every piece of content must be deliverable without
+  Meta. This is also why the build order does **email first** — not because Meta is unimportant, but
+  because a promise that can be revoked by a stranger cannot be the foundation under one.
+- **Meta is a bonus channel that works when it works** — and it will often work.
+- **The customer contract should say so plainly.** "If a platform becomes unavailable, your message
+  is delivered by email or text instead" is honest, cheap to write now, and impossible to retrofit
+  after the first failure.
+
+That framing keeps Meta *and* keeps the promise truthful. It is Jeremy's decision either way.
 
 ---
 
 ## OPEN QUESTIONS AND RISKS (Claude's — for Jeremy)
 
-### 🔴 Q1. Who receives a delivery? *(the blocking question)*
-The old answer was Facebook: a man dies, his message posts to his wall, the 300 people who knew him
-see it. Meta is gone. So when a legacy activates and a message is addressed to **his daughter, who
-is 34 and has never heard of Posterity** — where does it land?
-
-- Read **literally**, *"nothing shares outside of Posterity, ever"* means she must be **inside** a
-  paywalled network built for the elderly and the dying, which she is not.
-- Read **loosely**, deliveries go out by **email and SMS**, and the wall has a door in it.
-
-Both are defensible. **They are completely different products**, and the schema (`recipients`,
-`deliveries`) needs to know which. **This is the single most important unanswered question.**
-
-*Claude's recommendation:* the wall holds for **Social** (posts, friends, DMs — nothing leaves) and
-**deliveries ride email/SMS to the outside world**. A legacy that only reaches other dying people
-is not a legacy. But this is Jeremy's call.
+### ✅ Q1. Who receives a delivery? — **ANSWERED**
+Facebook, Instagram, email, and SMS, per the context document. The walled garden governs Posterity
+Social, not delivery. See "How the two layers fit together" above.
 
 ### 🔴 Q2. The search system is also a targeting database
 Search by Focus + stage means a stranger who pays **$9.99** can enumerate every **Stage 4 pancreatic
@@ -172,8 +226,7 @@ serving Washington residents, requires separate consent and a specific privacy n
 that matters, **carries a private right of action**: individuals can sue directly. Nevada SB370 is
 similar. GDPR Article 9 would apply to any EU members.
 
-**This is more actionable than the Meta risk ever was.** Worth an actual lawyer's hour before
-launch. It is far cheaper to design for now than to retrofit.
+Worth an actual lawyer's hour before launch. It is far cheaper to design for now than to retrofit.
 
 ### 🟡 Q6. The empty room
 A paywalled social network launches with zero members. Day one, a person pays $9.99, opens Social,
@@ -188,11 +241,11 @@ Sequence matters.
 
 ## WHAT THIS DOES NOT CHANGE
 
-**Phase 0 is completely untouched.** Signup, the auth gate, the checkout identity fix, and the
-Stripe webhook are identical whether content later lands on Facebook or on Posterity Social. The
-pivot changes **delivery**; none of those four are delivery.
+**Phase 0 is untouched.** Signup, the auth gate, the checkout identity fix, and the Stripe webhook
+are identical no matter where content is eventually delivered. None of those four are delivery.
 
 Posterity Social is a **second schema** — profiles, focuses, focus_stages, tags, profile_tags,
 posts, post_tags, friendships, conversations, messages, reports, blocks — sitting on top of the same
 `accounts` spine, exactly as the spec says it should. **Nothing in the 2026-07-13 migration is
-invalidated by this pivot.**
+invalidated by it**, and the `deliveries` table's channel column already accommodates social, email,
+and SMS side by side, as the context document always intended.

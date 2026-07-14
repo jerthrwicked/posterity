@@ -17,6 +17,30 @@ Anything under **Pending** has not been done.
 
 ## 2026-07-13
 
+### ⚠️ CORRECTION — we were wrong about Meta. It is not being replaced.
+Earlier today our documents stated that the Meta/Instagram integration was **dead**, replaced by
+Posterity Social. **That was false.** Claude inferred it from a secondhand summary and wrote it into
+the project's memory as a settled decision — even though it flatly contradicted Jeremy's own context
+document. It should have been raised with him as a question. It was not.
+
+**Jeremy has confirmed:** Facebook and Instagram **remain** the delivery platforms, published via
+**Buffer** (direct API "gonna be an option" later). **Posterity Social is an additional layer, not a
+substitute.** The context document's "Social Media Integration" section **stands.**
+
+**No code was affected.** The repo never contained a single line of Meta integration, so nothing was
+removed and nothing needs restoring. The error lived only in `BUILD/` and `CLAUDE.md`, and all of it
+is now corrected. It is recorded here rather than quietly edited away, because a project whose
+documents already ran ahead of its code cannot also have documents that quietly rewrite themselves.
+
+The **risks** we raised about Meta are unchanged and now sit in `POSTERITY_SOCIAL.md` under *"Meta
+delivery — the risks Buffer does not remove."* The short version, for Jeremy: **Buffer is itself a
+Graph API client**, so it changes who writes the API code, not what Meta permits or what expires. A
+**~60-day access token** against a **30-year promise** means ~160 re-authorizations over a long
+account — each one a login to the customer's Facebook, including after they die. And **any relative
+can have the account memorialized**, which locks it permanently against all posting, outside anyone's
+control. Conclusion is not "drop Meta" — it is **"Meta can't be the channel we *guarantee*."**
+Email/SMS is the spine; Meta is the bonus channel. That is why delivery is built email-first.
+
 ### Added — this changelog, and a hook that makes it mandatory
 - **`BUILD/CHANGELOG.md`** (this file).
 - **Rule 1 in `CLAUDE.md`**: update the changelog on every change, no exceptions.
@@ -131,11 +155,14 @@ from the client**, unvalidated, and **requires no auth.**
   `mode: 'subscription'`, auth on the route, and the webhook. **Until that ships, if checkout is live
   anywhere public, turn it off** — it takes money and records nothing.
 - **Needed from Jeremy:**
-  1. **How does a legacy reach a recipient who is not a Posterity member?** With Meta gone, "nothing
-     shares outside Posterity, ever" read literally means a customer's 34-year-old daughter can't
-     receive her father's message. Email/SMS says she can. These are different products and the
-     `recipients` / `deliveries` schema needs the answer. *(Detail: `POSTERITY_SOCIAL.md`, Q1.)*
-  2. **The sub-tag pool card** — the Posterity Social spec cut off mid-sentence at "Communication &
+  1. **The sub-tag pool card** — the Posterity Social spec cut off mid-sentence at "Communication &
      Relationships."
+  2. **A decision on the Meta failure modes** — not whether to use Meta (that's settled, we're using
+     it), but whether the customer contract will say plainly that *"if a platform becomes
+     unavailable, your message is delivered by email or text instead."* Cheap to write now,
+     impossible to retrofit after the first failed delivery.
+
+  *(Resolved: "who receives a delivery?" — Facebook, Instagram, email, and SMS, per the context
+  document. The walled garden governs Posterity Social, not delivery.)*
 - **Phase 1:** content creation · the check-in/trigger system · **email-first** delivery · a real
   dashboard.

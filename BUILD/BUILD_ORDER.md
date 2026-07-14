@@ -84,9 +84,11 @@ unrecoverable and would end the company.
      exist — the system is "safe" only because none of it works. That stops being true the moment
      either half ships alone.
 
-**1.3 — Delivery engine — EMAIL FIRST.** Blocked on **Q1 in `POSTERITY_SOCIAL.md`**: with Meta gone,
-does a legacy reach a recipient who is *not* a Posterity member? Email works under either answer, so
-build email regardless and let Q1 decide what else exists.
+**1.3 — Delivery engine — EMAIL FIRST.** Channels are social (Facebook/Instagram via Buffer), email,
+and SMS, chosen per piece — as the context document always said. **Build email first anyway**, and
+not as a shortcut: Meta delivery can be killed by a token expiry or by a memorialization request from
+a relative, neither of which Posterity controls (see LIVE RISKS). **Email is the channel that always
+works, so it is the one the promise rests on.** Social is layered on top once it does.
 
 **1.4 — A dashboard worth the name.** Content, recipients, check-in status, the plan. It currently
 shows an email address and three zeros.
@@ -96,8 +98,8 @@ shows an email address and three zeros.
 ---
 
 ## PHASE 2 — POSTERITY SOCIAL
-*The retention pillar. A second schema on the same `accounts` spine. Full spec and the six open
-questions: **`POSTERITY_SOCIAL.md`**.*
+*The retention pillar — an **additional** layer, not a replacement for Meta delivery. A second schema
+on the same `accounts` spine. Full spec and open questions: **`POSTERITY_SOCIAL.md`**.*
 
 **2.1 — The Focus list.** Curate the ~50–100 conditions people actually join over, plus *Aging* and
 *Legacy/Posterity*. Hand-attach the correct staging scheme per condition — **there is no generic
@@ -128,14 +130,31 @@ acceptable default (Q4). Design it deliberately.
 
 ---
 
-## RESOLVED / CHANGED
+## LIVE RISKS
 
-**✅ The Meta legality risk is dead.** The old plan — Meta Business API, Buffer, storing every
-customer's Facebook password, pointing their 2FA at Posterity-controlled contacts, and having staff
-log in to post as deceased customers — is **replaced by Posterity Social**. That also removes a
-serious security exposure and an unscalable manual labor model. See `POSTERITY_SOCIAL.md`.
+**🔴 Check-in false positives.** See 1.2. The highest-risk logic in the app.
 
-**🔴 Still live: check-in false positives.** See 1.2. Unchanged by the pivot.
+**🔴 Meta delivery has two failure modes that Buffer does not remove.** Jeremy has confirmed Meta
+stays — Facebook and Instagram remain the delivery platforms, published via Buffer. Buffer saves
+real engineering effort, but it is itself a Graph API client, so it changes *who writes the API
+code*, not what Meta permits or what expires:
+   - **A 60-day token against a 30-year promise.** Meta's long-lived tokens need re-authorization
+     from an active session roughly every 60 days. Over a 27-year account that's ~160 renewals, each
+     requiring a login to the customer's Facebook account — including after they die.
+   - **Memorialization.** Any relative can report a death; Meta then **locks the account and nothing
+     can post to it, ever.** Outside Posterity's control and the customer's.
+
+   **What follows is not "don't do it."** It is: **Meta cannot be the channel Posterity guarantees.**
+   Email/SMS is the spine that always works; Meta is the bonus channel that usually will. This is
+   exactly why 1.3 builds **email first**. Full detail in `POSTERITY_SOCIAL.md`.
+
+**🟠 Consumer health data** once Posterity Social stores a diagnosis — Washington's My Health My Data
+Act carries a private right of action. See Phase 3.
+
+> **Correction, 2026-07-13:** an earlier version of this file said the Meta integration was dead and
+> replaced by Posterity Social. **That was wrong** — it was inferred from a secondhand summary and
+> written down as fact despite contradicting Jeremy's own context document. Posterity Social is
+> **additive**. No code was affected; the error lived only in our documents.
 
 ---
 

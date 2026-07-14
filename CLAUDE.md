@@ -68,33 +68,43 @@ renew, and **has no auth**. Fix the checkout first.
 control in the product does nothing. The trigger doesn't exist either — **the system is "safe" only
 because none of it works.** Build both halves together or neither.
 
-## The two live risks
+## The live risks
 
 1. **A check-in false positive is extinction-level** — a living customer's goodbye messages sent to
    their family. Design the safeguards *before* the feature.
-2. **Consumer health data.** Posterity Social stores "user X has Stage 4 pancreatic cancer."
+2. **Meta delivery has two failure modes Buffer does not remove** — see below.
+3. **Consumer health data.** Posterity Social stores "user X has Stage 4 pancreatic cancer."
    HIPAA likely doesn't apply, but Washington's **My Health My Data Act** does — and it carries a
    **private right of action**. Needs a lawyer before launch.
 
-*(The old Meta/ToS risk is **dead** — see below.)*
+## Delivery — Meta STAYS. Posterity Social is ADDITIVE.
 
-## Posterity Social — the pivot (2026-07-13)
+> ⚠️ **A previous version of this file claimed Meta was dead and replaced by Posterity Social. That
+> was WRONG.** It was inferred from a secondhand summary and written into project memory as fact,
+> despite contradicting Jeremy's own context document. **Jeremy is the owner; when our notes
+> contradict his documents, ask him — do not record the contradiction as a decision.** No code was
+> affected; the error lived only in our documents.
 
-Meta/Instagram integration is **replaced** by **Posterity Social**: a walled, in-app social network
-for the elderly and those facing mortality, unlocked by the Horizon fee. Nothing shares outside
-Posterity, ever. Discovery runs on a **Focus** (the medical/life context — the trunk) plus generic
-**tags** that the Focus disambiguates ("Shaking" under Parkinson's ≠ under anxiety).
+**Delivery goes OUT** — Facebook and Instagram (published via **Buffer**, to avoid building against
+the Meta API; direct API is an option later), plus email and SMS. **Posterity Social stays IN** — a
+walled, in-app network for the living phases, unlocked by the Horizon fee, where nothing is shared
+outward. Discovery runs on a **Focus** (the medical/life context — the trunk) plus generic **tags the
+Focus disambiguates** ("Shaking" under Parkinson's ≠ under anxiety). The walled garden is a rule
+about *Social*, not about delivery.
 
-This kills three things at once: the ToS/legality risk, a **security bomb** (the old design stored
-every customer's Facebook password and pointed their 2FA at Posterity-controlled contacts), and a
-manual labor model (staff logging in to post as deceased customers).
+**🔴 Buffer is itself a Graph API client.** It changes who writes the API code; it does not change
+what Meta permits or what expires. Two problems survive it:
+- **A ~60-day token against a 30-year promise.** Meta's long-lived tokens need re-authorization from
+  an active session. Over a 27-year account that's ~160 renewals, each needing a login to the
+  customer's Facebook — including after they die.
+- **Memorialization.** Any relative can report a death; Meta then **locks the account and nothing can
+  post to it, ever.** Outside Posterity's control *and* the customer's.
 
-**🔴 The blocking question: who receives a delivery?** With Meta gone, does a legacy reach a
-recipient who is *not* a Posterity member — the customer's 34-year-old daughter? "Nothing shares
-outside Posterity" read literally says no. Email/SMS delivery says yes. **These are different
-products and the `recipients`/`deliveries` schema needs the answer.** See `BUILD/POSTERITY_SOCIAL.md`.
+**What follows is not "don't do it."** It is: **Meta cannot be the channel Posterity guarantees.**
+Email/SMS is the spine that always works; Meta is the bonus channel that usually will. That is why
+delivery is built **email first**. Full detail: `BUILD/POSTERITY_SOCIAL.md`.
 
-**Phase 0 is untouched by the pivot** — signup, auth, checkout, and webhook are not delivery.
+**Phase 0 is untouched by any of this** — signup, auth, checkout, and webhook are not delivery.
 
 ## Database
 
