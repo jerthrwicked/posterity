@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.7.0",
+    "@supabase/ssr": "^0.12.1",
     "@supabase/supabase-js": "^2.106.2",
     "canvas": "^3.2.3",
     "googleapis": "^173.0.0",

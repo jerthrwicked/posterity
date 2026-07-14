@@ -52,3 +52,6 @@ session-notes.md
 # Cursor-Claude bidirectional MCP bridge files
 cursor-inbox.md
 cursor-outbox.md
+
+# local test helpers
+/cursor-inbox.md
