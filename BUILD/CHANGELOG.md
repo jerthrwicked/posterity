@@ -14,6 +14,51 @@ change appear below, and they are not equally reversible:
 
 ---
 
+# 2026-07-15
+
+## 📄 Pricing reprice — the July-2026 ladder is now on the pricing page
+
+Jeremy's **Final Pricing Analysis (July 2026)** supersedes the June locked pricing. New ladder
+(recommended, for confirmation): **Basic $49 · Premium $129 · Legacy $399**; Horizon $9.99 and Grace
+Storage $4.99 unchanged; Custom/Grace stay Contact Us. Philosophy: growth-first, competition-anchored,
+cost is not a pricing input; Basic sits below the market ceiling but above a ~$39 credibility floor.
+
+**What changed in code (`app/components/PlanCards.js`):** the three displayed prices AND their Stripe
+`priceId`s. This was the important part — the cards were **showing $99/$249/$899 while the priceIds
+charged $39/$99/$299** (confirmed against Stripe test mode). Display and charge are now aligned at the
+new amounts:
+| Tier | Was shown | Was charged | Now (shown = charged) | Stripe price id |
+|---|---|---|---|---|
+| Basic | $99 | $39 | **$49** | `price_1TcvdE…GEYC3RtA` (existing) |
+| Premium | $249 | $99 | **$129** | `price_1TtgZx…c40u5BRt` (new) |
+| Legacy | $899 | $299 | **$399** | `price_1TtgZx…LqiUvC3j` (new) |
+| Horizon | $9.99 | $9.99 | $9.99 (unchanged) | `price_1Tcvq1…Yustrs4G` |
+
+## 🗄️ Stripe (TEST mode) — two prices created
+
+`scripts/stripe-create-newladder.py` created **Premium $129** and **Legacy $399** as one-time prices on
+the existing Posterity products (Basic $49 one-time already existed). One-time matches the context
+model — plans are paid upfront per plan-year; only the Horizon storage fee recurs — so the old
+"annual plans never renew" note reconciles (plans aren't meant to renew). **These are TEST-mode prices
+only. LIVE-mode prices were NOT created.**
+
+## ⚠️ Still open (NOT done — flagged for Jeremy / a decision)
+
+- **The checkout still needs its Phase 0.4 rebuild** — `create-checkout-session` still takes the
+  priceId from the client unvalidated, sends **no user identity**, has **no auth**, and runs
+  `mode:'payment'` (fine for the one-time plans, but the recurring Horizon price needs
+  `mode:'subscription'` — Horizon checkout is currently broken). The reprice fixed the amounts, NOT
+  the checkout's security/identity holes.
+- **LIVE Stripe prices** — not created; only test mode was touched.
+- **Jeremy's own docs** (`CONTEXT_for_posterity.md`, `Project Documents/*`) still show old pricing.
+  Per the repo rule we do **not** edit Jeremy's files, and Jeremy is **actively editing the context
+  himself** (the July-15 "…(Editing)" doc) — his pricing analysis says he reassembles the context as
+  the final step. Left to him to avoid a collision.
+- **Deploy** — no deploy target found in the repo (no vercel.json/Dockerfile); how/whether the live
+  site rebuilds is unconfirmed.
+
+---
+
 # 2026-07-13
 
 ## ✅ Phase 1.1 — you can write a message now

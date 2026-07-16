@@ -17,8 +17,8 @@ const PLANS = [
   {
     id: "basic",
     name: "Basic",
-    price: "$99",
-    priceId: "price_1TeTeyBcdnR2VoDgYhf7uym0",
+    price: "$49",
+    priceId: "price_1TcvdEBcdnR2VoDgGEYC3RtA",
     border: "border-gray-700",
     description: "A steady cadence — quarterly messages for the people who matter most.",
     bullets: [
@@ -30,8 +30,8 @@ const PLANS = [
   {
     id: "premium",
     name: "Premium",
-    price: "$249",
-    priceId: "price_1Tcvj2BcdnR2VoDgt4oZu8VA",
+    price: "$129",
+    priceId: "price_1TtgZxBcdnR2VoDgc40u5BRt",
     border: "border-gray-600",
     badge: "Most popular",
     featured: true,
@@ -45,8 +45,8 @@ const PLANS = [
   {
     id: "legacy",
     name: "Legacy",
-    price: "$899",
-    priceId: "price_1TeTj5BcdnR2VoDgtfA9O3z8",
+    price: "$399",
+    priceId: "price_1TtgZxBcdnR2VoDgLqiUvC3j",
     border: "border-gray-700",
     badge: "Limited availability",
     description: "A message every week — a full, living presence that lasts the whole year through.",
