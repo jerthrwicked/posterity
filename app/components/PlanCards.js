@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { PLANS as PLAN_CATALOG } from "../../lib/posterity/plans";
 
 const PLANS = [
   {
@@ -61,15 +62,24 @@ const PLANS = [
 export default function PlanCards() {
   const [loading, setLoading] = useState(null);
 
-  const handleCheckout = async (priceId, index) => {
+  const handleCheckout = async (planId, index) => {
     setLoading(index);
     const res = await fetch("/api/create-checkout-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ priceId }),
+      body: JSON.stringify({ plan: planId }),
     });
-    const { url } = await res.json();
-    window.location.href = url;
+    if (res.status === 401) {
+      // must be signed in to check out — the server owns the price, so this is required
+      window.location.href = "/login?next=/pricing";
+      return;
+    }
+    const data = await res.json().catch(() => ({}));
+    if (data && data.url) {
+      window.location.href = data.url;
+    } else {
+      setLoading(null);
+    }
   };
 
   return (
@@ -118,7 +128,7 @@ export default function PlanCards() {
               )}
 
               <div className="mb-4">
-                <span className="text-[44px] font-bold leading-none">{plan.price}</span>
+                <span className="text-[44px] font-bold leading-none">{PLAN_CATALOG[plan.id]?.price ?? plan.price}</span>
                 <span className="text-gray-500 ml-2 text-base">/year</span>
               </div>
 
@@ -138,7 +148,7 @@ export default function PlanCards() {
               <div style={{ height: "1.5rem" }} />
 
               <button
-                onClick={() => handleCheckout(plan.priceId, i)}
+                onClick={() => handleCheckout(plan.id, i)}
                 disabled={loading === i}
                 className={
                   plan.featured

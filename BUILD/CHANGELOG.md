@@ -14,6 +14,45 @@ change appear below, and they are not equally reversible:
 
 ---
 
+# 2026-07-16
+
+## 📄 Checkout security rebuild (Phase 0.4) — code only, no DB change
+
+The checkout was worse than "no webhook": it took **no auth**, accepted the **price id from the
+client** (so a caller could pay $9.99 for Legacy), ran **`mode:'payment'`** for everything (the
+recurring Horizon fee could never renew), and sent Stripe **no identity** (a webhook would have had
+nothing to attach the money to). All four are fixed:
+
+- **New `lib/posterity/plans.js`** — one source of truth for plan → tier → price → priceId → billing
+  mode. The pricing cards render their price from it and the checkout validates against it, so display
+  and charge can't drift again.
+- **`app/api/create-checkout-session/route.js` rewritten** — requires a signed-in user (401 otherwise);
+  the client now sends a **plan choice**, and the **price is resolved server-side** from the catalog;
+  attaches `client_reference_id` (account id) + `customer_email` + `metadata`; and picks
+  **`mode:'subscription'` for Horizon vs `mode:'payment'` for the one-time plans**.
+- **`app/components/PlanCards.js`** — sends `{ plan: id }` instead of a price; a signed-out click routes
+  to `/login?next=/pricing`.
+- **New `app/api/webhooks/stripe/route.js`** — signature-verified (Stripe raw-body), writes with the
+  service-role key into the purpose-built `subscriptions` table (idempotent on the subscription id for
+  Horizon), and on a one-time plan payment performs the documented **initiate** transition
+  (`accounts.phase` horizon→planning + `initiated_at`).
+
+No migration — `subscriptions`/`accounts` already existed. `proxy.js` only gates `/dashboard`, so the
+webhook path is public as Stripe requires.
+
+## ⚠️ Still open (needs Jeremy / a live key / a browser)
+
+- **The webhook is DORMANT until activated:** set `STRIPE_WEBHOOK_SECRET` in `.env.local` and register
+  `/api/webhooks/stripe` in the Stripe dashboard (events: `checkout.session.completed`,
+  `customer.subscription.updated|deleted`). **Review the initiate logic first** — which plan_year a
+  payment funds and skip-year storage fees aren't derivable from a single price, and the one-time
+  insert isn't yet idempotent on Stripe retries (needs an events-processed table or a session-id
+  column if that matters).
+- **LIVE Stripe prices** — still not created; only test mode exists, and `.env.local` holds a test key.
+- **End-to-end test** — the code is committed but a real checkout (browser + card) hasn't been run.
+
+---
+
 # 2026-07-15
 
 ## 📄 Pricing reprice — the July-2026 ladder is now on the pricing page
