@@ -16,6 +16,22 @@ change appear below, and they are not equally reversible:
 
 # 2026-07-16
 
+## 🗄️ DATABASE — staff death-verification fields (APPLIED to your live Supabase)
+
+⚠️ **Live on `vypytfmutmeyfwmkapjg` now** — migration `20260716120000_trigger_staff_death_verification.sql`,
+applied via `sb.sh`. Additive + behavior-neutral: no existing data touched, nothing reads these yet.
+
+Added to `trigger_confirmations` the fields for the **human-in-the-loop death hold** (Phase 1.2 design):
+`staff_verified` / `staff_verified_by` / `staff_verified_at` / `staff_note`, plus a false-positive **veto**
+path (`vetoed` / `vetoed_by` / `vetoed_at` / `veto_reason`), a check (never both verified and vetoed), and
+an index for the "verify death" task queue. The existing `verified_password`/`verified_code` prove who
+*initiated* a trigger; these prove a **staff member verified the actual death**. The invariant they
+enable: **no delivery for a death-triggered account until a staff member has verified the death here.**
+The delivery gate that reads these (and any DB-level enforcement) ships with the delivery engine.
+
+**Open for Jeremy:** (1) does "I'm Ready" (the customer's own living choice) skip the death hold? (2) is
+the no-send-without-verification gate enforced at the DB level too? Design in discussion.
+
 ## 📄 Checkout security rebuild (Phase 0.4) — code only, no DB change
 
 The checkout was worse than "no webhook": it took **no auth**, accepted the **price id from the
