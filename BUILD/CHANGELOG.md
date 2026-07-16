@@ -40,6 +40,14 @@ nothing to attach the money to). All four are fixed:
 No migration — `subscriptions`/`accounts` already existed. `proxy.js` only gates `/dashboard`, so the
 webhook path is public as Stripe requires.
 
+## 🗄️ Stripe (TEST mode) — cleaned to the ladder
+
+Archived the four stale prices ($39 / $99 / $199 / $299) and set each product's default to the new one,
+so test mode now shows **exactly** the ladder: Horizon $9.99 · Basic $49 · Premium $129 · Legacy $399.
+**Gotcha caught:** the Basic **$49** price the code uses (`price_1TcvdE…`) was **archived** in Stripe —
+a Basic checkout would have failed with "price is archived." Unarchived it; no code change. ⚠️ Watch for
+this when you create the LIVE prices: a price must be `active` to be usable in checkout.
+
 ## ⚠️ Still open (needs Jeremy / a live key / a browser)
 
 - **The webhook is DORMANT until activated:** set `STRIPE_WEBHOOK_SECRET` in `.env.local` and register
