@@ -20,15 +20,21 @@ Everything below was read, not remembered.
 | Login (`app/login/page.js`) | ✅ real `signInWithPassword` — but nobody can sign up, so nobody can log in |
 | Signup (`app/signup/page.js`) | ❌ **it is a copy of the pricing page** (see below) |
 | Dashboard (`app/dashboard/page.js`) | ⚠️ 79 lines of hardcoded zeros |
-| Stripe checkout (`app/api/create-checkout-session/route.js`) | ⚠️ 17 lines, and broken four ways (see below) |
-| Stripe webhook | ❌ **does not exist** |
+| Stripe checkout (`app/api/create-checkout-session/route.js`) | ✅ **rebuilt 2026-07-16** — was 17 lines broken four ways; now auth + server-side plan→price + identity + mode split (FINDING 1) |
+| Stripe webhook (`app/api/webhooks/stripe/route.js`) | ✅ **built 2026-07-16** — signature-verified, records `subscriptions` + initiate move; dormant until `STRIPE_WEBHOOK_SECRET` is set |
 | Auth gate | ❌ **does not exist** — no `middleware.js`, no `proxy.js` |
 | Database schema | ✅ **as of 2026-07-13** — 14 tables, RLS on all. Was empty before. |
 | Content / recipients / check-ins / delivery | ❌ none of the actual product exists |
 
 ---
 
-## FINDING 1 — The checkout cannot be fixed by adding a webhook 🔴 **OPEN**
+## FINDING 1 — The checkout cannot be fixed by adding a webhook ✅ **FIXED 2026-07-16** (commit `d9aec57`)
+
+**Resolution:** the checkout was rebuilt — it now requires auth, the client sends a **plan id** and the
+price is resolved server-side from `lib/posterity/plans.js`, it attaches `client_reference_id` +
+`customer_email` + `metadata`, and it uses `subscription` mode for the recurring Horizon fee vs
+`payment` for the one-time plans. A signature-verified webhook (`app/api/webhooks/stripe/route.js`)
+records into `subscriptions` and does the initiate phase move. *(Original finding, for the record:)*
 
 `app/api/create-checkout-session/route.js` sends Stripe **no user identity whatsoever** — no
 `client_reference_id`, no `customer_email`, no `metadata`. A `checkout.session.completed` event
@@ -48,7 +54,12 @@ Three further defects in the same 17 lines:
   would be charged exactly once.
 - **No auth on the route.** A logged-out stranger can open checkout sessions.
 
-## FINDING 2 — The site quotes two different price lists 🔴 **OPEN**
+## FINDING 2 — The site quotes two different price lists ✅ **FIXED 2026-07-16** (reprice `ea3c267`)
+
+**Resolution:** repriced to the July-2026 ladder ($49 / $129 / $399) and made `lib/posterity/plans.js`
+the single source both the cards render from and the server validates against, so display and charge
+can't drift. The old table below is the historical record. *(Verify `/signup` renders from the same
+catalog rather than its own hardcoded copy.)*
 
 | | Horizon | Basic | Premium | Legacy |
 |---|---|---|---|---|
@@ -111,8 +122,8 @@ at import time, with an unhelpful error.
 Present in code: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `STRIPE_SECRET_KEY`,
 `NEXT_PUBLIC_SITE_URL`.
 
-Needed and **absent**: `SUPABASE_SERVICE_ROLE_KEY` (the webhook must write as admin, bypassing RLS)
-and `STRIPE_WEBHOOK_SECRET` (to verify webhook signatures).
+`SUPABASE_SERVICE_ROLE_KEY` is now present (the webhook writes with it, bypassing RLS). Still **absent**:
+`STRIPE_WEBHOOK_SECRET` — Jeremy sets this to activate the webhook (see CHANGELOG 2026-07-16).
 
 > **Resolved.** All six are now in `.env.local` (gitignored). Four were pulled straight from the
 > Supabase Management API with `scripts/fetch-supabase-keys.sh` — never printed, written directly to

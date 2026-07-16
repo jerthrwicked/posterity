@@ -33,8 +33,8 @@ anyone else.
 | **Recipients** | ✅ `/dashboard/recipients`. **Must have an email or a phone** — enforced by the database. |
 | **Content** | ✅ `/dashboard/legacy` — messages, video, photos. Private bucket, signed URLs. |
 | **Trusted contacts** | ✅ `/dashboard/trusted-contacts` — add, note, set primary (one transaction, RLS-safe) |
-| **Stripe checkout** | 🔴 **untouched** — sends Stripe **no user identity** · takes the **price from the client** · **one-time mode** for annual plans · **no auth**. Waiting on Jeremy's new prices. |
-| **Stripe webhook** | ❌ does not exist |
+| **Stripe checkout** | ✅ **rebuilt (0.4, 2026-07-16)** — requires auth, server-side plan→price map (client sends a plan id, never a price), identity attached, `subscription` mode for Horizon / `payment` for one-time plans. |
+| **Stripe webhook** | ✅ **built (0.4)** — signature-verified, writes `subscriptions` + does the initiate phase move, via service-role. **Dormant** until Jeremy sets `STRIPE_WEBHOOK_SECRET` + registers the endpoint. |
 | Check-in / trigger | ❌ **deliberately not built.** See 1.2 — it ships with its safeguards or not at all. |
 | Delivery engine | ❌ not built |
 | Media compression / thumbnails | ❌ not built (oversized files are rejected, not shrunk) |
@@ -61,23 +61,29 @@ The old client-side redirect wasn't laziness — the session lived in `localStor
 server could never see it**, so a server-side gate was *impossible*. Auth now runs on cookies
 (`@supabase/ssr`). Three layers: proxy redirects, the page re-checks server-side, RLS underneath.
 
-**0.4 — Fix the checkout, *then* write the webhook.** In that order — and the order is the point.
-The checkout currently sends Stripe **nothing that identifies the buyer**, so even a perfect webhook
-would have nothing to attach the money to (FINDING 1).
-   - **0.4a — Checkout:** attach `client_reference_id` / `metadata.account_id`. Move to a
-     **server-side plan → price map** (the client sends a plan id, never a price id). Switch to
-     `mode: 'subscription'` — every plan is annual and today **nothing renews**. Require auth.
-   - **0.4b — Webhook:** `checkout.session.completed` → write the subscription and the plan, move the
-     account phase, record to `stripe_events`. Verify signatures with `STRIPE_WEBHOOK_SECRET`; write
-     with `SUPABASE_SERVICE_ROLE_KEY`.
+**0.4 — Fix the checkout, *then* write the webhook.** ✅ **DONE 2026-07-16** (commit `d9aec57`).
+   - **0.4a — Checkout:** ✅ requires auth; the client sends a **plan id** and the price is resolved
+     server-side from `lib/posterity/plans.js` (the trusted catalog); attaches
+     `client_reference_id` + `customer_email` + `metadata`.
+   - **0.4b — Webhook:** ✅ `app/api/webhooks/stripe/route.js` — `checkout.session.completed` writes
+     `subscriptions` and does the horizon→planning **initiate** move; signature-verified with
+     `STRIPE_WEBHOOK_SECRET`, writes with `SUPABASE_SERVICE_ROLE_KEY`. Dormant until Jeremy sets the
+     secret + registers the endpoint.
+   - ⚠️ **Billing-model divergence to confirm with Jeremy:** this order said switch **everything** to
+     `mode:'subscription'` ("every plan is annual, nothing renews"). Jeremy's **July-2026 pricing
+     analysis + the current context** say plans are paid **one-time up front per plan-year** and only
+     the Horizon storage fee recurs — so it was built that way (subscription = Horizon, payment =
+     plans). If Jeremy actually wants recurring plans, the mode + the price objects change.
 
 **0.5 — Delete `app/api/cursor-inbox/route.js`.** ✅ **DONE.** A route that wrote client-supplied data
 to disk, protected by a comment reading *"never deploy this route."*
 
-⏳ *Phase 0 is done except 0.4 — a person can create an account. They cannot yet pay and have it stick.*
+✅ *Phase 0 is code-complete (0.1–0.5). A person can create an account AND check out; the payment
+records via the webhook the moment Jeremy activates it (live prices + `STRIPE_WEBHOOK_SECRET` + deploy).*
 
-> **Until 0.4 ships: if the Stripe checkout is live anywhere public, turn it off.** It takes money
-> and records nothing.
+> **0.4 shipped.** The checkout now attaches identity and the webhook records the money — but the
+> webhook is **dormant** until Jeremy sets `STRIPE_WEBHOOK_SECRET` and registers the endpoint, and
+> there are no **live** prices yet. Don't take real money until both exist.
 
 ---
 
