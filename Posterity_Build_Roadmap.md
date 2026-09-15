@@ -1,0 +1,213 @@
+# POSTERITY
+
+## *Build Roadmap*
+
+This document is the living instruction manual for building Posterity. It carries every remaining build item in suggested build order. A working reference for the founder, for collaborators, and for the Claude Code instances that build from it. Completeness and accuracy come before presentation.
+
+The Master Specification is the reference this file points at. The roadmap states what gets built and in what order. The specification states what the thing is and how it behaves. Where the two disagree, the specification wins and the roadmap is corrected. Every stage names the subjects its work is governed by. The builder searches the specification for them and reads what returns before writing anything, so the work begins from a body of material rather than from a task list alone.
+
+Link: [Posterity Master Specification 9/12](https://docs.google.com/document/d/14OoN3GlzDnJjo0ll6hIN6pjU7nCEsWB2MA39R-jWhPY/edit?usp=sharing)
+
+Design and writing work carried by the founder lives within a separate work order. Stages that wait on an item there say so.
+
+Link: [Stage Zero - Founder Build Roadmap](https://docs.google.com/document/d/1YdA0yvA2-0Lxhvv06IcM8x7CG2HYl7lRm7ldr3EGUaM/edit?usp=sharing)
+
+**Project Files**
+
+Four artifacts carry this project's build record. Two are markdown files within the repository and hold the authority. Two are Google Docs, each a readable copy of one markdown file, and neither carries authority of its own.
+
+Posterity_Build_Roadmap.md holds every remaining build item in suggested build order. Its readable copy is the Build Roadmap Doc.
+
+Posterity_Build_Log.md holds the record of everything already built. Its readable copy is the Build Log Doc.
+
+# How to Use This Document
+
+Begin work by reading Current Status. This section describes where the project stands as a whole — what is current, what is open, and what blocks the build. It is rewritten when the picture changes rather than updated after each session. The record of what has been built lives within the Build Log.
+
+Remaining work lives in suggested build order. Completed work moves to the Build Log, which is organized by category with the newest entry first within each. Nothing is ever removed from it, so the log carries the full history of the build. A build item carrying a status holds its place within its stage until it is built, and the status is dropped when it moves. A stage records no progress of its own. It persists for as long as any build item remains within it, and it is finished when its last build item moves to the Build Log.
+
+Every stage covers one system and states its status in its opening line, written as the word Status followed by its value. A stage that carries sub-stages is the exception, and each of its sub-stages does both instead. A stage number carrying sub-stages beneath it groups them and holds no system of its own, and a status placed on it reaches every sub-stage within it. A heading within a stage groups build items inside that system rather than marking a separate one. Within any stage or heading, explanation comes first and build items follow beneath the Build Items label, which carries no status of its own. A system large enough to stand on its own is given its own stage number.
+
+A status applies to whatever carries it and to everything beneath it. Where a status halts progression, it reaches further, and it also stops everything after it that depends on what it sits on. Each stage opens by stating why it sits where it does, and that reasoning is what establishes the dependency. A stage that depends on nothing gated proceeds, and where that independence matters it is stated where the stage opens. A heading or a single build item carries its own status in the same form, written directly after the text naming what gets built with nothing between them, and any reason, condition, or open question follows the status. Anything carrying no status of its own takes the status above it, so the nearest status always governs. Nothing is open to a builder unless it reads designed and nothing above it in the hierarchy carries another status. A status behaves the same way wherever it sits within the hierarchy, and its position sets how far it reaches rather than what it does. Status is set by the founder, or by co-founder where the situation allows. Halted is the exception, since it records what the build encountered rather than what was decided. Claude Code sets and clears the halted status, and whether the halt stops only what it sits on or everything beneath and after it is decided by the founder or co-founder. Following is a list of all status types within the roadmap.
+
+Status types:
+
+- **Designed**. Everything the stage, sub-stage, heading, or build item requires is designed in full. It is ready to be built.
+- **Requires input**. Named issues or questions remain open on everything that carries this status. Further work can proceed unimpeded prior to its resolution.
+- **Requires input and gates progression**. Named issues or questions remain open on everything that carries this status. Nothing beneath it proceeds prior to its resolution, and neither does anything after it that depends on it.
+- **Requires system design**. The design itself remains outstanding on everything that carries this status. Nothing beneath it proceeds prior to its resolution, and neither does anything after it that depends on it.
+- **Halted**. Work began and stopped against something outside whatever carries this status, and the cause is recorded alongside it. Whether further work can proceed is decided case by case.
+
+All statuses maintain the ability to be shifted into another status if warranted. Resolutions of statuses, as well as any status shifts, must be appropriately maintained on progression.
+
+User Profiles is a container rather than a feature. Stage 4.5 builds its shell and the panels that stage owns (added prior to Stage 4 roadmap creation). Every later stage that adds a panel carries a line reading User Profiles insertion, naming what it adds. No stage waits on another to touch it.
+
+A stage number, once assigned, always points at the same system, since cross-references throughout the project depend on it. A system that earns its own number later takes the next decimal within the stage it sits in rather than forcing a renumber. The Master Specification carries no stage numbers, by design. Build order lives here and nowhere else.
+
+# How to Manually Edit This Document
+
+Claude Code edits this file as he builds. When a task is finished he removes it from its stage and writes it into the Build Log, so both files are edited every time something closes out. The roadmap is Posterity_Build_Roadmap.md and the log is Posterity_Build_Log.md, and neither is ever updated without the other. Build progress is the whole of his standing permission. Nothing else within either file changes without founder or co-founder approval, and he never edits the Master Specification or any other project document.
+
+Every other change is authored within a Claude.ai session. New sections are drafted and worked through in conversation, and edits to existing text are delivered as find and replace pairs, each carrying the exact existing string, the exact string replacing it, and the expected replacement count. The founder executes those against the Google Doc as work proceeds and edits the Doc by hand alongside them. Claude reads the live Doc before writing anything, since the founder edits as the session runs and a string written against stale text will not match.
+
+Work reaches Claude Code once the Doc carries the finished text. Claude compiles it into a prompt naming the file, the exact text, and its position stated as what it follows and what follows it. Claude Code writes it into the markdown and prints the section back rather than reporting that he wrote it, which surfaces a truncated or misplaced write while the work that produced it is still open.
+
+The markdown is the record and every change reaches it directly, whether it is build progress Claude Code writes on his own or authored text handed to him. Nothing is ever written back into the markdown from the Doc. The Doc is refreshed by pasting the markdown over the existing document, since a new document carries a new file identifier and every link pointing at the roadmap would stop resolving. The refresh happens at the end of a session, and more often where a second builder is closing out work, since the Doc goes stale the moment anything is written into the markdown.
+
+# Current Status
+
+As of September 15, 2026.
+
+The Master Specification is current. The Social Media Integration design record is complete and is the single authoritative copy of every rule within it. Posterity Social is complete in concept and awaits its own design pass. Every build-stage reference has been swept out of the Master Specification, so this file is the only place build order is recorded.
+
+Walker Brown pushed sixteen commits between July 13 and July 16, 2026, covering schema, authentication, checkout at the confirmed ladder, content creation, a BUILD folder, and his own CLAUDE.md. None of that work is recorded within the Build Log. An account from him of what each area covers, what state it is in, and which version of the design it was built against may close build items within Stage 3.1 and within Stage 4 as it is written.
+
+Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 requires input and Stage 3.5 requires system design, and neither holds up the stages around it. Stage 4 onward is unwritten. The payment model is decided: upfront pre-load with year-by-year release.
+
+# STAGE 3
+
+### STAGE 3.1 — Stripe Integration
+
+Status: designed.
+
+Payment is the first thing the application needs and nothing else within the build depends on it, so it opens the sequence. Subjects: subscription tiers, the Horizon tier, plan years and skipped years, additional recipients, and the financial architecture.
+
+#### Confirmation Before Any Change
+
+Price IDs matching the current ladder may already exist within Stripe, created outside a working session and never confirmed or tested. Check the Stripe dashboard directly before any pricing work proceeds. Where an entry already matches the confirmed ladder, test it rather than replacing it.
+
+#### Pricing and Products
+
+Build Items:
+
+- Update prices to the confirmed ladder: Basic $49, Premium $129, Legacy $399 per plan year
+- Generate new Price IDs for each
+- Update every Price ID within the codebase and the Vercel environment variables
+- Test checkout for each tier after every Price ID change
+- Horizon remains $9.99 per year, recurring. No change
+- Create Posterity Grace Storage at $4.99 per year. Admin-assigned through a unique access code, no public checkout
+- Create Posterity non-recurring storage charge at the same price as Horizon. It covers a skipped plan year and an additional Reprise year alike. Skipped years are added to the cart automatically and stack per year. Reprise years are purchased on demand, by the customer in advance or by a Legacy Guard during the phase, so the charge must be payable outside the plan selection flow as well as within it
+- Create Additional Recipient slots, priced by tier: $5 on Basic, $12 on Premium, $25 on Legacy, writing the product description for each within Stripe. Alternative Recipients are fixed at two per piece of content across all tiers and are never purchasable
+- Storage fees are payable in advance for any number of years a customer chooses
+
+#### Stripe to Supabase
+
+Build Items:
+
+- Record the subscription within Supabase on every successful payment
+- Webhook for subscription status changes
+- Refunds through Stripe. Status: requires input. The refund policy is written and the mechanism is not — what the customer does, what staff do, what Stripe does, and what happens to the content. Carried within the founder work order
+- The three-month free trial. Status: requires input. What happens once the trial expires is specified in full. What the trial attaches to, and what it grants while it runs, is not. Carried within the founder work order
+
+#### PayPal
+
+Build Items:
+
+- Add PayPal through Stripe's native integration. No separate PayPal account or API
+- Confirm PayPal carries recurring subscriptions, including Horizon at $9.99 per year
+- Confirm the non-recurring storage charge completes through PayPal
+- Dedicated sandbox testing before launch. Renewal reliability differs from card billing
+
+#### Dashboard Access
+
+Build Items:
+
+- Lock the dashboard behind subscription tier
+- Open intake at launch. No approval gating, cold traffic from day one
+
+#### Site Consistency Sweep
+
+Runs after the Stripe work, not before it. The live application carries content predating several confirmed decisions.
+
+Build Items:
+
+- Plan cards on both the homepage and the Plans page show the retired ladder of $99, $249, and $899
+- Phase names on the homepage read Abeyance and Twilight. The confirmed names are Interlude and Reprise
+- Plan card bullets count messages and video messages. The confirmed terminology is Standard Deliveries and Feature Deliveries
+- Grace Storage does not appear
+- Custom and Grace route to a mail link rather than a contact surface
+- Get Started routing is untested against the updated products
+- Various links contain incorrect or outdated material and some may be inactive
+- The site address variable, the Supabase authentication redirects, and the Stripe checkout return addresses still point at posterity-seven.vercel.app. Move each to www.yourposterity.com and retest login and checkout.
+
+### STAGE 3.2 — Twilio
+
+Status: requires input. Each open issue is named on the heading or build item it affects.
+
+Twilio carries every voice, SMS, and MMS path within the system. It is provisioned before the Communication Dispatch System, which sends through it.
+
+Subjects: customer contact and communication, video and content delivery, legal and compliance.
+
+#### Carrier Registration
+
+Status: requires input. The registration route remains open.
+
+Carriers block text messages to United States numbers from any number not registered to an approved campaign, so text messaging stays disabled on the Posterity number until registration clears.
+
+Recommended route: register once the User Profiles opt-in panel exists, since the review asks for evidence of how a customer agrees to receive texts.
+
+Alternative route: register now, with opt-in evidence showing a flow that is not yet built, which risks rejection at review.
+
+Build Items:
+
+- Publish a privacy policy page and a text message terms page on yourposterity.com. Status: requires input. The registration form requires a public link to each. Copy for both pages remains unwritten and is carried within the founder work order.
+- Submit the brand and campaign registration, with a campaign description, sample messages, and the opt-in evidence. Status: requires input. The campaign description and sample messages remain unwritten, and whether the brand registers under the founder or the business depends on when registration happens.
+- Confirm SMS capability is configured and tested once the campaign is approved.
+- Confirm MMS capability, including the size ceiling per message, is configured and tested once the campaign is approved.
+
+#### Account and Voicemail
+
+Build Items:
+
+- Move the Twilio account and its customer profile to the business. Status: requires input. The account is registered to the founder as an individual, and the move follows the business registration.
+- Voicemail alert. Status: requires input. Addressed later in the build. Nothing alerts staff to a new voicemail until the Operational Dashboard surfaces voicemails as tasks, and whether an interim alert comes before that stage remains open.
+
+### STAGE 3.3 — Postmark
+
+Status: designed.
+
+Postmark carries every automated email the system sends. It is provisioned before the Communication Dispatch System, which sends through it. It does not depend on Twilio and neither stage blocks the other.
+
+Subjects: customer contact and communication.
+
+Build Items:
+
+- Set up sending from admin@yourposterity.com. Status: requires input. The address receives through forwarding into posterity.admin@gmail.com and cannot send replies, and the Google Workspace evaluation that would allow it is tabled within the specification.
+- Move the domain's email authentication policy beyond monitoring. Status: requires input. The policy stays at monitoring until its reports show every legitimate sender passing, including Postmark and the forwarding.
+- Move to the Basic plan when the first customer subscribes. The free tier stops delivering at its cap rather than billing an overage, so this is a launch condition rather than a judgment.
+
+### STAGE 3.4 — The Communication Dispatch System
+
+Status: designed.
+
+The single path every automated message within Posterity takes on its way out. The system itself is specified in full within the Master Specification, and what is built here is the mechanism rather than any cascade that calls it. Social media is a third channel of the same system and is built within the Meta stage.
+
+It is built in this early stage because the Check-in System and the delivery automation both call it, and both are built within Stage 4.3 and Stage 4.4 (added prior to Stage 4 roadmap creation). It depends on Twilio and Postmark, since both are the channels it sends through. Its email channel sends live through Postmark, and its text message channel is built and tested against Twilio's test credentials, so this stage does not wait on carrier registration within Stage 3.2. Cascades are not built here. Each is built within the stage that owns its trigger, and each is a caller rather than a part of the Communication Dispatch System.
+
+Subjects: the Communication Dispatch System, customer contact and communication, delivery, automation summary.
+
+Build Items:
+
+- A scheduler that wakes on a cycle and asks what is due
+- A queue holding what the scheduler returns, so a failure retries rather than disappearing. A send that exhausts its retries is recorded as a failure for the Operational Dashboard to surface in a later stage
+- A Postmark sender and a Twilio sender, each taking a message and a destination. Both are built as channels behind one interface, since Meta joins them as a third channel when social media publishing is built
+- A Postmark sandbox server for test sends. It accepts messages without delivering them, so testing does not draw from the free tier's monthly allowance.
+- Channel policy applied at send: email is the universal baseline and always goes, and text message layers on wherever a phone number is on file and text notifications are enabled
+- An event log recording every send by account and by outcome, so a delivery can be evidenced years later
+- Message copy stored as a field the Communication Dispatch System reads rather than as text inside the trigger logic, so approved copy replaces placeholder copy as a content change rather than a code change
+- Postmark account approval, requested once this system sends email and the Site Consistency Sweep within Stage 3.1 is finished. Until approval, Postmark delivers only to addresses on yourposterity.com.
+
+### STAGE 3.5 — Hosting Migration
+
+Status: requires system design. The migration plan remains outstanding.
+
+The site runs on Vercel. It needs to move hosting to Cloudflare, where the domain and its records already sit. Nothing else within Stage 3 depends on the move, so it closes the stage and holds nothing ahead of it.
+
+Subjects: tech stack, environment variables, important links.
+
+Build Items:
+
+- A migration plan covering the Next.js build adapter for Cloudflare, the environment variables, the deployment flow from GitHub, and the Supabase and Stripe redirect addresses, decided with the co-founder.
+- Deploy the site on Cloudflare and point the yourposterity.com and www records at it in place of Vercel.
+- Retest login, checkout, and every link within automated email against the new host.
+- Retire the Vercel project once the Cloudflare deployment is confirmed.
