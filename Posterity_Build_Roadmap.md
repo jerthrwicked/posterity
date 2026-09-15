@@ -96,7 +96,6 @@ Build Items:
 
 - Record the subscription within Supabase on every successful payment
 - Webhook for subscription status changes
-- Webhook ending the Horizon subscription when the account initiates
 - Refunds through Stripe. Status: requires input. The refund policy is written and the mechanism is not — what the customer does, what staff do, what Stripe does, and what happens to the content. Carried within the founder work order
 - The three-month free trial. Status: requires input. What happens once the trial expires is specified in full. What the trial attaches to, and what it grants while it runs, is not. Carried within the founder work order
 
