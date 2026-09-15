@@ -10,6 +10,37 @@ Entries predating September 12, 2026 were written under stage numbering that has
 
 ---
 
+## Domain and Email
+
+| Item | Date Completed |
+| :-- | :-- |
+| DMARC record added through Cloudflare DMARC Management, with the policy set to monitoring only | September 15, 2026 |
+| Email forwarding enabled through Cloudflare Email Routing — admin@yourposterity.com forwards to posterity.admin@gmail.com, tested, as the receiving side of the Posterity email account | September 15, 2026 |
+| Domain yourposterity.com registered through Cloudflare, within a Posterity Cloudflare account under posterity.admin@gmail.com, separate from the founder's personal account | September 15, 2026 |
+
+---
+
+## Postmark
+
+| Item | Date Completed |
+| :-- | :-- |
+| Domain yourposterity.com verified, with the DKIM and Return-Path records added through Cloudflare and both active | September 15, 2026 |
+| Posterity server created as a Live server, sending through the default transactional stream | September 15, 2026 |
+| Account created on the free Developer tier under admin@yourposterity.com, not yet approved, so delivery reaches only addresses on yourposterity.com | September 15, 2026 |
+
+---
+
+## Twilio
+
+| Item | Date Completed |
+| :-- | :-- |
+| Incoming calls answered by a voicemail greeting and recorded within Twilio through two TwiML Bins, Posterity voicemail greeting and Posterity voicemail end, tested with a recorded message | September 15, 2026 |
+| Local number 504-358-3544 purchased in New Orleans, with voice, SMS, and MMS capability, and messaging disabled until carrier registration | September 15, 2026 |
+| Primary customer profile created for the founder as an individual | September 15, 2026 |
+| Account created under admin@yourposterity.com and upgraded to pay as you go as an individual, with a $20 starting balance | September 15, 2026 |
+
+---
+
 ## Claude Code Transition
 
 | Item | Date Completed |
@@ -142,6 +173,7 @@ The bridge is retired. Claude Code replaced it, and these entries stand as histo
 
 | Item | Date Completed |
 | :-- | :-- |
+| Custom domain connected within Vercel — www.yourposterity.com serves the site and yourposterity.com redirects to it, through records set to DNS only within Cloudflare, and posterity-seven.vercel.app remains valid | September 15, 2026 |
 | .cursorrules file created within the project root with full project context | June 7, 2026 |
 | Project Documents folder created within the project root | May 31, 2026 |
 | Vercel hosting configured, project live at posterity-seven.vercel.app | May 27, 2026 |
