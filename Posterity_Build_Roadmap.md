@@ -85,7 +85,8 @@ Build Items:
 - Update every Price ID within the codebase and the Vercel environment variables
 - Test checkout for each tier after every Price ID change
 - Horizon remains $9.99 per year, recurring. No change
-- Create Posterity Grace Storage at $4.99 per year. Admin-assigned through a unique access code, no public checkout
+- Create Posterity Grace Storage at $4.99 per year. Assigned to the account when a Grace plan request is approved, with no public checkout
+- A Grace plan carries no charge and no Stripe product. Approving a Grace plan request applies the Grace preset to that plan's record and moves the account's storage subscription to Grace Storage, which stays in place if the account later funds paid plans. An account holds one Grace plan year at most
 - Create Posterity non-recurring storage charge at the same price as Horizon. It covers a skipped plan year and an additional Reprise year alike. Skipped years are added to the cart automatically and stack per year. Reprise years are purchased on demand, by the customer in advance or by a Legacy Guard during the phase, so the charge must be payable outside the plan selection flow as well as within it
 - Create Additional Recipient slots, priced by tier: $5 on Basic, $12 on Premium, $25 on Legacy, writing the product description for each within Stripe. Alternative Recipients are fixed at two per piece of content across all tiers and are never purchasable
 - Create a Posterity Custom product with no fixed price. An admin sets each Custom plan's price on its plan record, and checkout passes that amount to Stripe at the moment of payment, so no per-customer products or Price IDs are created. A Custom plan checks out within the same cart as storage fees, skipped years, and Additional Recipient slots
@@ -132,7 +133,7 @@ Build Items:
 - Phase names on the homepage read Abeyance and Twilight. The confirmed names are Interlude and Reprise
 - Plan card bullets count messages and video messages. The confirmed terminology is Standard Deliveries and Feature Deliveries
 - Grace Storage does not appear
-- Custom and Grace route to a mail link rather than a contact surface
+- Custom routes to a mail link rather than a contact surface, and Grace is shown as Contact Us rather than as a free plan chosen at plan selection
 - Get Started routing is untested against the updated products
 - Various links contain incorrect or outdated material and some may be inactive
 - The site address variable, the Supabase authentication redirects, and the Stripe checkout return addresses still point at posterity-seven.vercel.app. Move each to www.yourposterity.com and retest login and checkout.
