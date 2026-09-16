@@ -199,6 +199,8 @@ The bridge is retired. Claude Code replaced it, and these entries stand as histo
 
 | Item | Date Completed |
 | :-- | :-- |
+| CLAUDE.md combined into one file for both builders, naming Posterity_Build_Roadmap.md and Posterity_Build_Log.md as the build record | September 15, 2026 |
+| Pre-commit hook (scripts/hooks/pre-commit) retargeted — a commit touching code, migrations, or scripts is rejected unless Posterity_Build_Log.md is also staged | September 15, 2026 |
 | Rule 31 added — the first Claude Code prompt each session checks whether npm run dev is running | June 13, 2026 |
 | Rules 26 through 33 established and documented within the context | June 3 to June 13, 2026 |
 | Rules 1 through 25 established and documented within the context | May 25 to June 2, 2026 |

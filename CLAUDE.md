@@ -1,164 +1,88 @@
 @AGENTS.md
 
-# 🔴 RULE 1 — UPDATE `BUILD/CHANGELOG.md`. EVERY TIME. NO EXCEPTIONS.
+# Posterity — CLAUDE.md
 
-**If you changed anything in this repo or in the database, you update `BUILD/CHANGELOG.md` before
-you stop. This is not a nice-to-have and it is not optional.**
+One file for every Claude Code session on this project, whoever is running it. Jeremy Grego is the founder. Walker Brown is the co-founder and builder. Both run Claude Code against this repository; Jeremy approves every push.
 
-**Why it is a hard rule, and not a habit:** we work on the `walker/build` branch and **we never push
-to Jeremy's repo.** He will never see a commit, a diff, or a pull request. GitHub will never tell
-him anything happened. **`BUILD/CHANGELOG.md` is the only record he gets that his own project
-changed.** If it is not in that file, from his point of view it did not happen — and he is the owner
-of this product.
-
-It matters most for the database. Code sits on a branch and can be thrown away with a `git reset`.
-**The migrations are live on his Supabase the moment they run.** Always mark database changes
-separately from code changes, so he never has to squint to see which ones are already real.
-
-**This is enforced.** A pre-commit hook rejects any commit that touches `app/`, `lib/`, `proxy.js`,
-or `supabase/migrations/` without also touching `BUILD/CHANGELOG.md`. If you find yourself reaching
-for `--no-verify`, you are about to do the exact thing this rule exists to prevent. Don't.
-*(Install the hook in a fresh clone with `bash scripts/install-hooks.sh`.)*
+Combined September 15, 2026 from Walker's July file and the September briefing. Jeremy's own July 22 CLAUDE.md exists only on his machine and is not in the repository yet; when it is committed, fold anything it adds into this file rather than keeping two.
 
 ---
 
-## Project memory — read this first
+## 1. The record — read this before doing anything
 
-**The gap between the documents and the code was the most important fact about this project.**
-Posterity has a 108KB context doc, a collaboration system, a PDF pipeline, and a Priority System
-with a mathematical foundation — and on the morning of 2026-07-13 the entire application was
-**1,040 lines**, could not sign up a user, and had a **completely empty database**. Do not let the
-volume of planning documents imply the product exists. **Check the code. Check the database.**
+Two markdown files at the repository root hold the build record and the authority. The Google Docs are readable copies and carry no authority. The copies under `Project Documents/` are outdated and are not the record.
 
-**Roles:** Jeremy Grego is the founder/owner. Walker is the builder and has Jeremy's full
-permission, including on Jeremy's Supabase. Claude.ai remains the planning/decision layer for
-product decisions; Claude Code executes.
+- **`Posterity_Build_Roadmap.md`** — every remaining build item, in suggested build order. Start with its *How to Use This Document* and *Current Status* sections.
+- **`Posterity_Build_Log.md`** — everything already built, by category, newest first within each. Nothing is ever removed from it.
 
-## Where the build actually is (end of 2026-07-13)
+The **Master Specification** governs what gets built. Each stage names the subjects to read within it. It is a Google Doc with no markdown export yet, so Claude Code cannot read it directly; the person running the session pulls the relevant sections in before building against them.
 
-**Phase 0 — done except Stripe.** Real signup (the account *and* the primary legacy are created by a
-database trigger, in the same transaction as the user — they cannot be skipped). Real server-side
-auth gate: `proxy.js` + a re-check on every private page + RLS, three layers. `/dashboard` signed out
-**307s before a byte of HTML is served**.
+**Session opening:** pull `main` and confirm it is at or after commit `e1d86e3`. Read both files in full.
 
-**Phase 1.1 — done.** `/dashboard/recipients`, `/dashboard/legacy` (messages, video, photos),
-`/dashboard/trusted-contacts`. Media sits in a **private** bucket, keyed to the account by its path,
-played back through signed URLs that expire in an hour.
+## 2. What Claude Code may do on its own
 
-**Not built, on purpose:** the **check-in and the trigger** (Phase 1.2). A false positive sends a
-living customer's goodbye messages to their family. **It gets designed before it gets written**, and
-the check-in and the trigger ship **together or not at all** — a check-in button wired to nothing is
-exactly what we deleted.
+**Build progress is the whole of the standing permission.** Work only on build items whose status reads *designed*, where nothing above them in the hierarchy carries another status. As of September 15: Stage 3.1 is open; Stage 3.2 requires input; Stage 3.5 requires system design; Stage 4 is not yet written.
 
-**Not built, blocked:** Stripe (Jeremy is repricing), the delivery engine, media compression,
-thumbnails, account deletion.
+When a build item is finished, in the same pass: remove it from its stage in the roadmap and add it to the matching category in the Build Log, newest first. Neither file is ever updated without the other. The Build Log records build items only, never document edits.
 
-**Every migration was tested against the live database as a real signed-in user, so RLS was actually
-exercised** — see `scripts/test-*.py`. Keep doing that. A second customer must never see the first
-one's legacy, and "it looks right" is not evidence.
+Change nothing else within either file without approval from Jeremy or Walker. Never edit the Master Specification, `CONTEXT_for_posterity.md`, or anything under `Project Documents/`.
 
-## Git — read before you commit
+**Print every change back rather than summarizing it, then stop.** A truncated or misplaced write surfaces while the work that produced it is still open.
 
-- **`main` is Jeremy's. It matches `origin/main` exactly and is never committed to.**
-- All of our work is on the **`walker/build`** branch.
-- **Pushing to Jeremy's repo is disabled at the git level** (push URL = `NO_PUSH_JEREMYS_REPO`), so
-  a stray `git push` fails loudly instead of quietly changing his repo. Undo only with his
-  agreement: `git remote set-url --push origin git@github.com:jerthrwicked/posterity.git`
-- **Our documents live in `BUILD/`. Everything outside it — `Project Documents/`,
-  `CONTEXT_for_posterity.md`, the PDFs — is Jeremy's and we do not edit it.**
+**Do not commit or push without approval, including after a correction.** Jeremy approves pushes. Ask for commit, push, and merge separately — never bundle them.
 
-## Our documents (`BUILD/`)
+Never place an API key, token, or password within the repository, the roadmap, the Build Log, or any document. `.env.local` is gitignored and is the only place secrets live. Never print a secret; the scripts echo names and lengths only.
 
-- **`BUILD/CHANGELOG.md`** — ⚠️ **update this at the end of every session, before you stop.** We
-  never push to Jeremy's repo, so this file — not GitHub — is the only record he gets of what
-  changed. Flag database changes separately from code changes: the DB ones are live on his project
-  and are not undone by a `git reset`.
-- **`BUILD/CODE_AUDIT.md`** — what is actually built, verified line by line. Read before believing
-  any roadmap.
-- **`BUILD/BUILD_ORDER.md`** — what to build, in order. Does not replace Jeremy's roadmap.
-- **`BUILD/POSTERITY_SOCIAL.md`** — the social pivot spec + six open questions.
+## 3. The database — changes here are live the moment they run
 
-**Phase 0 (make it real):** 0.1 schema ✅ **DONE** · 0.2 a signup that signs people up · 0.3
-server-side auth gate · 0.4 **fix the checkout, *then* the webhook — in that order.**
+Supabase project `vypytfmutmeyfwmkapjg`, Jeremy's account. Reach it with `bash scripts/sb.sh "<sql>"` or `bash scripts/sb.sh -f file.sql` (reads a Management API token from `.env.local`). Free tier: it pauses after about seven days idle and the first query wakes it.
 
-🔴 **The checkout is worse than "there's no webhook."** `app/api/create-checkout-session/route.js`
-sends Stripe **no user identity at all** — no `client_reference_id`, no `customer_email`, no
-`metadata` — so even a perfect webhook would have nothing to attach the money to. It also takes the
-**price ID from the client** (unvalidated), runs in **`mode: 'payment'`** so annual plans never
-renew, and **has no auth**. Fix the checkout first.
+A migration on `main` is not a migration applied — they run only when someone executes them against the project. **Every migration is tested against the live database as a real signed-in user** (`scripts/test-*.py`) so row-level security is actually exercised. "A second customer sees zero of the first one's legacy" is proven, not assumed.
 
-✅ **The fake check-in button is gone.** It read "✓ I'm Still Here" and was wired to **nothing** — a
-control that lies is worse than one that's absent. It comes back only alongside the trigger it holds
-back (Phase 1.2).
+In the Build Log, mark a database change as a database change, separately from code. Code on a branch is undone by a reset; a migration is undone only by another migration.
 
-## The live risks
+Schema: 14 tables, RLS on every one, 6 enums. Six migrations, all applied and live:
 
-1. **A check-in false positive is extinction-level** — a living customer's goodbye messages sent to
-   their family. Design the safeguards *before* the feature.
-2. **Meta delivery has two failure modes Buffer does not remove** — see below.
-3. **Consumer health data.** Posterity Social stores "user X has Stage 4 pancreatic cancer."
-   HIPAA likely doesn't apply, but Washington's **My Health My Data Act** does — and it carries a
-   **private right of action**. Needs a lawyer before launch.
-
-## Delivery — Meta STAYS. Posterity Social is ADDITIVE.
-
-> ⚠️ **A previous version of this file claimed Meta was dead and replaced by Posterity Social. That
-> was WRONG.** It was inferred from a secondhand summary and written into project memory as fact,
-> despite contradicting Jeremy's own context document. **Jeremy is the owner; when our notes
-> contradict his documents, ask him — do not record the contradiction as a decision.** No code was
-> affected; the error lived only in our documents.
-
-**Delivery goes OUT** — Facebook and Instagram (published via **Buffer**, to avoid building against
-the Meta API; direct API is an option later), plus email and SMS. **Posterity Social stays IN** — a
-walled, in-app network for the living phases, unlocked by the Horizon fee, where nothing is shared
-outward. Discovery runs on a **Focus** (the medical/life context — the trunk) plus generic **tags the
-Focus disambiguates** ("Shaking" under Parkinson's ≠ under anxiety). The walled garden is a rule
-about *Social*, not about delivery.
-
-**🔴 Buffer is itself a Graph API client.** It changes who writes the API code; it does not change
-what Meta permits or what expires. Two problems survive it:
-- **A ~60-day token against a 30-year promise.** Meta's long-lived tokens need re-authorization from
-  an active session. Over a 27-year account that's ~160 renewals, each needing a login to the
-  customer's Facebook — including after they die.
-- **Memorialization.** Any relative can report a death; Meta then **locks the account and nothing can
-  post to it, ever.** Outside Posterity's control *and* the customer's.
-
-**What follows is not "don't do it."** It is: **Meta cannot be the channel Posterity guarantees.**
-Email/SMS is the spine that always works; Meta is the bonus channel that usually will. That is why
-delivery is built **email first**. Full detail: `BUILD/POSTERITY_SOCIAL.md`.
-
-**Phase 0 is untouched by any of this** — signup, auth, checkout, and webhook are not delivery.
-
-## Database
-
-Supabase project **`vypytfmutmeyfwmkapjg`** (Jeremy's account — Walker's Supabase MCP CANNOT see it).
-Reach it with `bash scripts/sb.sh "<sql>"` or `bash scripts/sb.sh -f file.sql` (reads the token from
-`.env.local`, gitignored). Free tier — pauses after ~7 days idle; the first query wakes it.
-
-Schema: 14 tables, RLS on all. **Four migrations**, all applied and live:
 1. `20260713000000_initial_schema` — the first migration this project ever had
-2. `20260713120000_account_on_signup` — the account, guaranteed by the database
-3. `20260713140000_fallback_and_legacy` — **a recipient must have an email or a phone**, and every
-   account gets its primary legacy at signup
-4. `20260713160000_trusted_contacts` — reachability + one-primary, in one transaction
-5. `20260713180000_media_storage` — the **private** `legacy-media` bucket
+2. `20260713120000_account_on_signup` — the account row is created by a trigger in the same transaction as the user
+3. `20260713140000_fallback_and_legacy` — a recipient must have an email or a phone; every account gets its primary legacy at signup
+4. `20260713160000_trusted_contacts` — same reachability rule; promoting a primary is one database transaction (`set_primary_trusted_contact`, SECURITY INVOKER so RLS applies)
+5. `20260713180000_media_storage` — the private `legacy-media` bucket; 25 MB ceiling and formats enforced by the bucket; objects keyed to the account by path
+6. `20260716120000_trigger_staff_death_verification` — `staff_verified` and `vetoed` paths on `trigger_confirmations`, additive, nothing reads them yet
 
-It uses the product's own vocabulary — accounts move through six **phases** (horizon → planning →
-abeyance → active → twilight → posterity); **only accounts shift phases, plans move with them**; one
-plan = one delivery **year**. The trigger system is deliberately auditable: `trigger_confirmations`
-stores **both** verification steps as columns, so a trigger must be *proven*, never inferred.
-`account_phase_events` is append-only. **Clinical language is banned product-wide** — keep it out of
-code and comments too.
+Two constraints to understand before touching them: `recipients_reachable_without_meta` and `trusted_contacts_reachable`. A Facebook account can be memorialized by any relative, which locks it against posting forever. A recipient reachable only through Facebook is a message with nowhere to go; an unreachable trusted contact means the escalation has nowhere to go at all.
 
-**Two constraints worth understanding before you touch them:**
-- **`recipients_reachable_without_meta`** — a recipient must have an email or a phone. Meta can be
-  lost to memorialization, which any relative can trigger and which locks the account against posting
-  forever. A recipient reachable *only* through Facebook is a message with **nowhere to go**.
-- **`trusted_contacts_reachable`** — same, higher stakes: an unreachable trusted contact means the
-  six-notification escalation has nowhere to go at all.
+Vocabulary the schema uses: accounts move through phases; only accounts shift phases, plans move with them; one plan is one delivery year. `trigger_confirmations` stores both verification steps as columns so a trigger is proven, never inferred. `account_phase_events` is append-only. Say *account* for phase progression and *plan* for delivery configuration. Clinical mortality language stays out of anything customer-facing, including copy in code.
 
-**`.env.local` is complete** — all six values are in it (gitignored). Four came straight from the
-Management API via `scripts/fetch-supabase-keys.sh`. Note the `SUPABASE_ACCESS_TOKEN` there is a
-**Management API** token: it reaches the database via `sb.sh`, but it cannot run the app.
+## 4. Where the build stands (verified against the code and the live site, September 15, 2026)
 
-**Never print a secret.** The scripts write straight to `.env.local` and echo only names and lengths.
+**Live at www.yourposterity.com:** signup; a three-layer auth gate (`proxy.js` — Next 16's renamed middleware — plus `requireAccount()` on every private page, plus RLS; `/dashboard` signed out returns 307 before any HTML); recipients, messages with a delivery date, video and photo upload into the private bucket with one-hour signed URLs, trusted contacts with one primary; plan cards at the confirmed ladder ($49 / $129 / $399, Horizon $9.99).
+
+**Checkout:** signed-in user required; the client sends a plan choice and the price is resolved server-side from `lib/posterity/plans.js` — the single catalog of plan → tier → price → price ID → billing mode, so display and charge cannot drift; `mode:'subscription'` for Horizon, `mode:'payment'` for the one-time plans. Price IDs live in that file, not in environment variables. **Test mode only** — no live Stripe prices exist, and `.env.local` holds a test key. Checkout has not been run end to end in a browser.
+
+**Webhook, dormant:** `app/api/webhooks/stripe/route.js` is signature-verified and writes to `subscriptions` with the service-role key. It wakes when `STRIPE_WEBHOOK_SECRET` is set and the endpoint is registered in Stripe. Its initiate logic needs review first — which plan year a payment funds and skipped-year storage are not derivable from one price, and the one-time insert is not idempotent on retries.
+
+**Not built:** the check-in and the trigger; the delivery engine and the Communication Dispatch System; tier-based dashboard locking (it is locked behind login only); Grace Storage, the storage charge, additional recipient slots; media compression and thumbnails; account deletion (deleting a user does not delete their storage files).
+
+**Still on the site from before the confirmed decisions:** the phase names Abeyance and Twilight on the homepage (confirmed names: Interlude and Reprise); plan bullets counting messages rather than Standard and Feature Deliveries; Grace Storage absent; Custom and Grace routed to a mail link. The Stage 3.1 Site Consistency Sweep lists these.
+
+**Infrastructure, set up by hand September 15 (Jeremy):** domain at Cloudflare; site on Vercel at www.yourposterity.com with the apex redirecting; `admin@yourposterity.com` forwards in and cannot send; Postmark on the Developer tier, verified for the domain, unapproved so it delivers only to `@yourposterity.com`; Twilio pay as you go with a New Orleans number, voicemail via two TwiML Bins, messaging disabled until carrier registration. The site address variable, the Supabase auth redirects, and the Stripe return addresses still point at `posterity-seven.vercel.app`. API keys for Postmark and Twilio come from Jeremy directly when needed.
+
+## 5. The risks that shape the design
+
+1. **A check-in false positive is extinction-level** — a living customer's goodbye messages sent to their family. The check-in and the trigger are designed before they are written and ship together or not at all. The old "✓ I'm Still Here" button was deleted because it was wired to nothing; a control that lies is worse than one that is absent.
+2. **Meta cannot be the channel Posterity guarantees.** Delivery goes out over Facebook and Instagram (via Buffer), email, and text. Every layer of the Meta fallback needs the ability to log in, and memorialization removes that for all of them at once — and the recipients Posterity delivers to are the people most likely to report the death. Email and text are the spine, which is why delivery is built email first. Detail: `BUILD/META_DELIVERY.md`.
+3. **Consumer health data.** Posterity Social stores a customer's medical context. HIPAA likely does not apply; Washington's My Health My Data Act does, with a private right of action. Needs a lawyer before launch. Detail: `BUILD/POSTERITY_SOCIAL.md`.
+
+When Walker's notes or this file contradict Jeremy's documents, ask Jeremy. Do not record the contradiction as a decision — that mistake was made once (Meta was written up as dead; it is not) and is why this sentence is here.
+
+## 6. Git
+
+- `origin` is `git@github.com:jerthrwicked/posterity.git`. `main` is the record; only approved pushes reach it.
+- Walker's work happens on `walker/build`, merged to `main` on approval. Pull `--rebase` before every commit.
+- `scripts/hooks/pre-commit` (installed by `bash scripts/install-hooks.sh`) rejects any commit touching `app/`, `lib/`, `proxy.js`, `supabase/migrations/`, or `scripts/` unless `Posterity_Build_Log.md` is also staged — the Build Log is the record, and a build change that is not in it did not happen from the founder's side.
+- Windows checkouts fail on long paths because `posterity-mcp/node_modules` (4,069 files) is tracked. Until it is untracked, `git config --global core.longpaths true`.
+
+## 7. Files Walker authored
+
+`BUILD/CHANGELOG.md` was the record from July 13 until the Build Log took over; its entries are being carried across and it is no longer updated. `BUILD/CODE_AUDIT.md` is the July 13 read of the codebase. `BUILD/BUILD_ORDER.md` is superseded by the roadmap. `BUILD/META_DELIVERY.md` and `BUILD/POSTERITY_SOCIAL.md` are the two design notes above. `scripts/sb.sh`, `scripts/test-*.py`, `scripts/stripe-*.py` are the database and Stripe tools. `lib/posterity/plans.js` and `lib/posterity/account.js` are the catalog and the auth helper.

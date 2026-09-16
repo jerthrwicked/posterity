@@ -7,4 +7,4 @@ git config core.hooksPath scripts/hooks
 chmod +x scripts/hooks/*
 echo "✓ hooks installed (core.hooksPath = scripts/hooks)"
 echo "  pre-commit — blocks any commit that changes code or the database"
-echo "               without updating BUILD/CHANGELOG.md"
+echo "               without updating Posterity_Build_Log.md"

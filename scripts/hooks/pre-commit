@@ -1,38 +1,38 @@
 #!/usr/bin/env bash
 # Posterity — Rule 1 enforcement · Walker Brown
-# Rule 1: if you changed the app or the database, you update the changelog.
+# Rule 1: if you changed the app or the database, you update the Build Log.
 #
-# We never push to Jeremy's repo. BUILD/CHANGELOG.md is the ONLY record he gets
-# that his own project changed. A rule in CLAUDE.md is a request; this is a wall.
+# Posterity_Build_Log.md is the record of everything built. A rule in CLAUDE.md
+# is a request; this is a wall.
 set -euo pipefail
 
 STAGED="$(git diff --cached --name-only)"
 
-# Does this commit touch anything Jeremy would want to know about?
+# Does this commit touch anything that belongs in the Build Log?
 SUBSTANTIVE="$(printf '%s\n' "$STAGED" | grep -E '^(app/|lib/|proxy\.js$|supabase/migrations/|scripts/)' || true)"
 [ -n "$SUBSTANTIVE" ] || exit 0
 
 # Did it also update the changelog?
-printf '%s\n' "$STAGED" | grep -qx 'BUILD/CHANGELOG.md' && exit 0
+printf '%s\n' "$STAGED" | grep -qx 'Posterity_Build_Log.md' && exit 0
 
 cat >&2 <<'MSG'
 
-  ✗ COMMIT BLOCKED — BUILD/CHANGELOG.md was not updated.
+  ✗ COMMIT BLOCKED — Posterity_Build_Log.md was not updated.
 
-  This commit changes code or the database, but leaves the changelog alone.
+  This commit changes code or the database, but leaves the Build Log alone.
 
-  We never push to Jeremy's repo. He will not see this commit, this diff, or a
-  pull request. BUILD/CHANGELOG.md is the ONLY record he gets that his own
-  project changed. If it isn't in that file, from his side it did not happen.
+  Posterity_Build_Log.md is the record of everything built. A build change that
+  is not in it did not happen from the founder's side, and the roadmap item it
+  closes stays open.
 
-  Files in this commit that he'd want to know about:
+  Files in this commit that belong in the Build Log:
 MSG
 printf '      %s\n' $SUBSTANTIVE >&2
 cat >&2 <<'MSG'
 
-  Update BUILD/CHANGELOG.md and stage it, then commit again.
-  Mark DATABASE changes separately from code changes — the DB ones are live on
-  his Supabase and are not undone by a git reset.
+  Update Posterity_Build_Log.md (and the roadmap, same pass) and stage it, then commit again.
+  Mark DATABASE changes separately from code changes — the DB ones are already live on
+  Supabase and are not undone by a git reset.
 
   (--no-verify exists. Reaching for it here is doing the exact thing this hook
    is here to prevent.)
