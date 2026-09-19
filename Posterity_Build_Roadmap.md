@@ -48,11 +48,11 @@ A stage number, once assigned, always points at the same system, since cross-ref
 
 Claude Code edits this file as he builds. When a task is finished he removes it from its stage and writes it into the Build Log, so both files are edited every time something closes out. The roadmap is Posterity_Build_Roadmap.md and the log is Posterity_Build_Log.md, and neither is ever updated without the other. Build progress is the whole of his standing permission. Nothing else within either file changes without founder or co-founder approval, and he never edits the Master Specification or any other project document.
 
-Every other change is authored within a Claude.ai session. New sections are drafted and worked through in conversation, and edits to existing text are delivered as find and replace pairs, each carrying the exact existing string, the exact string replacing it, and the expected replacement count. The founder executes those against the Google Doc as work proceeds and edits the Doc by hand alongside them. Claude reads the live Doc before writing anything, since the founder edits as the session runs and a string written against stale text will not match.
+Every other change is authored within a Claude.ai session and approved there by the founder. The Doc is never edited by hand, since it is a copy and anything written into it is lost at the next refresh. Claude compiles the approved text into a Claude Code prompt naming the file, the exact existing text, and the exact text replacing it, with new text placed by what it follows and what follows it.
 
-Work reaches Claude Code once the Doc carries the finished text. Claude compiles it into a prompt naming the file, the exact text, and its position stated as what it follows and what follows it. Claude Code writes it into the markdown and prints the section back rather than reporting that he wrote it, which surfaces a truncated or misplaced write while the work that produced it is still open.
+Claude Code makes the change on a short branch of his own, cut from the latest main, and prints each changed section back rather than reporting that he wrote it, which surfaces a truncated or misplaced write while the work that produced it is still open. On the founder's approval he commits, pushes the branch, opens a pull request into main with the other founder as reviewer, and merges it at once, so the change reaches the other founder as a notification without waiting on him. The branch is deleted in the same step. Any builder working on a branch of his own merges main into it once the pull request lands, since every branch carries its own copy of this file.
 
-The markdown is the record and every change reaches it directly, whether it is build progress Claude Code writes on his own or authored text handed to him. Nothing is ever written back into the markdown from the Doc. The Doc is refreshed by pasting the markdown over the existing document, since a new document carries a new file identifier and every link pointing at the roadmap would stop resolving. The refresh happens at the end of a session, and more often where a second builder is closing out work, since the Doc goes stale the moment anything is written into the markdown.
+The markdown is the record and every change reaches it directly, whether it is build progress Claude Code writes on his own or authored text handed to him. Nothing is ever written back into the markdown from the Doc. The Doc is refreshed from main after every merge by pasting the markdown over the existing document with Paste from Markdown, since a new document carries a new file identifier and every link pointing at the roadmap would stop resolving. It is refreshed more often where a second builder is closing out work, since the Doc goes stale the moment anything is written into the markdown.
 
 # Current Status
 
@@ -148,18 +148,16 @@ Subjects: customer contact and communication, video and content delivery, legal 
 
 #### Carrier Registration
 
-Status: requires input. The registration route remains open.
+Status: requires input. Registration waits on the business formation and the Settings build within Stage 4.
 
 Carriers block text messages to United States numbers from any number not registered to an approved campaign, so text messaging stays disabled on the Posterity number until registration clears.
 
-Recommended route: register once the User Profiles opt-in panel exists, since the review asks for evidence of how a customer agrees to receive texts.
-
-Alternative route: register now, with opt-in evidence showing a flow that is not yet built, which risks rejection at review.
+Registration follows the business formation, since a company holding an employer identification number registers as a business rather than as a sole proprietor. It also follows the Settings build within Stage 4, since the review asks for evidence of how people agree to receive texts.
 
 Build Items:
 
 - Publish a privacy policy page and a text message terms page on yourposterity.com. Status: requires input. The registration form requires a public link to each. Copy for both pages remains unwritten and is carried within the founder work order.
-- Submit the brand and campaign registration, with a campaign description, sample messages, and the opt-in evidence. Status: requires input. The campaign description and sample messages remain unwritten, and whether the brand registers under the founder or the business depends on when registration happens.
+- Submit the brand and campaign registration, with a campaign description, sample messages, and the opt-in evidence. Status: requires input. The campaign description and sample messages remain unwritten, and the brand registers under the business.
 - Confirm SMS capability is configured and tested once the campaign is approved.
 - Confirm MMS capability, including the size ceiling per message, is configured and tested once the campaign is approved.
 
@@ -200,8 +198,8 @@ Build Items:
 - A queue holding what the scheduler returns, so a failure retries rather than disappearing. A send that exhausts its retries is recorded as a failure for the Operational Dashboard to surface in a later stage
 - A Postmark sender and a Twilio sender, each taking a message and a destination. Both are built as channels behind one interface, since Meta joins them as a third channel when social media publishing is built
 - A Postmark sandbox server for test sends. It accepts messages without delivering them, so testing does not draw from the free tier's monthly allowance.
-- Channel policy applied at send: email is the universal baseline and always goes, and text message layers on wherever a phone number is on file and text notifications are enabled
-- An event log recording every send by account and by outcome, so a delivery can be evidenced years later
+- Channel policy applied at send, texting only a person whose agreement is on file. This covers the sending window, immediate sends for texts a person sets off themselves, the confirmation text after each agreement, the Reassigned Numbers Database check, and inbound texts read for STOP replies and check-ins by text
+- An event log recording every send by account and by outcome, along with every agreement to texts and every stop, so a delivery can be evidenced years later
 - Message copy stored as a field the Communication Dispatch System reads rather than as text inside the trigger logic, so approved copy replaces placeholder copy as a content change rather than a code change
 - Postmark account approval, requested once this system sends email and the Site Consistency Sweep within Stage 3.1 is finished. Until approval, Postmark delivers only to addresses on yourposterity.com.
 
