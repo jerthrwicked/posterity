@@ -25,7 +25,7 @@ The **Master Specification** governs what gets built. Each stage names the subje
 
 When a build item is finished, in the same pass: remove it from its stage in the roadmap and add it to the matching category in the Build Log, newest first. Neither file is ever updated without the other. The Build Log records build items only, never document edits.
 
-Change nothing else within either file without approval from Jeremy or Walker. Never edit the Master Specification, `CONTEXT_for_posterity.md`, or anything under `Project Documents/`.
+Change nothing else within either file without approval from Jeremy or Walker. Never edit the Master Specification, `Posterity_Master_Specification.md`, or anything under `Project Documents/`.
 
 **Print every change back rather than summarizing it, then stop.** A truncated or misplaced write surfaces while the work that produced it is still open.
 
