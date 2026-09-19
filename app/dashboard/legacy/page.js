@@ -3,6 +3,7 @@ import { requireAccount } from '../../../lib/posterity/account'
 import { Wordmark } from '../../components/brand/Wordmark'
 import { LogoutButton } from '../LogoutButton'
 import { Composer } from './Composer'
+import { StorageNotice } from '../../components/StorageNotice'
 import { deleteMessage } from './actions'
 
 function formatDate(d) {
@@ -18,7 +19,7 @@ function formatDate(d) {
 }
 
 export default async function Legacy() {
-  const { supabase, account, legacy } = await requireAccount()
+  const { supabase, account, legacy, canBuild } = await requireAccount()
 
   const [{ data: recipients }, { data: items }] = await Promise.all([
     supabase
@@ -63,7 +64,11 @@ export default async function Legacy() {
           you&rsquo;re here.
         </p>
 
-        <Composer recipients={recipients ?? []} accountId={account.id} legacyId={legacy?.id} />
+        {canBuild ? (
+          <Composer recipients={recipients ?? []} accountId={account.id} legacyId={legacy?.id} />
+        ) : (
+          <StorageNotice />
+        )}
 
         <div className="mt-12">
           <h2 className="text-sm uppercase tracking-widest text-gray-600 mb-5">

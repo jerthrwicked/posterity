@@ -3,9 +3,15 @@
 // Posterity — recipient actions · Walker Brown
 import { revalidatePath } from 'next/cache'
 import { requireAccount } from '../../../lib/posterity/account'
+import { STORAGE_LAPSED_MESSAGE } from '../../../lib/posterity/storage'
 
 export async function addRecipient(_prev, formData) {
-  const { supabase, account } = await requireAccount()
+  const { supabase, account, canBuild } = await requireAccount()
+
+  // Building is paused while storage is not current (Master Spec, Horizon Tier
+  // and Storage Lapse Grace Period). The database refuses the write anyway;
+  // this says why in the customer's own words instead of an RLS error.
+  if (!canBuild) return { error: STORAGE_LAPSED_MESSAGE }
 
   const name = (formData.get('name') || '').trim()
   const email = (formData.get('email') || '').trim()

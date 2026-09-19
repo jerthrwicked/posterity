@@ -10,6 +10,19 @@ Entries predating September 12, 2026 were written under stage numbering that has
 
 ---
 
+## Storage and Trial
+
+The storage state every build gate reads. Master Specification, Horizon Tier and Storage Lapse Grace Period.
+
+| Item | Date Completed |
+| :-- | :-- |
+| Building refuses in the app while storage is not current: add message, add media, and add recipient return "Your storage is not current, so building is paused. Everything you have made is safe and still here. Renew storage to keep building."; the Legacy and Recipients pages show that notice in place of the form; the dashboard shows the trial days left or that storage is current (`lib/posterity/storage.js`, `lib/posterity/account.js` returns `canBuild`, `app/components/StorageNotice.js`) | September 18, 2026 |
+| Live test as a signed-in user, 18 checks: trial open builds; the customer cannot move their own dates; trial over refuses insert, update, and media upload while read and delete still work; paid through today opens; paid through yesterday closes (`scripts/test-storage-gate.py`) | September 18, 2026 |
+| **Database change** — `20260918123000_storage_paid_through_whole_day`: `storage_is_current()` replaced so a paid-through date holds until that date has ended in every timezone (UTC−12); found by the live test at 9 PM Central, when the database's own day had already turned. Applied and live | September 18, 2026 |
+| **Database change** — `20260918120000_trial_and_storage_state`: `accounts.trial_ends_at` (signup + three months, one per account, held in Supabase, no payment method) and `accounts.storage_paid_through` (last calendar day paid storage covers, empty until the first storage payment), backfilled for existing accounts; `storage_is_current(account)`; restrictive row-level security on `content_items` and `recipients` refusing insert and update while storage is not current, with select and delete left open and trusted contacts left open; the `legacy-media` bucket refuses uploads from a lapsed account; a trigger stops a customer changing either date through the API — only the server writes them. Applied and live | September 18, 2026 |
+
+---
+
 ## Domain and Email
 
 | Item | Date Completed |
@@ -112,6 +125,8 @@ The bridge is retired. Claude Code replaced it, and these entries stand as histo
 
 | Item | Date Completed |
 | :-- | :-- |
+| Checkout rebuilt: a signed-in user is required; the client sends a plan choice and the price is resolved server-side from `lib/posterity/plans.js`, the single catalog of plan, tier, price, Price ID, and billing mode; the account identity is carried on the Stripe session; Horizon runs in subscription mode and the one-time plans in payment mode. A signature-verified webhook (`app/api/webhooks/stripe/route.js`) is written and dormant until the endpoint is registered and its secret set; its initiate logic is reworked against the plan record within Stage 3.1 | July 16, 2026 |
+| Confirmed ladder in place: Basic $49, Premium $129, Legacy $399 per plan year, Horizon $9.99 per year recurring and unchanged; the two missing one-time prices created in Stripe test mode (`scripts/stripe-create-newladder.py`) and every Price ID held in the codebase, so display matches charge; plan cards on the homepage and the Plans page show the confirmed ladder. Test mode only, no live prices | July 15, 2026 |
 | Stripe MCP added to mcp.json | June 7, 2026 |
 | Stripe checkout working and tested for all tiers | June 3, 2026 |
 | Stripe sandbox account created | June 1, 2026 |

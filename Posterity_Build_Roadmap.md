@@ -56,11 +56,13 @@ The markdown is the record and every change reaches it directly, whether it is b
 
 # Current Status
 
-As of September 15, 2026.
+As of September 18, 2026.
 
 The Master Specification is current. The Social Media Integration design record is complete and is the single authoritative copy of every rule within it. Posterity Social is complete in concept and awaits its own design pass. Every build-stage reference has been swept out of the Master Specification, so this file is the only place build order is recorded.
 
-Walker Brown pushed sixteen commits between July 13 and July 16, 2026, covering schema, authentication, checkout at the confirmed ladder, content creation, a BUILD folder, and his own CLAUDE.md. None of that work is recorded within the Build Log. An account from him of what each area covers, what state it is in, and which version of the design it was built against may close build items within Stage 3.1 and within Stage 4 as it is written.
+Walker Brown's July 2026 work is now recorded within the Build Log where it closes a build item: the confirmed ladder and its Price IDs, Horizon as a recurring subscription, the checkout rebuilt around a server-side catalog, and the plan cards at the confirmed ladder. The Stripe webhook is written and signature-verified but dormant, and its initiate logic waits on the plan-record checkout described below. Checkout has not yet been run end to end in a browser, and Stripe holds test-mode prices only.
+
+The storage state is built and live as of September 18: the three-month free trial on every account, a paid-through date the server alone writes, and a gate at the database that pauses building — not viewing — while storage is not current. Every remaining payment item writes to that state. What remains within Stage 3.1 is the plan-record checkout (a plan carries its own plan year; the cart adds a storage fee per skipped year and the storage fee itself when it is not current), the storage products in Stripe, the webhook rework against the plan record, PayPal, test clocks, and the Site Consistency Sweep.
 
 Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 requires input and Stage 3.5 requires system design, and neither holds up the stages around it. Stage 4 onward is unwritten. The payment model is decided: upfront pre-load with year-by-year release.
 
@@ -80,11 +82,9 @@ Price IDs matching the current ladder may already exist within Stripe, created o
 
 Build Items:
 
-- Update prices to the confirmed ladder: Basic $49, Premium $129, Legacy $399 per plan year
-- Generate new Price IDs for each
-- Update every Price ID within the codebase and the Vercel environment variables
-- Test checkout for each tier after every Price ID change
-- Horizon remains $9.99 per year, recurring. No change
+- Test checkout for each tier in a browser, end to end, and after every Price ID change
+- Replace the three plan product descriptions within Stripe, which still carry the retired ladder and count messages rather than Standard and Feature Deliveries. Checkout shows the description beside the price
+- Grace Storage and Horizon exist within Stripe test mode as yearly recurring products as of September 18, 2026. Carry the new Horizon Price ID into `lib/posterity/plans.js` and add Grace Storage there, marked as assigned by the server with no public checkout
 - Create Posterity Grace Storage at $4.99 per year. Assigned to the account when a Grace plan request is approved, with no public checkout
 - A Grace plan carries no charge and no Stripe product. Approving a Grace plan request applies the Grace preset to that plan's record and moves the account's storage subscription to Grace Storage, which stays in place if the account later funds paid plans. An account holds one Grace plan year at most
 - Create Posterity non-recurring storage charge at the same price as Horizon. It covers a skipped plan year and an additional Reprise year alike. Skipped years are added to the cart automatically and stack per year. Reprise years are purchased on demand, by the customer in advance or by a Legacy Guard during the phase, so the charge must be payable outside the plan selection flow as well as within it
@@ -103,7 +103,6 @@ Build Items:
 - Set Stripe to retry a failed storage charge once, three days after the first attempt. Record within Supabase when that retry fails or a payment request goes unpaid past its due date, so the storage lapse sequence built within Stage 4 can begin from it
 - Test storage renewal by card using Stripe's test clocks: a successful automatic payment, a charge that fails its retry, a renewal with automatic payments turned off, and a renewal following prepaid years
 - Refunds through Stripe. Status: requires input. The refund policy is written and the mechanism is not — what the customer does, what staff do, what Stripe does, and what happens to the content. Carried within the founder work order
-- The three-month free trial, held within Supabase rather than Stripe since it takes no payment method: one per account, beginning at signup, granting content building without Posterity Social access
 
 #### PayPal
 
@@ -120,7 +119,6 @@ Build Items:
 
 Build Items:
 
-- Lock the dashboard behind subscription tier
 - Open intake at launch. No approval gating, cold traffic from day one
 
 #### Site Consistency Sweep
@@ -129,7 +127,6 @@ Runs after the Stripe work, not before it. The live application carries content 
 
 Build Items:
 
-- Plan cards on both the homepage and the Plans page show the retired ladder of $99, $249, and $899
 - Phase names on the homepage read Abeyance and Twilight. The confirmed names are Interlude and Reprise
 - Plan card bullets count messages and video messages. The confirmed terminology is Standard Deliveries and Feature Deliveries
 - Grace Storage does not appear
