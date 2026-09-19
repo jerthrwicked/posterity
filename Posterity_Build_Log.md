@@ -173,6 +173,8 @@ The bridge is retired. Claude Code replaced it, and these entries stand as histo
 
 | Item | Date Completed |
 | :-- | :-- |
+| Posterity_Master_Specification.md and Social_Media_Integration_System.md added as exports of their Google Docs, replacing CONTEXT_for_posterity.md | September 19, 2026 |
+| Repository cleanup — retired Cursor tooling, the PDF pipeline, and the Project Documents copies removed | September 19, 2026 |
 | Custom domain connected within Vercel — www.yourposterity.com serves the site and yourposterity.com redirects to it, through records set to DNS only within Cloudflare, and posterity-seven.vercel.app remains valid | September 15, 2026 |
 | .cursorrules file created within the project root with full project context | June 7, 2026 |
 | Project Documents folder created within the project root | May 31, 2026 |
