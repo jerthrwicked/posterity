@@ -148,18 +148,16 @@ Subjects: customer contact and communication, video and content delivery, legal 
 
 #### Carrier Registration
 
-Status: requires input. The registration route remains open.
+Status: requires input. Registration waits on the business formation and the Settings build within Stage 4.
 
 Carriers block text messages to United States numbers from any number not registered to an approved campaign, so text messaging stays disabled on the Posterity number until registration clears.
 
-Recommended route: register once the User Profiles opt-in panel exists, since the review asks for evidence of how a customer agrees to receive texts.
-
-Alternative route: register now, with opt-in evidence showing a flow that is not yet built, which risks rejection at review.
+Registration follows the business formation, since a company holding an employer identification number registers as a business rather than as a sole proprietor. It also follows the Settings build within Stage 4, since the review asks for evidence of how people agree to receive texts.
 
 Build Items:
 
 - Publish a privacy policy page and a text message terms page on yourposterity.com. Status: requires input. The registration form requires a public link to each. Copy for both pages remains unwritten and is carried within the founder work order.
-- Submit the brand and campaign registration, with a campaign description, sample messages, and the opt-in evidence. Status: requires input. The campaign description and sample messages remain unwritten, and whether the brand registers under the founder or the business depends on when registration happens.
+- Submit the brand and campaign registration, with a campaign description, sample messages, and the opt-in evidence. Status: requires input. The campaign description and sample messages remain unwritten, and the brand registers under the business.
 - Confirm SMS capability is configured and tested once the campaign is approved.
 - Confirm MMS capability, including the size ceiling per message, is configured and tested once the campaign is approved.
 
@@ -200,8 +198,8 @@ Build Items:
 - A queue holding what the scheduler returns, so a failure retries rather than disappearing. A send that exhausts its retries is recorded as a failure for the Operational Dashboard to surface in a later stage
 - A Postmark sender and a Twilio sender, each taking a message and a destination. Both are built as channels behind one interface, since Meta joins them as a third channel when social media publishing is built
 - A Postmark sandbox server for test sends. It accepts messages without delivering them, so testing does not draw from the free tier's monthly allowance.
-- Channel policy applied at send: email is the universal baseline and always goes, and text message layers on wherever a phone number is on file and text notifications are enabled
-- An event log recording every send by account and by outcome, so a delivery can be evidenced years later
+- Channel policy applied at send, texting only a person whose agreement is on file. This covers the sending window, immediate sends for texts a person sets off themselves, the confirmation text after each agreement, the Reassigned Numbers Database check, and inbound texts read for STOP replies and check-ins by text
+- An event log recording every send by account and by outcome, along with every agreement to texts and every stop, so a delivery can be evidenced years later
 - Message copy stored as a field the Communication Dispatch System reads rather than as text inside the trigger logic, so approved copy replaces placeholder copy as a content change rather than a code change
 - Postmark account approval, requested once this system sends email and the Site Consistency Sweep within Stage 3.1 is finished. Until approval, Postmark delivers only to addresses on yourposterity.com.
 
