@@ -4,13 +4,13 @@
 
 This document is the living instruction manual for building Posterity. It carries every remaining build item in suggested build order. A working reference for the founder, for collaborators, and for the Claude Code instances that build from it. Completeness and accuracy come before presentation.
 
-The Master Specification is the reference this file points at. The roadmap states what gets built and in what order. The specification states what the thing is and how it behaves. Where the two disagree, the specification wins and the roadmap is corrected. Every stage names the subjects its work is governed by. The builder searches the specification for them and reads what returns before writing anything, so the work begins from a body of material rather than from a task list alone.
+The Master Specification is the reference this file points at. The roadmap states what gets built and in what order. The specification states what the thing is and how it behaves. Where the two disagree, the specification wins and the roadmap is corrected. Every stage names the subjects its work is governed by. The builder searches the markdown exports of the specification and its design records for them, and reads what returns before writing anything, so the work begins from a body of material rather than from a task list alone.
 
-Link: [Posterity Master Specification 9/12](https://docs.google.com/document/d/14OoN3GlzDnJjo0ll6hIN6pjU7nCEsWB2MA39R-jWhPY/edit?usp=sharing)
+Link: [Posterity Master Specification](https://docs.google.com/document/d/14OoN3GlzDnJjo0ll6hIN6pjU7nCEsWB2MA39R-jWhPY/edit?usp=sharing)
 
 Design and writing work carried by the founder lives within a separate work order. Stages that wait on an item there say so.
 
-Link: [Stage Zero - Founder Build Roadmap](https://docs.google.com/document/d/1YdA0yvA2-0Lxhvv06IcM8x7CG2HYl7lRm7ldr3EGUaM/edit?usp=sharing)
+Link: [Posterity Founder Build Roadmap](https://docs.google.com/document/d/1YdA0yvA2-0Lxhvv06IcM8x7CG2HYl7lRm7ldr3EGUaM/edit?usp=sharing)
 
 **Project Files**
 
@@ -40,7 +40,9 @@ Status types:
 
 All statuses maintain the ability to be shifted into another status if warranted. Resolutions of statuses, as well as any status shifts, must be appropriately maintained on progression.
 
-User Profiles is a container rather than a feature. Stage 4.5 builds its shell and the panels that stage owns (added prior to Stage 4 roadmap creation). Every later stage that adds a panel carries a line reading User Profiles insertion, naming what it adds. No stage waits on another to touch it.
+User Profiles and Settings are containers rather than features. Stage 4.3 builds the User Profiles shell and Stage 4.2 builds Settings, each with the panels its own stage owns. Every later stage that adds to either carries a line reading User Profiles insertion or Settings insertion, naming what it adds. No stage waits on another to touch them.
+
+Customer-facing text the build needs, and that has no approved copy yet, is built as a placeholder. A placeholder is stored as a field the code reads rather than written into its logic, so approved copy later replaces it as a content change. Every placeholder opens with the marker [Placeholder: and names the Writing Requirements item within the Founder Build Roadmap it waits on. Once that copy is approved, Claude Code finds the placeholder by its marker and replaces it. Copy already approved within the Master Specification, whether in Brand Copy or quoted within a section, is used exactly as written. Before launch, a search for the marker returns nothing, so no placeholder reaches a customer.
 
 A stage number, once assigned, always points at the same system, since cross-references throughout the project depend on it. A system that earns its own number later takes the next decimal within the stage it sits in rather than forcing a renumber. The Master Specification carries no stage numbers, by design. Build order lives here and nowhere else.
 
@@ -56,13 +58,15 @@ The markdown is the record and every change reaches it directly, whether it is b
 
 # Current Status
 
-As of September 15, 2026.
+As of September 19, 2026.
 
-The Master Specification is current. The Social Media Integration design record is complete and is the single authoritative copy of every rule within it. Posterity Social is complete in concept and awaits its own design pass. Every build-stage reference has been swept out of the Master Specification, so this file is the only place build order is recorded.
+The Master Specification is current. The Social Media Integration and Delivery System design records are complete, and each is the single authoritative copy of every rule within it. Posterity Social is complete in concept and awaits its own design pass. Every build-stage reference has been swept out of the Master Specification, so this file is the only place build order is recorded.
 
-Walker Brown pushed sixteen commits between July 13 and July 16, 2026, covering schema, authentication, checkout at the confirmed ladder, content creation, a BUILD folder, and his own CLAUDE.md. None of that work is recorded within the Build Log. An account from him of what each area covers, what state it is in, and which version of the design it was built against may close build items within Stage 3.1 and within Stage 4 as it is written.
+Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 requires input and Stage 3.5 requires system design, and neither holds up the stages around it. Earlier Stripe work is redone within Stage 3.1. The payment model is decided: upfront pre-load with year-by-year release.
 
-Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 requires input and Stage 3.5 requires system design, and neither holds up the stages around it. Stage 4 onward is unwritten. The payment model is decided: upfront pre-load with year-by-year release.
+Stage 4 is being written within a separate outline and lands here once each sub-stage is reconfirmed. Its numbering is fixed: 4.1 Account Status, 4.2 Settings, 4.3 User Profiles, 4.4 Video and Image Systems, 4.5 Content Builder and Delivery System, 4.6 Legacy Guard Setup, 4.7 Account Lifecycle and Delivery Automation, 4.8 Check-in System, and 4.9 Test and Preview Mode. Every stage after Stage 4 is unwritten.
+
+Link: [Stage 4 Outline](https://docs.google.com/document/d/1AsaowbnlZ9CoX4lDu70yzBmQh5ex1WmvacbCr2wxVpY/edit?usp=sharing)
 
 # STAGE 3
 
@@ -70,7 +74,7 @@ Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read 
 
 Status: designed.
 
-Payment is the first thing the application needs and nothing else within the build depends on it, so it opens the sequence. Subjects: subscription tiers, the Horizon tier, Build Your Own and Grace, plan years and skipped years, additional recipients, and the financial architecture.
+Payment is the first thing the application needs and nothing else within the build depends on it, so it opens the sequence. Subjects: subscription tiers, the Horizon tier, custom plans and Posterity Grace, plan years and skipped years, additional recipients, and the financial architecture.
 
 #### Confirmation Before Any Change
 
@@ -86,8 +90,8 @@ Build Items:
 - Test checkout for each tier after every Price ID change
 - Horizon remains $9.99 per year, recurring. No change
 - Create Posterity Grace Storage at $4.99 per year. Assigned to the account when a Grace plan request is approved, with no public checkout
-- A Grace plan carries no charge and no Stripe product. Approving a Grace plan request applies the Grace preset to that plan's record and moves the account's storage subscription to Grace Storage, which stays in place if the account later funds paid plans. An account holds one Grace plan year at most
-- Create Posterity non-recurring storage charge at the same price as Horizon. It covers a skipped plan year and an additional Reprise year alike. Skipped years are added to the cart automatically and stack per year. Reprise years are purchased on demand, by the customer in advance or by a Legacy Guard during the phase, so the charge must be payable outside the plan selection flow as well as within it
+- A Grace plan carries no charge and no Stripe product. Approving a Grace plan request places one Grace plan year carrying the Grace preset and moves the account's storage subscription to Grace Storage, which stays in place if the account later funds paid plans. An account holds one Grace plan year at most
+- Create Posterity non-recurring storage charge at the same price as Horizon. It covers a skipped plan year and an additional Reprise year alike. Skipped years are added to the cart automatically and stack per year. Reprise years are purchased on demand, by the customer in advance or by a Legacy Guard during the phase, so the charge is payable within plan selection, Purchases, and the Legacy Guard portal
 - Create Additional Recipient slots, priced by tier: $5 on Basic, $12 on Premium, $25 on Legacy, writing the product description for each within Stripe. Alternative Recipients are fixed at two per piece of content across all tiers and are never purchasable
 - Create a Posterity Custom product with no fixed price. An admin sets each Custom plan's price on its plan record, and checkout passes that amount to Stripe at the moment of payment, so no per-customer products or Price IDs are created. A Custom plan checks out within the same cart as storage fees, skipped years, and Additional Recipient slots
 - Storage fees are payable in advance for any number of years a customer chooses
@@ -100,7 +104,7 @@ Build Items:
 
 - Record the subscription within Supabase on every successful payment
 - Webhook for subscription status changes
-- Set Stripe to retry a failed storage charge once, three days after the first attempt. Record within Supabase when that retry fails or a payment request goes unpaid past its due date, so the storage lapse sequence built within Stage 4 can begin from it
+- Set Stripe to retry a failed storage charge once, three days after the first attempt. Record within Supabase when that retry fails or a payment request goes unpaid past its due date, so the storage lapse sequence built within Stage 4.7 can begin from it
 - Test storage renewal by card using Stripe's test clocks: a successful automatic payment, a charge that fails its retry, a renewal with automatic payments turned off, and a renewal following prepaid years
 - Refunds through Stripe. Status: requires input. The refund policy is written and the mechanism is not — what the customer does, what staff do, what Stripe does, and what happens to the content. Carried within the founder work order
 - The three-month free trial, held within Supabase rather than Stripe since it takes no payment method: one per account, beginning at signup, granting content building without Posterity Social access
@@ -120,7 +124,7 @@ Build Items:
 
 Build Items:
 
-- Lock the dashboard behind subscription tier
+- Dashboard access is governed by the account status check built within Stage 4.1
 - Open intake at launch. No approval gating, cold traffic from day one
 
 #### Site Consistency Sweep
@@ -148,11 +152,11 @@ Subjects: customer contact and communication, video and content delivery, legal 
 
 #### Carrier Registration
 
-Status: requires input. Registration waits on the business formation and the Settings build within Stage 4.
+Status: requires input. Registration waits on the business formation and the Settings build within Stage 4.2.
 
 Carriers block text messages to United States numbers from any number not registered to an approved campaign, so text messaging stays disabled on the Posterity number until registration clears.
 
-Registration follows the business formation, since a company holding an employer identification number registers as a business rather than as a sole proprietor. It also follows the Settings build within Stage 4, since the review asks for evidence of how people agree to receive texts.
+Registration follows the business formation, since a company holding an employer identification number registers as a business rather than as a sole proprietor. It also follows the Settings build within Stage 4.2, since the review asks for evidence of how people agree to receive texts.
 
 Build Items:
 
@@ -188,7 +192,7 @@ Status: designed.
 
 The single path every automated message within Posterity takes on its way out. The system itself is specified in full within the Master Specification, and what is built here is the mechanism rather than any cascade that calls it. Social media is a third channel of the same system and is built within the Meta stage.
 
-It is built in this early stage because the Check-in System and the delivery automation both call it, and both are built within Stage 4.3 and Stage 4.4 (added prior to Stage 4 roadmap creation). It depends on Twilio and Postmark, since both are the channels it sends through. Its email channel sends live through Postmark, and its text message channel is built and tested against Twilio's test credentials, so this stage does not wait on carrier registration within Stage 3.2. Cascades are not built here. Each is built within the stage that owns its trigger, and each is a caller rather than a part of the Communication Dispatch System.
+It is built in this early stage because the delivery automation and the Check-in System both call it, and both are built within Stage 4.7 and Stage 4.8. It depends on Twilio and Postmark, since both are the channels it sends through. Its email channel sends live through Postmark, and its text message channel is built and tested against Twilio's test credentials, so this stage does not wait on carrier registration within Stage 3.2. Cascades are not built here. Each is built within the stage that owns its trigger, and each is a caller rather than a part of the Communication Dispatch System.
 
 Subjects: the Communication Dispatch System, customer contact and communication, delivery, automation summary.
 
