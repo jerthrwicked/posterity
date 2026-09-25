@@ -62,9 +62,9 @@ As of September 25, 2026.
 
 The Master Specification is current. The Social Media Integration and Delivery System design records are complete, and each is the single authoritative copy of every rule within it. Posterity Social is complete in concept and awaits its own design pass. Every build-stage reference has been swept out of the Master Specification, so this file is the only place build order is recorded.
 
-Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 requires input and Stage 3.5 requires system design, and neither holds up the stages around it. Walker's July Stripe work stands in test mode, and Stage 3.1 holds what remains. The payment model is decided: upfront pre-load with year-by-year release.
+Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 requires input and Stage 3.5 requires system design, and neither holds up the stages around it. Walker's July Stripe work stands in test mode, and Stage 3.1 holds what remains. Stage 3.4 is under way. Its storage is applied to the live database, and the build resumes at the Postmark sandbox server. The payment model is decided: upfront pre-load with year-by-year release.
 
-Stage 4 is being written within a separate outline and lands here once each sub-stage is reconfirmed. Its numbering is fixed: 4.1 Account Status, 4.2 Settings, 4.3 User Profiles, 4.4 Video and Image Systems, 4.5 Content Builder and Delivery System, 4.6 Legacy Guard Setup, 4.7 Account Lifecycle and Delivery Automation, 4.8 Check-in System, and 4.9 Test and Preview Mode. Every stage after Stage 4 is unwritten.
+Stage 4 is being written within a separate outline and lands here once each sub-stage is reconfirmed. Its numbering is fixed: 4.1 Account Status, 4.2 Settings, 4.3 User Profiles, 4.4 Video and Image Systems, 4.5 Content Builder and Delivery System, 4.6 Legacy Guard Setup, 4.7 Account Lifecycle and Delivery Automation, 4.8 Check-in System, and 4.9 Preview Mode. Every stage after Stage 4 is unwritten.
 
 Link: [Stage 4 Outline](https://docs.google.com/document/d/1AsaowbnlZ9CoX4lDu70yzBmQh5ex1WmvacbCr2wxVpY/edit?usp=sharing)
 
@@ -155,6 +155,7 @@ Build Items:
 
 - Publish a privacy policy page and a text message terms page on yourposterity.com. Status: requires input. The registration form requires a public link to each. Copy for both pages remains unwritten and is carried within the founder work order.
 - Submit the brand and campaign registration, with a campaign description, sample messages, and the opt-in evidence. Status: requires input. The campaign description and sample messages remain unwritten, and the brand registers under the business.
+- Register an account with the Reassigned Numbers Database at reassigned.us, submitted alongside the brand and campaign registration. The number check within Stage 3.4 waits on it.
 - Confirm SMS capability is configured and tested once the campaign is approved.
 - Confirm MMS capability, including the size ceiling per message, is configured and tested once the campaign is approved.
 
@@ -175,7 +176,7 @@ Subjects: customer contact and communication.
 
 Build Items:
 
-- Set up sending from admin@yourposterity.com. Status: requires input. The address receives through forwarding into posterity.admin@gmail.com and cannot send replies, and the Google Workspace evaluation that would allow it is tabled within the specification.
+- Set up automated sending from posterity@yourposterity.com. Replies go to admin@yourposterity.com under the rule held within Customer Contact and Communication. Mail sent to the address directly forwards through Cloudflare, the same as admin@yourposterity.com.
 - Move the domain's email authentication policy beyond monitoring. Status: requires input. The policy stays at monitoring until its reports show every legitimate sender passing, including Postmark and the forwarding.
 - Move to the Basic plan when the first customer subscribes. The free tier stops delivering at its cap rather than billing an overage, so this is a launch condition rather than a judgment.
 
@@ -198,6 +199,7 @@ Build Items:
 - Channel policy applied at send, texting only a person whose agreement is on file. This covers the sending window, immediate sends for texts a person sets off themselves, the confirmation text after each agreement, the Reassigned Numbers Database check, and inbound texts read for STOP replies and check-ins by text
 - An event log recording every send by account and by outcome, along with every agreement to texts and every stop, so a delivery can be evidenced years later
 - Message copy stored as a field the Communication Dispatch System reads rather than as text inside the trigger logic, so approved copy replaces placeholder copy as a content change rather than a code change
+- The email frame, as Customer Contact and Communication describes it. Every automated email and its plain-text version render from it.
 - Postmark account approval, requested once this system sends email and the Site Consistency Sweep within Stage 3.1 is finished. Until approval, Postmark delivers only to addresses on yourposterity.com.
 
 ### STAGE 3.5 — Hosting Migration
