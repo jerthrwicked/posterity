@@ -100,7 +100,7 @@ Build Items:
 - Activate the webhook by setting STRIPE_WEBHOOK_SECRET and registering the endpoint for checkout.session.completed, customer.subscription.updated, and customer.subscription.deleted
 - Set Stripe to retry a failed storage charge once, three days after the first attempt. Record within Supabase when that retry fails or a payment request goes unpaid past its due date, so the account status check built within Stage 4.1 and the storage lapse sequence built within Stage 4.7 can both read it
 - Test storage renewal by card using Stripe's test clocks: a successful automatic payment, a charge that fails its retry, a renewal with automatic payments turned off, and a renewal following prepaid years
-- Refunds through Stripe. Status: requires input. The refund policy is written and the mechanism is not — what the customer does, what staff do, what Stripe does, and what happens to the content. Carried within the founder work order
+- Refunds through Stripe, following the refund policy held within Legal and Compliance. A customer's plan deletion, downgrade, or account deletion issues its refund when it is made. A lapsed account's deletion issues its refund from a staff task built within the Operational Dashboard stage
 - The three-month free trial, held within Supabase rather than Stripe since it takes no payment method: one per account, beginning at signup, granting content building without Posterity Social access
 
 #### PayPal
@@ -112,6 +112,7 @@ Build Items:
 - Confirm the non-recurring storage charge completes through PayPal
 - Confirm a Custom plan's price, passed in at checkout, completes through PayPal
 - Confirm a customer paying by PayPal can turn automatic payments off and pay each renewal through a payment request
+- Confirm a refund issues through PayPal
 - Dedicated sandbox testing before launch, covering a successful automatic payment, a charge that fails its retry, and a renewal with automatic payments turned off. Renewal reliability differs from card billing
 
 #### Dashboard Access
