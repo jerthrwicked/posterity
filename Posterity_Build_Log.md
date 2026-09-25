@@ -108,10 +108,37 @@ The bridge is retired. Claude Code replaced it, and these entries stand as histo
 
 ---
 
+## Database
+
+| Item | Date Completed |
+| :-- | :-- |
+| Database: staff-verified and vetoed paths added to trigger confirmations, additive and not yet read. Applied to the live database | July 16, 2026 |
+| Database: the private legacy-media storage bucket, with its size ceiling and formats enforced by the bucket and each file keyed to its account. Applied to the live database | July 13, 2026 |
+| Database: trusted contacts required to hold an email or a phone, with a primary promoted in one transaction. Applied to the live database | July 13, 2026 |
+| Database: recipients required to hold an email or a phone, and a primary legacy created for every account at signup. Applied to the live database | July 13, 2026 |
+| Database: the account row created by a trigger in the same transaction as each signup. Applied to the live database | July 13, 2026 |
+| Database: the initial schema, the project's first migration, with row-level security on every table. Applied to the live database | July 13, 2026 |
+
+---
+
+## Content and Contacts
+
+| Item | Date Completed |
+| :-- | :-- |
+| Video and photo upload into the private bucket, played back through signed links that expire in an hour | July 13, 2026 |
+| Trusted contacts page: add them, write each a private note, and set the primary | July 13, 2026 |
+| Messages and recipients: add the people a message is for, write it, and choose its delivery date and whether it stays in Posterity | July 13, 2026 |
+
+---
+
 ## Stripe Integration
 
 | Item | Date Completed |
 | :-- | :-- |
+| Stale test-mode prices archived, and the Basic $49 price unarchived so checkout can use it | July 16, 2026 |
+| Stripe webhook built at app/api/webhooks/stripe/route.js, signature-verified and writing to subscriptions, dormant until its secret is set and the endpoint is registered | July 16, 2026 |
+| Checkout rebuilt: sign-in required, the price resolved on the server from lib/posterity/plans.js, the customer's identity sent to Stripe, and Horizon billed as a subscription while plans are one-time payments | July 16, 2026 |
+| Test-mode prices moved to the July 2026 ladder of $49, $129, and $399, with display and charge aligned | July 15, 2026 |
 | Stripe MCP added to mcp.json | June 7, 2026 |
 | Stripe checkout working and tested for all tiers | June 3, 2026 |
 | Stripe sandbox account created | June 1, 2026 |
@@ -151,6 +178,8 @@ The bridge is retired. Claude Code replaced it, and these entries stand as histo
 
 | Item | Date Completed |
 | :-- | :-- |
+| Three-layer sign-in gate: proxy.js, a server-side check on every private page, and row-level security beneath both | July 13, 2026 |
+| Signup rebuilt as a real account signup, with sessions moved from browser storage to cookies | July 13, 2026 |
 | PWA installed on Android | June 2, 2026 |
 | Supabase authentication — email and password, email confirmation disabled | May 30, 2026 |
 
