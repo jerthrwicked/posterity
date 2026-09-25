@@ -112,6 +112,7 @@ The bridge is retired. Claude Code replaced it, and these entries stand as histo
 
 | Item | Date Completed |
 | :-- | :-- |
+| Database: storage for the Communication Dispatch System — the message queue, text agreements held by phone number, inbound texts, message copy as a field, and an append-only event log that outlives the account it records, all server-side only. Applied to the live database | September 25, 2026 |
 | Database: staff-verified and vetoed paths added to trigger confirmations, additive and not yet read. Applied to the live database | July 16, 2026 |
 | Database: the private legacy-media storage bucket, with its size ceiling and formats enforced by the bucket and each file keyed to its account. Applied to the live database | July 13, 2026 |
 | Database: trusted contacts required to hold an email or a phone, with a primary promoted in one transaction. Applied to the live database | July 13, 2026 |
@@ -230,6 +231,7 @@ The bridge is retired. Claude Code replaced it, and these entries stand as histo
 
 | Item | Date Completed |
 | :-- | :-- |
+| scripts/sb.sh encodes each query with Node rather than Python, since no Python is installed on the founder's machine | September 25, 2026 |
 | CLAUDE.md combined into one file for both builders, naming Posterity_Build_Roadmap.md and Posterity_Build_Log.md as the build record | September 15, 2026 |
 | Pre-commit hook (scripts/hooks/pre-commit) retargeted — a commit touching code, migrations, or scripts is rejected unless Posterity_Build_Log.md is also staged | September 15, 2026 |
 | Rule 31 added — the first Claude Code prompt each session checks whether npm run dev is running | June 13, 2026 |
