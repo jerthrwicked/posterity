@@ -58,11 +58,11 @@ The markdown is the record and every change reaches it directly, whether it is b
 
 # Current Status
 
-As of September 19, 2026.
+As of September 25, 2026.
 
 The Master Specification is current. The Social Media Integration and Delivery System design records are complete, and each is the single authoritative copy of every rule within it. Posterity Social is complete in concept and awaits its own design pass. Every build-stage reference has been swept out of the Master Specification, so this file is the only place build order is recorded.
 
-Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 requires input and Stage 3.5 requires system design, and neither holds up the stages around it. Earlier Stripe work is redone within Stage 3.1. The payment model is decided: upfront pre-load with year-by-year release.
+Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 requires input and Stage 3.5 requires system design, and neither holds up the stages around it. Walker's July Stripe work stands in test mode, and Stage 3.1 holds what remains. The payment model is decided: upfront pre-load with year-by-year release.
 
 Stage 4 is being written within a separate outline and lands here once each sub-stage is reconfirmed. Its numbering is fixed: 4.1 Account Status, 4.2 Settings, 4.3 User Profiles, 4.4 Video and Image Systems, 4.5 Content Builder and Delivery System, 4.6 Legacy Guard Setup, 4.7 Account Lifecycle and Delivery Automation, 4.8 Check-in System, and 4.9 Test and Preview Mode. Every stage after Stage 4 is unwritten.
 
@@ -76,18 +76,12 @@ Status: designed.
 
 Payment is the first thing the application needs and nothing else within the build depends on it, so it opens the sequence. Subjects: subscription tiers, the Horizon tier, custom plans and Posterity Grace, plan years and skipped years, additional recipients, and the financial architecture.
 
-#### Confirmation Before Any Change
-
-Price IDs matching the current ladder may already exist within Stripe, created outside a working session and never confirmed or tested. Check the Stripe dashboard directly before any pricing work proceeds. Where an entry already matches the confirmed ladder, test it rather than replacing it.
-
 #### Pricing and Products
 
 Build Items:
 
-- Update prices to the confirmed ladder: Basic $49, Premium $129, Legacy $399 per plan year
-- Generate new Price IDs for each
-- Update every Price ID within the codebase and the Vercel environment variables
-- Test checkout for each tier after every Price ID change
+- Test checkout end to end in a browser for each tier. It has never been run end to end
+- Create the live-mode prices once test checkout passes. Only test-mode prices exist, and a price must be active before checkout can use it
 - Horizon remains $9.99 per year, recurring. No change
 - Create Posterity Grace Storage at $4.99 per year. Assigned to the account when a Grace plan request is approved, with no public checkout
 - A Grace plan carries no charge and no Stripe product. Approving a Grace plan request places one Grace plan year carrying the Grace preset and moves the account's storage subscription to Grace Storage, which stays in place if the account later funds paid plans. An account holds one Grace plan year at most
@@ -102,9 +96,9 @@ Build Items:
 
 Build Items:
 
-- Record the subscription within Supabase on every successful payment
-- Webhook for subscription status changes
-- Set Stripe to retry a failed storage charge once, three days after the first attempt. Record within Supabase when that retry fails or a payment request goes unpaid past its due date, so the storage lapse sequence built within Stage 4.7 can begin from it
+- Before activating the webhook built at app/api/webhooks/stripe/route.js, review which plan year each payment funds and how skipped-year storage is recorded, and make its one-time insert idempotent on Stripe retries
+- Activate the webhook by setting STRIPE_WEBHOOK_SECRET and registering the endpoint for checkout.session.completed, customer.subscription.updated, and customer.subscription.deleted
+- Set Stripe to retry a failed storage charge once, three days after the first attempt. Record within Supabase when that retry fails or a payment request goes unpaid past its due date, so the account status check built within Stage 4.1 and the storage lapse sequence built within Stage 4.7 can both read it
 - Test storage renewal by card using Stripe's test clocks: a successful automatic payment, a charge that fails its retry, a renewal with automatic payments turned off, and a renewal following prepaid years
 - Refunds through Stripe. Status: requires input. The refund policy is written and the mechanism is not — what the customer does, what staff do, what Stripe does, and what happens to the content. Carried within the founder work order
 - The three-month free trial, held within Supabase rather than Stripe since it takes no payment method: one per account, beginning at signup, granting content building without Posterity Social access
@@ -124,7 +118,7 @@ Build Items:
 
 Build Items:
 
-- Dashboard access is governed by the account status check built within Stage 4.1
+- Every signed-in account reaches User Profiles, and the account status check built within Stage 4.1 governs what opens within it
 - Open intake at launch. No approval gating, cold traffic from day one
 
 #### Site Consistency Sweep
@@ -133,8 +127,7 @@ Runs after the Stripe work, not before it. The live application carries content 
 
 Build Items:
 
-- Plan cards on both the homepage and the Plans page show the retired ladder of $99, $249, and $899
-- Phase names on the homepage read Abeyance and Twilight. The confirmed names are Interlude and Reprise
+- Phase names on the homepage and the dashboard read Abeyance and Twilight. The confirmed names are Interlude and Reprise
 - Plan card bullets count messages and video messages. The confirmed terminology is Standard Deliveries and Feature Deliveries
 - Grace Storage does not appear
 - Custom routes to a mail link rather than a contact surface, and Grace is shown as Contact Us rather than as a free plan chosen at plan selection
