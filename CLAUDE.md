@@ -17,17 +17,14 @@ Two markdown files at the repository root hold the build record and its authorit
 
 Every other project document works the other way around. Its definitive version is the Google Doc in Jeremy's Google Drive, and this repository keeps no copy of it. That covers the Master Specification, its design records (Social Media Integration, the Delivery System, and Posterity Social), the Founder Build Roadmap, and the Build Queue.
 
-The **Master Specification** governs what gets built. Each stage names the subjects to read within it. A build session pulls the markdown of the Master Specification and its three design records into `live-docs/`, a folder git ignores. It searches those files for a stage's subjects before building against them. Each pull overwrites the last, so every copy matches its Doc on the day it is pulled. If a download comes back as a web page rather than markdown, stop and ask Jeremy. He can save the Doc through File, then Download, then Markdown into the same folder.
+The **Master Specification** governs what gets built. Each stage names the subjects to read within it. A session reads a Google Doc when its work needs one or when asked, and never by default at opening. It pulls the Doc's markdown through the Doc's export link into `live-docs/`, a folder git ignores. The ID comes from any link to the Doc, whether in the Master Specification's Important Links, this repository, or the prompt. The Master Specification's own ID is 14OoN3GlzDnJjo0ll6hIN6pjU7nCEsWB2MA39R-jWhPY. Each pull overwrites the last, so the copy matches its Doc on the day it is pulled. A session searches that copy for a stage's subjects before building against them. If a download comes back as a web page rather than markdown, stop and ask Jeremy. He can save the Doc through File, then Download, then Markdown into the same folder.
 
 ```bash
 mkdir -p live-docs
-curl -sL "https://docs.google.com/document/d/14OoN3GlzDnJjo0ll6hIN6pjU7nCEsWB2MA39R-jWhPY/export?format=md" -o live-docs/Posterity_Master_Specification.md
-curl -sL "https://docs.google.com/document/d/19A8MgOupqA_S0LxCxztba48V0KwEixLs1hQONVNk1Og/export?format=md" -o live-docs/Social_Media_Integration_System.md
-curl -sL "https://docs.google.com/document/d/158SKgvJXDf_oHfLs3klqHDcJ_gddd_ZeTr-h-HJlAVk/export?format=md" -o live-docs/The_Delivery_System.md
-curl -sL "https://docs.google.com/document/d/1KSTmyDsJpBd3-oY7XvhHpnVwVc6Zfxmql-dpxDM8Vjs/export?format=md" -o live-docs/Posterity_Social.md
+curl -sL "https://docs.google.com/document/d/<ID>/export?format=md" -o live-docs/<Doc_Name>.md
 ```
 
-**Session opening:** pull `main` and read both files in full. A build session then pulls the four Docs with the commands above.
+**Session opening:** pull `main` and read both files in full.
 
 ## 2. What Claude Code may do on its own
 
@@ -90,7 +87,7 @@ Vocabulary the schema uses: accounts move through phases; only accounts shift ph
 ## 5. The risks that shape the design
 
 1. **A check-in false positive is extinction-level** — a living customer's goodbye messages sent to their family. The check-in and the trigger are designed before they are written and ship together or not at all. The old "✓ I'm Still Here" button was deleted because it was wired to nothing; a control that lies is worse than one that is absent.
-2. **Meta cannot be the channel Posterity guarantees.** Social delivery publishes to a Facebook Page the customer owns, through Posterity's own app and a system user, with no login anywhere in the chain, so memorialization of the customer's profile does not stop it. Buffer is retired and Instagram is deferred. The Social Gate still gives every social delivery a route off Meta, and email and text remain the spine, which is why delivery is built email first. Detail: `live-docs/Social_Media_Integration_System.md`, which supersedes `BUILD/META_DELIVERY.md`.
+2. **Meta cannot be the channel Posterity guarantees.** Social delivery publishes to a Facebook Page the customer owns, through Posterity's own app and a system user, with no login anywhere in the chain, so memorialization of the customer's profile does not stop it. Buffer is retired and Instagram is deferred. The Social Gate still gives every social delivery a route off Meta, and email and text remain the spine, which is why delivery is built email first. Detail: the Social Media Integration design record, which supersedes `BUILD/META_DELIVERY.md`.
 3. **Consumer health data.** Posterity Social stores a customer's medical context. HIPAA likely does not apply; Washington's My Health My Data Act does, with a private right of action. Needs a lawyer before launch. Detail: `BUILD/POSTERITY_SOCIAL.md`.
 
 When Walker's notes or this file contradict Jeremy's documents, ask Jeremy. Do not record the contradiction as a decision — that mistake was made once (Meta was written up as dead; it is not) and is why this sentence is here.
@@ -104,4 +101,4 @@ When Walker's notes or this file contradict Jeremy's documents, ask Jeremy. Do n
 
 ## 7. Files Walker authored
 
-`BUILD/CHANGELOG.md` was the record from July 13 until the Build Log took over; its entries are carried across into the Build Log and it is no longer updated. `BUILD/README.md` describes the July git setup, and Section 6 supersedes it. `BUILD/CODE_AUDIT.md` is the July 13 read of the codebase. `BUILD/BUILD_ORDER.md` is superseded by the roadmap. `BUILD/META_DELIVERY.md` is superseded by `live-docs/Social_Media_Integration_System.md`, and `BUILD/POSTERITY_SOCIAL.md` is the design note behind risk 3. `scripts/sb.sh`, `scripts/test-*.py`, `scripts/stripe-*.py` are the database and Stripe tools. `lib/posterity/plans.js` and `lib/posterity/account.js` are the catalog and the auth helper.
+`BUILD/CHANGELOG.md` was the record from July 13 until the Build Log took over; its entries are carried across into the Build Log and it is no longer updated. `BUILD/README.md` describes the July git setup, and Section 6 supersedes it. `BUILD/CODE_AUDIT.md` is the July 13 read of the codebase. `BUILD/BUILD_ORDER.md` is superseded by the roadmap. `BUILD/META_DELIVERY.md` is superseded by the Social Media Integration design record, and `BUILD/POSTERITY_SOCIAL.md` is the design note behind risk 3. `scripts/sb.sh`, `scripts/test-*.py`, `scripts/stripe-*.py` are the database and Stripe tools. `lib/posterity/plans.js` and `lib/posterity/account.js` are the catalog and the auth helper.
