@@ -6,8 +6,7 @@ Posterity is a post-life legacy platform with a walled social network for older 
 
 - Posterity_Build_Roadmap.md holds every remaining build item in suggested build order. It is authoritative, and its Google Doc is a copy.
 - Posterity_Build_Log.md holds the record of everything already built. It is authoritative, and its Google Doc is a copy.
-- Posterity_Master_Specification.md is an export of the Posterity Master Specification. The Google Doc is authoritative, and this copy is refreshed periodically.
-- Social_Media_Integration_System.md is an export of the Social Media Integration System design record. The Google Doc is authoritative, and this copy is refreshed periodically.
+- live-docs/ receives the markdown of the Master Specification and its design records at the opening of each build session, as CLAUDE.md sets out. Git ignores it.
 - CLAUDE.md holds the operating instructions for Claude Code.
 - BUILD/ holds Walker Brown's working documents.
 

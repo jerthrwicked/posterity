@@ -55,3 +55,6 @@ cursor-outbox.md
 
 # local test helpers
 /cursor-inbox.md
+
+# Markdown pulled from the Google Docs at the opening of each build session (CLAUDE.md, Section 1)
+/live-docs/
