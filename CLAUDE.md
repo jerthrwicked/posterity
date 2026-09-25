@@ -33,17 +33,21 @@ Change nothing else within either file without approval from Jeremy or Walker. N
 
 **For build progress, do not commit or push without approval, including after a correction.** Jeremy approves pushes. Ask for commit, push, and merge separately — never bundle them. Authored edits follow their own route, set out in Section 6.
 
+**Git steps run in Manual mode.** Auto mode's checker blocks a retried commit after a refusal, and it blocks merging a pull request no human approved. If a commit, push, or merge is refused, stop and report it rather than retrying in another form.
+
+**Never route around a permission.** Build no scratch copy of a repository tool, and no other workaround, that sidesteps an ask rule. Ask instead.
+
 Never place an API key, token, or password within the repository, the roadmap, the Build Log, or any document. `.env.local` is gitignored and is the only place secrets live. Never print a secret; the scripts echo names and lengths only.
 
 ## 3. The database — changes here are live the moment they run
 
-Supabase project `vypytfmutmeyfwmkapjg`, Jeremy's account. Reach it with `bash scripts/sb.sh "<sql>"` or `bash scripts/sb.sh -f file.sql` (reads a Management API token from `.env.local`). Free tier: it pauses after about seven days idle and the first query wakes it.
+Supabase project `vypytfmutmeyfwmkapjg`, Jeremy's account. Reach it with `bash scripts/sb.sh "<sql>"` or `bash scripts/sb.sh -f file.sql` (reads a Management API token from `.env.local`). `sb.sh` encodes each query with Node. Inline queries are read-only. Every change to the database runs from a file with `-f`. Each migration is first dry-run in a transaction that rolls back, with a check that nothing remains, before it is applied. Free tier: it pauses after about seven days idle and the first query wakes it.
 
-A migration on `main` is not a migration applied — they run only when someone executes them against the project. **Every migration is tested against the live database as a real signed-in user** (`scripts/test-*.py`) so row-level security is actually exercised. "A second customer sees zero of the first one's legacy" is proven, not assumed.
+A migration on `main` is not a migration applied — they run only when someone executes them against the project. **Every migration is tested against the live database as a real signed-in user** (`scripts/test-*.py`, or `scripts/test-*.mjs` where Python isn't installed) so row-level security is actually exercised. "A second customer sees zero of the first one's legacy" is proven, not assumed.
 
 In the Build Log, mark a database change as a database change, separately from code. Code on a branch is undone by a reset; a migration is undone only by another migration.
 
-Schema: 14 tables, RLS on every one, 6 enums. Six migrations, all applied and live:
+RLS is on every table. Seven migrations, all applied and live:
 
 1. `20260713000000_initial_schema` — the first migration this project ever had
 2. `20260713120000_account_on_signup` — the account row is created by a trigger in the same transaction as the user
@@ -51,6 +55,9 @@ Schema: 14 tables, RLS on every one, 6 enums. Six migrations, all applied and li
 4. `20260713160000_trusted_contacts` — same reachability rule; promoting a primary is one database transaction (`set_primary_trusted_contact`, SECURITY INVOKER so RLS applies)
 5. `20260713180000_media_storage` — the private `legacy-media` bucket; 25 MB ceiling and formats enforced by the bucket; objects keyed to the account by path
 6. `20260716120000_trigger_staff_death_verification` — `staff_verified` and `vetoed` paths on `trigger_confirmations`, additive, nothing reads them yet
+7. `20260925000000_communication_dispatch` — the Communication Dispatch System's storage: five server-only tables (`dispatch_copy`, `dispatch_messages`, `text_agreements`, `dispatch_inbound`, and the append-only `dispatch_events`), RLS on with no policies and client grants revoked. `dispatch_events` has no foreign keys, so it survives account deletion.
+
+Objects in the live database that no migration creates: the functions `guard_storage_columns`, `storage_is_current`, and `rls_auto_enable`, and the columns `accounts.trial_ends_at` and `accounts.storage_paid_through`. Leave them alone until a migration records them.
 
 Two constraints to understand before touching them: `recipients_reachable_without_meta` and `trusted_contacts_reachable`. A Facebook account can be memorialized by any relative, which locks it against posting forever. A recipient reachable only through Facebook is a message with nowhere to go; an unreachable trusted contact means the escalation has nowhere to go at all.
 
@@ -64,11 +71,13 @@ Vocabulary the schema uses: accounts move through phases; only accounts shift ph
 
 **Webhook, dormant:** `app/api/webhooks/stripe/route.js` is signature-verified and writes to `subscriptions` with the service-role key. It wakes when `STRIPE_WEBHOOK_SECRET` is set and the endpoint is registered in Stripe. Its initiate logic needs review first — which plan year a payment funds and skipped-year storage are not derivable from one price, and the one-time insert is not idempotent on retries.
 
-**Not built:** the check-in and the trigger; the delivery engine and the Communication Dispatch System; Grace Storage, the storage charge, additional recipient slots; media compression and thumbnails; account deletion (deleting a user does not delete their storage files).
+**Not built:** the check-in and the trigger; the delivery engine; the Communication Dispatch System beyond its storage, which migration 7 applied on September 25, 2026; Grace Storage, the storage charge, additional recipient slots; media compression and thumbnails; account deletion (deleting a user does not delete their storage files).
 
 **Still on the site from before the confirmed decisions:** the phase names Abeyance and Twilight on the homepage and the dashboard (confirmed names: Interlude and Reprise); plan bullets counting messages rather than Standard and Feature Deliveries; Grace Storage absent; Custom and Grace routed to a mail link. The Stage 3.1 Site Consistency Sweep lists these.
 
 **Infrastructure, set up by hand September 15 (Jeremy):** domain at Cloudflare; site on Vercel at www.yourposterity.com with the apex redirecting; `admin@yourposterity.com` forwards in and cannot send; Postmark on the Developer tier, verified for the domain, unapproved so it delivers only to `@yourposterity.com`; Twilio pay as you go with a New Orleans number, voicemail via two TwiML Bins, messaging disabled until carrier registration. The site address variable, the Supabase auth redirects, and the Stripe return addresses still point at `posterity-seven.vercel.app`. API keys for Postmark and Twilio come from Jeremy directly when needed.
+
+**Jeremy's PC:** Windows 11. Python isn't installed, so new scripts are written in Node. The GitHub command-line tool isn't signed in, so when a pull request can't be opened from the terminal, stop and say so, and it is opened and merged on the GitHub website. `.claude/settings.local.json` asks before `git commit`, `git push`, `git merge`, `gh pr`, and `bash scripts/sb.sh -f`. Local build sessions start with `claude --remote-control` so Claude.ai can follow them.
 
 ## 5. The risks that shape the design
 
