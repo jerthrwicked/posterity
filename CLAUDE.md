@@ -15,11 +15,19 @@ Two markdown files at the repository root hold the build record and its authorit
 - **`Posterity_Build_Roadmap.md`** — every remaining build item, in suggested build order. Start with its *How to Use This Document* and *Current Status* sections.
 - **`Posterity_Build_Log.md`** — everything already built, by category, newest first within each. Nothing is ever removed from it.
 
-Every other project document works the other way around. Its definitive version is the Google Doc in Jeremy's Google Drive, and any copy in this repository is an export that carries no authority. That covers the Master Specification, its design records (Social Media Integration, the Delivery System, and Posterity Social), the Founder Build Roadmap, and the Build Queue. Where an export and its Doc disagree, the Doc wins.
+Every other project document works the other way around. Its definitive version is the Google Doc in Jeremy's Google Drive, and this repository keeps no copy of it. That covers the Master Specification, its design records (Social Media Integration, the Delivery System, and Posterity Social), the Founder Build Roadmap, and the Build Queue.
 
-The **Master Specification** governs what gets built. Each stage names the subjects to read within it. `Posterity_Master_Specification.md` is a markdown export of it, and `Social_Media_Integration_System.md` is an export of the Social Media Integration System design record. Each export may lag behind its Doc. Search the export for a stage's subjects before building against them, and treat anything that looks out of date as a question for Jeremy. The Delivery System and Posterity Social design records have no export yet, so the person running the session pulls in the sections a stage needs from those Docs.
+The **Master Specification** governs what gets built. Each stage names the subjects to read within it. A build session pulls the markdown of the Master Specification and its three design records into `live-docs/`, a folder git ignores. It searches those files for a stage's subjects before building against them. Each pull overwrites the last, so every copy matches its Doc on the day it is pulled. If a download comes back as a web page rather than markdown, stop and ask Jeremy. He can save the Doc through File, then Download, then Markdown into the same folder.
 
-**Session opening:** pull `main` and read both files in full.
+```bash
+mkdir -p live-docs
+curl -sL "https://docs.google.com/document/d/14OoN3GlzDnJjo0ll6hIN6pjU7nCEsWB2MA39R-jWhPY/export?format=md" -o live-docs/Posterity_Master_Specification.md
+curl -sL "https://docs.google.com/document/d/19A8MgOupqA_S0LxCxztba48V0KwEixLs1hQONVNk1Og/export?format=md" -o live-docs/Social_Media_Integration_System.md
+curl -sL "https://docs.google.com/document/d/158SKgvJXDf_oHfLs3klqHDcJ_gddd_ZeTr-h-HJlAVk/export?format=md" -o live-docs/The_Delivery_System.md
+curl -sL "https://docs.google.com/document/d/1KSTmyDsJpBd3-oY7XvhHpnVwVc6Zfxmql-dpxDM8Vjs/export?format=md" -o live-docs/Posterity_Social.md
+```
+
+**Session opening:** pull `main` and read both files in full. A build session then pulls the four Docs with the commands above.
 
 ## 2. What Claude Code may do on its own
 
@@ -27,7 +35,7 @@ The **Master Specification** governs what gets built. Each stage names the subje
 
 When a build item is finished, in the same pass: remove it from its stage in the roadmap and add it to the matching category in the Build Log, newest first. Neither file is ever updated without the other. The Build Log records build items only, never document edits.
 
-Change nothing else within either file without approval from Jeremy or Walker. Never edit the Master Specification or either export. A fresh export replaces its file whole, on Jeremy's approval.
+Change nothing else within either file without approval from Jeremy or Walker. Never edit the Master Specification or any file within `live-docs/`.
 
 **Print every change back rather than summarizing it, then stop.** A truncated or misplaced write surfaces while the work that produced it is still open.
 
@@ -82,7 +90,7 @@ Vocabulary the schema uses: accounts move through phases; only accounts shift ph
 ## 5. The risks that shape the design
 
 1. **A check-in false positive is extinction-level** — a living customer's goodbye messages sent to their family. The check-in and the trigger are designed before they are written and ship together or not at all. The old "✓ I'm Still Here" button was deleted because it was wired to nothing; a control that lies is worse than one that is absent.
-2. **Meta cannot be the channel Posterity guarantees.** Social delivery publishes to a Facebook Page the customer owns, through Posterity's own app and a system user, with no login anywhere in the chain, so memorialization of the customer's profile does not stop it. Buffer is retired and Instagram is deferred. The Social Gate still gives every social delivery a route off Meta, and email and text remain the spine, which is why delivery is built email first. Detail: `Social_Media_Integration_System.md`, which supersedes `BUILD/META_DELIVERY.md`.
+2. **Meta cannot be the channel Posterity guarantees.** Social delivery publishes to a Facebook Page the customer owns, through Posterity's own app and a system user, with no login anywhere in the chain, so memorialization of the customer's profile does not stop it. Buffer is retired and Instagram is deferred. The Social Gate still gives every social delivery a route off Meta, and email and text remain the spine, which is why delivery is built email first. Detail: `live-docs/Social_Media_Integration_System.md`, which supersedes `BUILD/META_DELIVERY.md`.
 3. **Consumer health data.** Posterity Social stores a customer's medical context. HIPAA likely does not apply; Washington's My Health My Data Act does, with a private right of action. Needs a lawyer before launch. Detail: `BUILD/POSTERITY_SOCIAL.md`.
 
 When Walker's notes or this file contradict Jeremy's documents, ask Jeremy. Do not record the contradiction as a decision — that mistake was made once (Meta was written up as dead; it is not) and is why this sentence is here.
@@ -96,4 +104,4 @@ When Walker's notes or this file contradict Jeremy's documents, ask Jeremy. Do n
 
 ## 7. Files Walker authored
 
-`BUILD/CHANGELOG.md` was the record from July 13 until the Build Log took over; its entries are carried across into the Build Log and it is no longer updated. `BUILD/README.md` describes the July git setup, and Section 6 supersedes it. `BUILD/CODE_AUDIT.md` is the July 13 read of the codebase. `BUILD/BUILD_ORDER.md` is superseded by the roadmap. `BUILD/META_DELIVERY.md` is superseded by `Social_Media_Integration_System.md`, and `BUILD/POSTERITY_SOCIAL.md` is the design note behind risk 3. `scripts/sb.sh`, `scripts/test-*.py`, `scripts/stripe-*.py` are the database and Stripe tools. `lib/posterity/plans.js` and `lib/posterity/account.js` are the catalog and the auth helper.
+`BUILD/CHANGELOG.md` was the record from July 13 until the Build Log took over; its entries are carried across into the Build Log and it is no longer updated. `BUILD/README.md` describes the July git setup, and Section 6 supersedes it. `BUILD/CODE_AUDIT.md` is the July 13 read of the codebase. `BUILD/BUILD_ORDER.md` is superseded by the roadmap. `BUILD/META_DELIVERY.md` is superseded by `live-docs/Social_Media_Integration_System.md`, and `BUILD/POSTERITY_SOCIAL.md` is the design note behind risk 3. `scripts/sb.sh`, `scripts/test-*.py`, `scripts/stripe-*.py` are the database and Stripe tools. `lib/posterity/plans.js` and `lib/posterity/account.js` are the catalog and the auth helper.

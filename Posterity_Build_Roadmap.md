@@ -4,7 +4,7 @@
 
 This document is the living instruction manual for building Posterity. It carries every remaining build item in suggested build order. A working reference for the founder, for collaborators, and for the Claude Code instances that build from it. Completeness and accuracy come before presentation.
 
-The Master Specification is the reference this file points at. The roadmap states what gets built and in what order. The specification states what the thing is and how it behaves. Where the two disagree, the specification wins and the roadmap is corrected. Every stage names the subjects its work is governed by. The builder searches the markdown exports of the specification and its design records for them, and reads what returns before writing anything, so the work begins from a body of material rather than from a task list alone.
+The Master Specification is the reference this file points at. The roadmap states what gets built and in what order. The specification states what the thing is and how it behaves. Where the two disagree, the specification wins and the roadmap is corrected. Every stage names the subjects its work is governed by. The builder pulls the markdown of the specification and its design records fresh from their Docs, as CLAUDE.md sets out. It searches that markdown for a stage's subjects and reads what returns before writing anything. The work therefore begins from a body of material rather than from a task list alone.
 
 Link: [Posterity Master Specification](https://docs.google.com/document/d/14OoN3GlzDnJjo0ll6hIN6pjU7nCEsWB2MA39R-jWhPY/edit?usp=sharing)
 
@@ -64,9 +64,9 @@ The Master Specification is current. The Social Media Integration and Delivery S
 
 Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 requires input and Stage 3.5 requires system design, and neither holds up the stages around it. Walker's July Stripe work stands in test mode, and Stage 3.1 holds what remains. Stage 3.4 is under way. Its storage is applied to the live database, and the build resumes at the Postmark sandbox server. The payment model is decided: upfront pre-load with year-by-year release.
 
-Stage 4 is being written within a separate outline and lands here once each sub-stage is reconfirmed. Its numbering is fixed: 4.1 Account Status, 4.2 Settings, 4.3 User Profiles, 4.4 Video and Image Systems, 4.5 Content Builder and Delivery System, 4.6 Legacy Guard Setup, 4.7 Account Lifecycle and Delivery Automation, 4.8 Check-in System, and 4.9 Preview Mode. Every stage after Stage 4 is unwritten.
+Stage 4 was finalized within its own Doc on September 25, 2026. It moves into this file once the build reaches it, and nothing within it is built before then. Its numbering is fixed: 4.1 Account Status, 4.2 Settings, 4.3 User Profiles, 4.4 Video and Image Systems, 4.5 Content Builder and Delivery System, 4.6 Legacy Guard Setup, 4.7 Account Lifecycle and Delivery Automation, 4.8 Check-in System, and 4.9 Preview Mode. Every stage after Stage 4 is unwritten.
 
-Link: [Stage 4 Outline](https://docs.google.com/document/d/1AsaowbnlZ9CoX4lDu70yzBmQh5ex1WmvacbCr2wxVpY/edit?usp=sharing)
+Link: [Stage 4 Roadmap](https://docs.google.com/document/d/1AsaowbnlZ9CoX4lDu70yzBmQh5ex1WmvacbCr2wxVpY/edit?usp=sharing)
 
 # STAGE 3
 
