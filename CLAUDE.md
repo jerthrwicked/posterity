@@ -4,6 +4,8 @@
 
 One file for every Claude Code session on this project, whoever is running it. Jeremy Grego is the founder. Walker Brown is the co-founder and builder. Both run Claude Code against this repository; Jeremy approves every push.
 
+Jeremy works across three Claude.ai chats within the Posterity project, and the Project Instructions Doc owns their roles under THE CHATS. Its ID is 1e2hjCL4d3Fie5_0WAlZLHc4b1M7ly9j3zcU9QoF3Brg. Two of the chats hand this repository work. The roadmap chat, the main chat, authors every edit to the roadmap, the Build Log, and this file that is not build progress, and those edits run under Section 6. The build chat directs local build sessions against the roadmap's open stages. The research chat hands Claude Code nothing. A session reads the Project Instructions Doc through its export link under Section 1 when its work needs the roles.
+
 Combined September 15, 2026 from Walker's July file and the September briefing.
 
 ---
