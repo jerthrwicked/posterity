@@ -139,6 +139,7 @@ The bridge is retired. Claude Code replaced it, and these entries stand as histo
 
 | Item | Date Completed |
 | :-- | :-- |
+| Checkout tested end to end in a browser for every tier in test mode: Horizon as a yearly subscription of $9.99, and Basic, Premium, and Legacy as one-time payments of $49, $129, and $399. Each was signed in through the login page, started from its own Get Started button, paid by test card, returned to the dashboard, and recorded within Stripe against the account, 18 checks passing (scripts/test-checkout.mjs). Horizon checkout had been failing because the catalog named a Stripe price no longer within the sandbox, and lib/posterity/plans.js now names the Horizon price created September 19, under the product Horizon / Posterity Social access | October 6, 2026 |
 | Stale test-mode prices archived, and the Basic $49 price unarchived so checkout can use it | July 16, 2026 |
 | Stripe webhook built at app/api/webhooks/stripe/route.js, signature-verified and writing to subscriptions, dormant until its secret is set and the endpoint is registered | July 16, 2026 |
 | Checkout rebuilt: sign-in required, the price resolved on the server from lib/posterity/plans.js, the customer's identity sent to Stripe, and Horizon billed as a subscription while plans are one-time payments | July 16, 2026 |

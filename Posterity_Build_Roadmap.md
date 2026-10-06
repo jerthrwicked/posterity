@@ -80,10 +80,9 @@ Payment is the first thing the application needs and nothing else within the bui
 
 Build Items:
 
-- Test checkout end to end in a browser for each tier. It has never been run end to end
 - Create the live-mode prices once test checkout passes. Only test-mode prices exist, and a price must be active before checkout can use it
 - Horizon remains $9.99 per year, recurring. No change
-- Create Posterity Grace Storage at $4.99 per year. Assigned to the account when a Grace plan request is approved, with no public checkout
+- Create Posterity Grace Storage at $4.99 per year. Assigned to the account when a Grace plan request is approved, with no public checkout. A test-mode price already exists within the sandbox, created September 19, 2026 under the product name Grace Storage with its description written. The live-mode product remains
 - A Grace plan carries no charge and no Stripe product. Approving a Grace plan request places one Grace plan year carrying the Grace preset and moves the account's storage subscription to Grace Storage, which stays in place if the account later funds paid plans. An account holds one Grace plan year at most
 - Create Posterity non-recurring storage charge at the same price as Horizon. It covers a skipped plan year and an additional Reprise year alike. Skipped years are added to the cart automatically and stack per year. Reprise years are purchased on demand, by the customer in advance or by a Legacy Guard during the phase, so the charge is payable within plan selection, Purchases, and the Legacy Guard portal
 - Create Additional Recipient slots, priced by tier: $5 on Basic, $12 on Premium, $25 on Legacy, writing the product description for each within Stripe. Alternative Recipients are fixed at two per piece of content across all tiers and are never purchasable
@@ -133,6 +132,8 @@ Build Items:
 - Custom routes to a mail link rather than a contact surface, and Grace is shown as Contact Us rather than as a free plan chosen at plan selection
 - Get Started routing is untested against the updated products
 - Various links contain incorrect or outdated material and some may be inactive
+- The Stripe product descriptions for Basic, Premium, and Legacy still state the June prices of $39, $99, and $299 per year, and Stripe's checkout page shows each beneath the July price
+- A checkout that fails leaves the customer on the plans page with no message. The button returns to rest and nothing says what happened
 - The site address variable, the Supabase authentication redirects, and the Stripe checkout return addresses still point at posterity-seven.vercel.app. Move each to www.yourposterity.com and retest login and checkout.
 
 ### STAGE 3.2 — Twilio
