@@ -58,11 +58,11 @@ The markdown is the record and every change reaches it directly, whether it is b
 
 # Current Status
 
-As of September 25, 2026.
+As of October 6, 2026.
 
 The Master Specification is current. The Social Media Integration and Delivery System design records are complete, and each is the single authoritative copy of every rule within it. Posterity Social is complete in concept and awaits its own design pass. Every build-stage reference has been swept out of the Master Specification, so this file is the only place build order is recorded.
 
-Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 requires input and Stage 3.5 requires system design, and neither holds up the stages around it. Walker's July Stripe work stands in test mode, and Stage 3.1 holds what remains. The storage state was built and applied to the live database on September 18: the three-month free trial on every account, a paid-through date only the server writes, and a gate at the database that pauses building, not viewing, while storage is not current. Stage 3.4 is under way. Its storage is applied to the live database, and the build resumes at the Postmark sandbox server. The payment model is decided: upfront pre-load with year-by-year release.
+Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 requires input and Stage 3.5 requires system design, and neither holds up the stages around it. Walker's July Stripe work stands in test mode, and Stage 3.1 holds what remains. The storage state was built and applied to the live database on September 18: the three-month free trial on every account, a paid-through date only the server writes, and a gate at the database that pauses building, not viewing, while storage is not current. Checkout was tested end to end in a browser for every tier on October 6, so the live-mode prices are the next item within Stage 3.1. Stage 3.4 is under way. Its storage is applied to the live database, and the build resumes at the Postmark sandbox server. The payment model is decided: upfront pre-load with year-by-year release.
 
 Stage 4 was finalized within its own Doc on September 25, 2026. It moves into this file once the build reaches it, and nothing within it is built before then. Its numbering is fixed: 4.1 Account Status, 4.2 Settings, 4.3 User Profiles, 4.4 Video and Image Systems, 4.5 Content Builder and Delivery System, 4.6 Legacy Guard Setup, 4.7 Account Lifecycle and Delivery Automation, 4.8 Check-in System, and 4.9 Preview Mode. Every stage after Stage 4 is unwritten.
 
