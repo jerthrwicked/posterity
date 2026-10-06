@@ -24,7 +24,7 @@ else
   QUERY="${1:?usage: sb.sh \"<sql>\" | sb.sh -f file.sql}"
 fi
 
-BODY="$(QUERY="$QUERY" python3 -c 'import json,os; print(json.dumps({"query": os.environ["QUERY"]}))')"
+BODY="$(QUERY="$QUERY" node -e 'console.log(JSON.stringify({ query: process.env.QUERY }))')"
 
 curl -sS --max-time 60 \
   -X POST "https://api.supabase.com/v1/projects/${REF}/database/query" \

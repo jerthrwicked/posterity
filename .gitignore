@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -55,3 +55,6 @@ cursor-outbox.md
 
 # local test helpers
 /cursor-inbox.md
+
+# Markdown pulled from the Google Docs at the opening of each build session (CLAUDE.md, Section 1)
+/live-docs/
