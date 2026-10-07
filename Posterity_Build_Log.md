@@ -108,10 +108,22 @@ The bridge is retired. Claude Code replaced it, and these entries stand as histo
 
 ---
 
+## Communication Dispatch System
+
+| Item | Date Completed |
+| :-- | :-- |
+| The queue: a failure that may pass is retried after 1 minute, 5 minutes, 30 minutes, and 2 hours, a failure no retry can fix fails at once, and a send out of attempts is recorded as exhausted for the Operational Dashboard. Each scheduler pass sends a message once, even with two passes running together. Tested against the live database with test-flagged rows and stand-in senders, 32 checks passing (scripts/test-dispatch-run.mjs) | October 7, 2026 |
+| Message copy read from its stored field at send, with names and dates filled in, and a blank left unfilled stopping the send rather than reaching a person. The enqueue helper refuses the frame, another channel's copy, or copy that does not exist | October 7, 2026 |
+| The email frame: a light card carrying the Swallow Seal as an inline vector and the sage accent, with the frame's fixed text read from stored copy, and a plain-text version of every email (scripts/test-dispatch-policy.mjs, 39 checks passing) | October 7, 2026 |
+
+---
+
 ## Database
 
 | Item | Date Completed |
 | :-- | :-- |
+| Database: the em dash restored in the seeded placeholder for the text-agreement confirmation, where the live row held a replacement character since the September 25 migration was applied. Applied to the live database | October 7, 2026 |
+| Database: the email frame's fixed text stored as copy — each copy row is a message or the frame, there is exactly one frame and it is email, and its placeholder is seeded. Applied to the live database | October 7, 2026 |
 | Database: storage for the Communication Dispatch System — the message queue, text agreements held by phone number, inbound texts, message copy as a field, and an append-only event log that outlives the account it records, all server-side only. Applied to the live database | September 25, 2026 |
 | Database: a paid-through date that holds until it has ended in every timezone, so a customer is never locked out on the last day they paid for. Applied to the live database | September 18, 2026 |
 | Database: the storage state every build gate reads — a three-month trial date set at signup, a paid-through date for storage that only the server writes, and row-level security that refuses new or edited messages, recipients, and uploads while storage is not current, leaving viewing and deleting open. Applied to the live database | September 18, 2026 |

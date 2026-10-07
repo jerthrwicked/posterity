@@ -194,13 +194,12 @@ Subjects: the Communication Dispatch System, customer contact and communication,
 Build Items:
 
 - A scheduler that wakes on a cycle and asks what is due
-- A queue holding what the scheduler returns, so a failure retries rather than disappearing. A send that exhausts its retries is recorded as a failure for the Operational Dashboard to surface in a later stage
 - A Postmark sender and a Twilio sender, each taking a message and a destination. Both are built as channels behind one interface, since Meta joins them as a third channel when social media publishing is built
 - A Postmark sandbox server for test sends. It accepts messages without delivering them, so testing does not draw from the free tier's monthly allowance.
 - Channel policy applied at send, texting only a person whose agreement is on file. This covers the sending window, immediate sends for texts a person sets off themselves, the confirmation text after each agreement, the Reassigned Numbers Database check, and inbound texts read for STOP replies and check-ins by text
 - An event log recording every send by account and by outcome, along with every agreement to texts and every stop, so a delivery can be evidenced years later
-- Message copy stored as a field the Communication Dispatch System reads rather than as text inside the trigger logic, so approved copy replaces placeholder copy as a content change rather than a code change
-- The email frame, as Customer Contact and Communication describes it. Every automated email and its plain-text version render from it.
+- The Swallow Seal within the email frame. Status: requires input. The frame carries the seal as an inline vector, as the Website Design Standards require, and Gmail and Outlook show no vector image, so the seal is absent for their readers. Should the frame carry a high-resolution picture of the seal, generated from the vector and used only in email, as an approved exception to the rule against raster? The alternative keeps the vector alone and sets the name Posterity in text beside it.
+- Texts to numbers outside North America. Status: requires input. Channel policy judges the sending window by area code, and the table it reads covers only the +1 numbers of the United States, Canada, and the Caribbean, so a number from any other country has no local time to judge. Such a number is not texted, and its messages go by email alone. Canadian and Caribbean numbers share the +1 code and are texted under the same rules as the United States. Should Posterity text numbers outside North America, and should it text the Canadian and Caribbean numbers it texts now? Carrier registration, consent rules, and pricing differ by country.
 - Postmark account approval, requested once this system sends email and the Site Consistency Sweep within Stage 3.1 is finished. Until approval, Postmark delivers only to addresses on yourposterity.com.
 
 ### STAGE 3.5 — Hosting Migration
