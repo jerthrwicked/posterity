@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { createClient } from '../../lib/supabase/server'
 import { Wordmark } from '../components/brand/Wordmark'
 import { LogoutButton } from './LogoutButton'
+import { StorageNotice } from '../components/StorageNotice'
+import { storageIsCurrent, trialDaysLeft } from '../../lib/posterity/storage'
 
 // The six phases, in the product's own language. Never clinical.
 const PHASES = {
@@ -43,7 +45,7 @@ export default async function Dashboard() {
 
   const { data: account } = await supabase
     .from('accounts')
-    .select('id, phase, next_checkin_due')
+    .select('id, phase, next_checkin_due, trial_ends_at, storage_paid_through')
     .eq('user_id', user.id)
     .single()
 
@@ -65,6 +67,18 @@ export default async function Dashboard() {
   const phase = PHASES[account?.phase] ?? PHASES.horizon
   const name = user.user_metadata?.full_name || 'Friend'
 
+  // Storage state, in the product's words. The trial is the spec's three-month
+  // free trial (Horizon Tier); once a storage year is paid, the trial line goes
+  // away and the paid-through date takes over.
+  const canBuild = storageIsCurrent(account)
+  const daysLeft = trialDaysLeft(account)
+  let storageLine = null
+  if (account?.storage_paid_through && canBuild) {
+    storageLine = 'Storage is current.'
+  } else if (canBuild && daysLeft !== null) {
+    storageLine = daysLeft === 1 ? 'Your free trial ends tomorrow.' : `Your free trial: ${daysLeft} days left.`
+  }
+
   return (
     <main className="min-h-screen bg-black text-white">
       <nav className="flex justify-between items-center px-8 py-6 border-b border-gray-800">
@@ -75,10 +89,18 @@ export default async function Dashboard() {
       <div className="max-w-4xl mx-auto px-8 py-16">
         <h2 className="text-4xl font-bold mb-2">Welcome, {name}.</h2>
         <p className="text-gray-400 mb-2">{phase.line}</p>
-        <p className="text-gray-600 text-sm mb-12">
+        <p className={`text-gray-600 text-sm ${storageLine ? 'mb-2' : 'mb-12'}`}>
           Phase: <span className="text-gray-300">{phase.name}</span>
         </p>
+        {storageLine && (
+          <p className="text-gray-600 text-sm mb-12">{storageLine}</p>
+        )}
 
+        {account && !canBuild && (
+          <div className="mb-8">
+            <StorageNotice />
+          </div>
+        )}
         {!account && (
           <div className="mb-8 rounded-2xl p-6 border border-yellow-900 bg-yellow-950/30">
             <p className="text-yellow-200 text-sm">

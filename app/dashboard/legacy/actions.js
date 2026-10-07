@@ -3,9 +3,15 @@
 // Posterity — content actions · Walker Brown
 import { revalidatePath } from 'next/cache'
 import { requireAccount } from '../../../lib/posterity/account'
+import { STORAGE_LAPSED_MESSAGE } from '../../../lib/posterity/storage'
 
 export async function addMessage(_prev, formData) {
-  const { supabase, account, legacy } = await requireAccount()
+  const { supabase, account, legacy, canBuild } = await requireAccount()
+
+  // Building is paused while storage is not current (Master Spec, Horizon Tier
+  // and Storage Lapse Grace Period). The database refuses the write anyway;
+  // this says why in the customer's own words instead of an RLS error.
+  if (!canBuild) return { error: STORAGE_LAPSED_MESSAGE }
 
   const title = (formData.get('title') || '').trim()
   const body = (formData.get('body') || '').trim()
@@ -49,7 +55,12 @@ export async function addMessage(_prev, formData) {
 // The file is already in storage by the time this runs — the browser uploaded it
 // directly. This records it. If it fails, the caller removes the orphaned object.
 export async function addMedia(_prev, formData) {
-  const { supabase, account, legacy } = await requireAccount()
+  const { supabase, account, legacy, canBuild } = await requireAccount()
+
+  // Building is paused while storage is not current (Master Spec, Horizon Tier
+  // and Storage Lapse Grace Period). The database refuses the write anyway;
+  // this says why in the customer's own words instead of an RLS error.
+  if (!canBuild) return { error: STORAGE_LAPSED_MESSAGE }
 
   const storagePath = formData.get('storage_path') || ''
   const kind = formData.get('kind') || ''

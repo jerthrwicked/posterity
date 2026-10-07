@@ -13,7 +13,7 @@ SUBSTANTIVE="$(printf '%s\n' "$STAGED" | grep -E '^(app/|lib/|proxy\.js$|supabas
 [ -n "$SUBSTANTIVE" ] || exit 0
 
 # Did it also update the changelog?
-printf '%s\n' "$STAGED" | grep -qx 'Posterity_Build_Log.md' && exit 0
+grep -qx 'Posterity_Build_Log.md' <<<"$STAGED" && exit 0
 
 cat >&2 <<'MSG'
 

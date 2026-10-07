@@ -7,7 +7,7 @@ const PLANS = [
     id: "horizon",
     name: "Horizon",
     price: "$9.99",
-    priceId: "price_1Tcvq1BcdnR2VoDgYustrs4G",
+    priceId: "price_1UHEk8BcdnR2VoDg768Poe7B",
     border: "border-gray-800",
     description: "Your legacy starts here. Unlimited time to build your account before you commit.",
     bullets: [

@@ -58,11 +58,11 @@ The markdown is the record and every change reaches it directly, whether it is b
 
 # Current Status
 
-As of September 25, 2026.
+As of October 6, 2026.
 
 The Master Specification is current. The Social Media Integration and Delivery System design records are complete, and each is the single authoritative copy of every rule within it. Posterity Social is complete in concept and awaits its own design pass. Every build-stage reference has been swept out of the Master Specification, so this file is the only place build order is recorded.
 
-Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 requires input and Stage 3.5 requires system design, and neither holds up the stages around it. Walker's July Stripe work stands in test mode, and Stage 3.1 holds what remains. Stage 3.4 is under way. Its storage is applied to the live database, and the build resumes at the Postmark sandbox server. The payment model is decided: upfront pre-load with year-by-year release.
+Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 requires input and Stage 3.5 requires system design, and neither holds up the stages around it. Walker's July Stripe work stands in test mode, and Stage 3.1 holds what remains. The storage state was built and applied to the live database on September 18: the three-month free trial on every account, a paid-through date only the server writes, and a gate at the database that pauses building, not viewing, while storage is not current. Checkout was tested end to end in a browser for every tier on October 6, so the live-mode prices are the next item within Stage 3.1. Stage 3.4 is under way. Its storage is applied to the live database, and the build resumes at the Postmark sandbox server. The payment model is decided: upfront pre-load with year-by-year release.
 
 Stage 4 was finalized within its own Doc on September 25, 2026. It moves into this file once the build reaches it, and nothing within it is built before then. Its numbering is fixed: 4.1 Account Status, 4.2 Settings, 4.3 User Profiles, 4.4 Video and Image Systems, 4.5 Content Builder and Delivery System, 4.6 Legacy Guard Setup, 4.7 Account Lifecycle and Delivery Automation, 4.8 Check-in System, and 4.9 Preview Mode. Every stage after Stage 4 is unwritten.
 
@@ -80,10 +80,9 @@ Payment is the first thing the application needs and nothing else within the bui
 
 Build Items:
 
-- Test checkout end to end in a browser for each tier. It has never been run end to end
 - Create the live-mode prices once test checkout passes. Only test-mode prices exist, and a price must be active before checkout can use it
 - Horizon remains $9.99 per year, recurring. No change
-- Create Posterity Grace Storage at $4.99 per year. Assigned to the account when a Grace plan request is approved, with no public checkout
+- Create Posterity Grace Storage at $4.99 per year. Assigned to the account when a Grace plan request is approved, with no public checkout. A test-mode price already exists within the sandbox, created September 19, 2026 under the product name Grace Storage with its description written. The live-mode product remains
 - A Grace plan carries no charge and no Stripe product. Approving a Grace plan request places one Grace plan year carrying the Grace preset and moves the account's storage subscription to Grace Storage, which stays in place if the account later funds paid plans. An account holds one Grace plan year at most
 - Create Posterity non-recurring storage charge at the same price as Horizon. It covers a skipped plan year and an additional Reprise year alike. Skipped years are added to the cart automatically and stack per year. Reprise years are purchased on demand, by the customer in advance or by a Legacy Guard during the phase, so the charge is payable within plan selection, Purchases, and the Legacy Guard portal
 - Create Additional Recipient slots, priced by tier: $5 on Basic, $12 on Premium, $25 on Legacy, writing the product description for each within Stripe. Alternative Recipients are fixed at two per piece of content across all tiers and are never purchasable
@@ -96,12 +95,11 @@ Build Items:
 
 Build Items:
 
-- Before activating the webhook built at app/api/webhooks/stripe/route.js, review which plan year each payment funds and how skipped-year storage is recorded, and make its one-time insert idempotent on Stripe retries
+- Before activating the webhook built at app/api/webhooks/stripe/route.js, decide which plan year each payment funds and how skipped-year storage is recorded. Checkout sends a tier and no plan year, since no cart exists yet. A plan payment belongs on its row within plans and a skipped year within storage_fees, and until then the webhook records each plan payment within subscriptions
 - Activate the webhook by setting STRIPE_WEBHOOK_SECRET and registering the endpoint for checkout.session.completed, customer.subscription.updated, and customer.subscription.deleted
 - Set Stripe to retry a failed storage charge once, three days after the first attempt. Record within Supabase when that retry fails or a payment request goes unpaid past its due date, so the account status check built within Stage 4.1 and the storage lapse sequence built within Stage 4.7 can both read it
 - Test storage renewal by card using Stripe's test clocks: a successful automatic payment, a charge that fails its retry, a renewal with automatic payments turned off, and a renewal following prepaid years
 - Refunds through Stripe, following the refund policy held within Legal and Compliance. A customer's plan deletion, downgrade, or account deletion issues its refund when it is made. A lapsed account's deletion issues its refund from a staff task built within the Operational Dashboard stage
-- The three-month free trial, held within Supabase rather than Stripe since it takes no payment method: one per account, beginning at signup, granting content building without Posterity Social access
 
 #### PayPal
 
@@ -134,6 +132,8 @@ Build Items:
 - Custom routes to a mail link rather than a contact surface, and Grace is shown as Contact Us rather than as a free plan chosen at plan selection
 - Get Started routing is untested against the updated products
 - Various links contain incorrect or outdated material and some may be inactive
+- The Stripe product descriptions for Basic, Premium, and Legacy still state the June prices of $39, $99, and $299 per year, and Stripe's checkout page shows each beneath the July price
+- A checkout that fails leaves the customer on the plans page with no message. The button returns to rest and nothing says what happened
 - The site address variable, the Supabase authentication redirects, and the Stripe checkout return addresses still point at posterity-seven.vercel.app. Move each to www.yourposterity.com and retest login and checkout.
 
 ### STAGE 3.2 — Twilio

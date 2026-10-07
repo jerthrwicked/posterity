@@ -113,6 +113,8 @@ The bridge is retired. Claude Code replaced it, and these entries stand as histo
 | Item | Date Completed |
 | :-- | :-- |
 | Database: storage for the Communication Dispatch System — the message queue, text agreements held by phone number, inbound texts, message copy as a field, and an append-only event log that outlives the account it records, all server-side only. Applied to the live database | September 25, 2026 |
+| Database: a paid-through date that holds until it has ended in every timezone, so a customer is never locked out on the last day they paid for. Applied to the live database | September 18, 2026 |
+| Database: the storage state every build gate reads — a three-month trial date set at signup, a paid-through date for storage that only the server writes, and row-level security that refuses new or edited messages, recipients, and uploads while storage is not current, leaving viewing and deleting open. Applied to the live database | September 18, 2026 |
 | Database: staff-verified and vetoed paths added to trigger confirmations, additive and not yet read. Applied to the live database | July 16, 2026 |
 | Database: the private legacy-media storage bucket, with its size ceiling and formats enforced by the bucket and each file keyed to its account. Applied to the live database | July 13, 2026 |
 | Database: trusted contacts required to hold an email or a phone, with a primary promoted in one transaction. Applied to the live database | July 13, 2026 |
@@ -126,6 +128,7 @@ The bridge is retired. Claude Code replaced it, and these entries stand as histo
 
 | Item | Date Completed |
 | :-- | :-- |
+| Building pauses while storage is not current: adding a message, media, or a recipient shows the storage notice instead, and the dashboard shows the trial days left. Tested live as a signed-in user, 18 checks passing (scripts/test-storage-gate.py) | September 18, 2026 |
 | Video and photo upload into the private bucket, played back through signed links that expire in an hour | July 13, 2026 |
 | Trusted contacts page: add them, write each a private note, and set the primary | July 13, 2026 |
 | Messages and recipients: add the people a message is for, write it, and choose its delivery date and whether it stays in Posterity | July 13, 2026 |
@@ -136,6 +139,8 @@ The bridge is retired. Claude Code replaced it, and these entries stand as histo
 
 | Item | Date Completed |
 | :-- | :-- |
+| Stripe webhook reviewed and corrected ahead of activation. A database write that fails now answers Stripe with an error so Stripe retries it, where before it answered received for a payment never recorded. Each event is recorded by its Stripe event id within stripe_events and marked processed once handled, so a resent event changes nothing. Horizon's renewal date is read from the subscription item, where Stripe's current API keeps it. A paid storage year sets storage_paid_through to the end of its billing period and carries it forward on each renewal. The move from Horizon to Planning is logged within account_phase_events and happens once when two payments land together. Tested in test mode with Stripe forwarding webhooks to a local server, 27 checks passing (scripts/test-checkout.mjs) | October 6, 2026 |
+| Checkout tested end to end in a browser for every tier in test mode: Horizon as a yearly subscription of $9.99, and Basic, Premium, and Legacy as one-time payments of $49, $129, and $399. Each was signed in through the login page, started from its own Get Started button, paid by test card, returned to the dashboard, and recorded within Stripe against the account, 18 checks passing (scripts/test-checkout.mjs). Horizon checkout had been failing because the catalog named a Stripe price no longer within the sandbox, and lib/posterity/plans.js now names the Horizon price created September 19, under the product Horizon / Posterity Social access | October 6, 2026 |
 | Stale test-mode prices archived, and the Basic $49 price unarchived so checkout can use it | July 16, 2026 |
 | Stripe webhook built at app/api/webhooks/stripe/route.js, signature-verified and writing to subscriptions, dormant until its secret is set and the endpoint is registered | July 16, 2026 |
 | Checkout rebuilt: sign-in required, the price resolved on the server from lib/posterity/plans.js, the customer's identity sent to Stripe, and Horizon billed as a subscription while plans are one-time payments | July 16, 2026 |

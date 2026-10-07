@@ -3,10 +3,11 @@ import { requireAccount } from '../../../lib/posterity/account'
 import { Wordmark } from '../../components/brand/Wordmark'
 import { LogoutButton } from '../LogoutButton'
 import { RecipientForm } from './RecipientForm'
+import { StorageNotice } from '../../components/StorageNotice'
 import { deleteRecipient } from './actions'
 
 export default async function Recipients() {
-  const { supabase, account } = await requireAccount()
+  const { supabase, account, canBuild } = await requireAccount()
 
   const { data: recipients } = await supabase
     .from('recipients')
@@ -32,7 +33,7 @@ export default async function Recipients() {
           you write something.
         </p>
 
-        <RecipientForm />
+        {canBuild ? <RecipientForm /> : <StorageNotice />}
 
         <div className="mt-10">
           {!recipients?.length ? (
