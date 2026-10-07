@@ -95,7 +95,7 @@ Build Items:
 
 Build Items:
 
-- Before activating the webhook built at app/api/webhooks/stripe/route.js, review which plan year each payment funds and how skipped-year storage is recorded, and make its one-time insert idempotent on Stripe retries
+- Before activating the webhook built at app/api/webhooks/stripe/route.js, decide which plan year each payment funds and how skipped-year storage is recorded. Checkout sends a tier and no plan year, since no cart exists yet. A plan payment belongs on its row within plans and a skipped year within storage_fees, and until then the webhook records each plan payment within subscriptions
 - Activate the webhook by setting STRIPE_WEBHOOK_SECRET and registering the endpoint for checkout.session.completed, customer.subscription.updated, and customer.subscription.deleted
 - Set Stripe to retry a failed storage charge once, three days after the first attempt. Record within Supabase when that retry fails or a payment request goes unpaid past its due date, so the account status check built within Stage 4.1 and the storage lapse sequence built within Stage 4.7 can both read it
 - Test storage renewal by card using Stripe's test clocks: a successful automatic payment, a charge that fails its retry, a renewal with automatic payments turned off, and a renewal following prepaid years

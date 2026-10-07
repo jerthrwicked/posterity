@@ -19,6 +19,13 @@ returns to it:
   NEXT_PUBLIC_SITE_URL=http://localhost:3150 npx next dev -p 3150
   CHECKOUT_BASE=http://localhost:3150 node scripts/test-checkout.mjs
 CHROME_PATH chooses the browser if Puppeteer's own is not installed.
+
+With STRIPE_WEBHOOK_SECRET set, it also checks the webhook: that each payment is
+recorded within Supabase once, that storage is paid through the Horizon year, that
+the account moves to Planning with the move logged, that a resent event changes
+nothing, and that a write which fails answers Stripe with an error. Forward the
+webhooks to the dev server and start it with the same secret:
+  stripe listen --api-key <test key> --events checkout.session.completed,customer.subscription.updated,customer.subscription.deleted --forward-to localhost:3150/api/webhooks/stripe
 */
 import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
@@ -44,6 +51,11 @@ const URL_ = env.NEXT_PUBLIC_SUPABASE_URL, SERVICE = env.SUPABASE_SERVICE_ROLE_K
 const BASE = process.env.CHECKOUT_BASE || 'http://localhost:3000';
 const ORDER = ['horizon', 'basic', 'premium', 'legacy']; // the order of the cards on /pricing
 const EMAIL = `checkout-test-${Date.now()}@example.com`, PASSWORD = 'test-password-123';
+// Set to the secret `stripe listen` prints, and give the dev server the same one,
+// to also check what the webhook records within Supabase.
+const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
+const WEBHOOK_TYPES = ['checkout.session.completed', 'customer.subscription.updated', 'customer.subscription.deleted'];
+const eventIds = [];
 
 const admin = (path, opts = {}) => fetch(URL_ + path, {
   ...opts,
@@ -127,8 +139,63 @@ try {
         sub.status === 'active' && sub.items.data[0].price.recurring?.interval === 'year' && sub.metadata.account_id === account);
     }
   }
+
+  if (!WEBHOOK_SECRET) {
+    console.log('\nRecorded within Supabase: skipped, STRIPE_WEBHOOK_SECRET is not set');
+  } else {
+    console.log('\nRecorded within Supabase');
+    // Webhooks arrive on their own schedule; wait for all four checkouts to be handled.
+    const ours = async () => (await stripe.events.list({ limit: 100, created: { gte: started }, types: WEBHOOK_TYPES })).data
+      .filter((e) => e.data.object.client_reference_id === account || e.data.object.metadata?.account_id === account);
+    let checkoutEvents = [], handled = [];
+    for (let t = 0; t < 60; t++) {
+      checkoutEvents = (await ours()).filter((e) => e.type === 'checkout.session.completed');
+      handled = checkoutEvents.length ? await (await admin(`/rest/v1/stripe_events?id=in.(${checkoutEvents.map((e) => e.id)})&processed_at=not.is.null&select=id`)).json() : [];
+      if (handled.length === ORDER.length) break;
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+    check('every checkout event was received and marked processed', handled.length === ORDER.length, `${handled.length} of ${ORDER.length}`);
+
+    const rows = await (await admin(`/rest/v1/subscriptions?account_id=eq.${account}&select=tier,status,stripe_subscription_id,current_period_end`)).json();
+    const horizonSession = sessions.find((x) => x.metadata.plan === 'horizon');
+    const sub = horizonSession && await stripe.subscriptions.retrieve(horizonSession.subscription);
+    const end = sub && new Date(sub.items.data[0].current_period_end * 1000);
+    const hz = rows.filter((r) => r.stripe_subscription_id);
+    check('Horizon recorded once, with its renewal date', hz.length === 1 && hz[0].status === 'active' && new Date(hz[0].current_period_end).getTime() === end?.getTime(), JSON.stringify(hz));
+    const paid = rows.filter((r) => r.status === 'paid').map((r) => r.tier).sort();
+    check('each plan payment recorded once', JSON.stringify(paid) === JSON.stringify(['basic', 'legacy', 'premium']), paid.join(', '));
+
+    const [acct] = await (await admin(`/rest/v1/accounts?id=eq.${account}&select=phase,initiated_at,storage_paid_through`)).json();
+    check('storage is paid through the end of the Horizon year', acct.storage_paid_through === end?.toISOString().slice(0, 10), acct.storage_paid_through);
+    check('the account moved to Planning and was initiated', acct.phase === 'planning' && !!acct.initiated_at, acct.phase);
+    const moves = await (await admin(`/rest/v1/account_phase_events?account_id=eq.${account}&to_phase=eq.planning&select=from_phase,to_phase`)).json();
+    check('the move was logged once in the phase history', moves.length === 1 && moves[0].from_phase === 'horizon' && moves[0].to_phase === 'planning', JSON.stringify(moves));
+
+    // A retry: Stripe sends the same event again. It must change nothing.
+    const send = async (payload) => {
+      const body = JSON.stringify(payload);
+      const header = stripe.webhooks.generateTestHeaderString({ payload: body, secret: WEBHOOK_SECRET });
+      return fetch(`${BASE}/api/webhooks/stripe`, { method: 'POST', headers: { 'stripe-signature': header, 'Content-Type': 'application/json' }, body });
+    };
+    const basicEvent = checkoutEvents.find((e) => e.data.object.metadata.plan === 'basic');
+    const again = await send(basicEvent);
+    const againBody = await again.json().catch(() => ({}));
+    const after = await (await admin(`/rest/v1/subscriptions?account_id=eq.${account}&status=eq.paid&select=id`)).json();
+    check('a resent payment is acknowledged and recorded nothing new', again.status === 200 && againBody.duplicate === true && after.length === 3, `${again.status} ${after.length} rows`);
+
+    // A write that fails must reach Stripe as a failure, so Stripe retries it.
+    // This payment names an account that does not exist, so its insert is refused.
+    const broken = { ...basicEvent, id: `evt_test_broken_${Date.now()}`, data: { object: { ...basicEvent.data.object, client_reference_id: crypto.randomUUID(), metadata: {} } } };
+    const failed = await send(broken);
+    check('a failed write answers Stripe with an error', failed.status === 500, `got ${failed.status}`);
+    const [left] = await (await admin(`/rest/v1/stripe_events?id=eq.${broken.id}&select=processed_at`)).json();
+    check('the failed event stays open for the retry', left && left.processed_at === null, JSON.stringify(left));
+    eventIds.push(broken.id, ...(await ours()).map((e) => e.id));
+  }
 } finally {
   if (browser) await browser.close();
+  // The test's events are sandbox events; they come out of the live stripe_events table.
+  if (eventIds.length) console.log(`\ntest events removed from stripe_events: ${(await admin(`/rest/v1/stripe_events?id=in.(${eventIds})`, { method: 'DELETE' })).status === 204}`);
   if (uid) console.log(`\ntest user deleted: ${(await admin(`/auth/v1/admin/users/${uid}`, { method: 'DELETE' })).status === 200}`);
 }
 console.log(`\n${passed} passing, ${failed} failing`);
