@@ -1,8 +1,7 @@
-import Stripe from 'stripe';
+import { getStripe } from '../../../lib/posterity/stripe';
 import { createClient } from '../../../lib/supabase/server';
 import { getPlan } from '../../../lib/posterity/plans';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Create a Stripe Checkout session for the signed-in customer.
 //
@@ -48,7 +47,7 @@ export async function POST(req) {
   };
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: plan.mode, // 'subscription' for the recurring Horizon fee, 'payment' for one-time plans
     line_items: [{ price: plan.priceId, quantity: 1 }],
     client_reference_id: account.id,

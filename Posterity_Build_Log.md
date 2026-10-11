@@ -10,6 +10,21 @@ Entries predating September 12, 2026 were written under stage numbering that has
 
 ---
 
+## Hosting Migration
+
+Groundwork for Stage 3.5 on the branch walker/cloudflare. Nothing is deployed, the site still runs on Vercel, and the Stage 3.5 items stay on the roadmap until the migration plan is decided. The draft plan is BUILD/CLOUDFLARE_MIGRATION.md.
+
+| Item | Date Completed |
+| :-- | :-- |
+| The site builds for Cloudflare Workers through scripts/cf-build.sh, which keeps every server secret out of the Worker. The adapter copies every .env file into the Worker, and the first build carried the service-role key, the Stripe secret key and the Supabase management token inside it. The script builds with the public values only and fails if a secret reaches the bundle | October 10, 2026 |
+| Tested locally in the Workers runtime: the public pages load, an unknown page returns 404, the dashboard redirects a signed-out visitor to login, checkout refuses a signed-out visitor, and the Stripe webhook rejects a bad signature and accepts a correctly signed event. A signed-in session and a real checkout remain untested | October 10, 2026 |
+| The Stripe client is built on first use rather than when a route loads, since on Cloudflare the key is a runtime secret and a load-time client crashed the build | October 10, 2026 |
+| The Stripe webhook verifies signatures asynchronously through Web Crypto, since Workers have no synchronous HMAC. The async form works on Vercel as well | October 10, 2026 |
+| Next.js moved from 16.2.6 to 16.3.8, the smallest version the Cloudflare adapter accepts, with the adapter and Wrangler added and the Worker configured | October 10, 2026 |
+| Paid Workers plan chosen for go-live (Walker) | October 10, 2026 |
+
+---
+
 ## Domain and Email
 
 | Item | Date Completed |

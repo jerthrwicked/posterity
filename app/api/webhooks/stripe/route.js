@@ -1,7 +1,10 @@
 import Stripe from 'stripe';
+import { getStripe } from '../../../../lib/posterity/stripe';
 import { createClient } from '@supabase/supabase-js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+// Workers have no synchronous HMAC; Web Crypto is async-only. The async verifier
+// works on Node as well, so this is safe on Vercel and on Cloudflare.
+const cryptoProvider = Stripe.createSubtleCryptoProvider();
 
 // Service-role client: the webhook runs with no user session, so it writes past
 // RLS. It is the ONLY thing that records money — the `subscriptions` table exists
@@ -38,7 +41,7 @@ export async function POST(req) {
   const raw = await req.text(); // raw body required for signature verification
   let event;
   try {
-    event = stripe.webhooks.constructEvent(raw, sig, secret);
+    event = await getStripe().webhooks.constructEventAsync(raw, sig, secret, undefined, cryptoProvider);
   } catch (err) {
     return new Response(`signature verification failed: ${err.message}`, { status: 400 });
   }
@@ -100,7 +103,7 @@ async function onCheckoutCompleted(db, session) {
   // Horizon (recurring): record/refresh the subscription. Idempotent on the
   // subscription id, so Stripe retries can't duplicate it.
   if (session.mode === 'subscription' && session.subscription) {
-    const sub = await stripe.subscriptions.retrieve(session.subscription);
+    const sub = await getStripe().subscriptions.retrieve(session.subscription);
     const end = periodEnd(sub);
     must(await db.from('subscriptions').upsert({
       account_id: accountId,
