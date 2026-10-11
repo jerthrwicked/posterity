@@ -213,6 +213,5 @@ Subjects: tech stack, environment variables, important links.
 Build Items:
 
 - A migration plan covering the Next.js build adapter for Cloudflare, the environment variables, the deployment flow from GitHub, and the Supabase and Stripe redirect addresses, decided with the co-founder.
-- Deploy the site on Cloudflare and point the yourposterity.com and www records at it in place of Vercel.
 - Retest login, checkout, and every link within automated email against the new host.
 - Retire the Vercel project once the Cloudflare deployment is confirmed.

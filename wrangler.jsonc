@@ -7,7 +7,11 @@
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
-  }
-  // No routes yet: the first deploy lands on posterity.<subdomain>.workers.dev.
-  // yourposterity.com + www move here only at DNS cutover.
+  },
+  // www is the site. The bare domain is not attached here: a Cloudflare redirect
+  // rule sends yourposterity.com to www, as Vercel did. Cut over 2026-10-11.
+  "routes": [
+    { "pattern": "www.yourposterity.com", "custom_domain": true }
+  ],
+  "workers_dev": false
 }

@@ -17,9 +17,12 @@ cd "$(dirname "$0")/.."
 # Cloudflare's GitHub build (no .env.local; public values are build variables).
 if [ -f .env.local ]; then
   [ ! -e .env.local.cfbuild ] || { echo ".env.local.cfbuild exists — a previous build died; restore it by hand first"; exit 1; }
-  set -a
-  eval "$(grep -E '^NEXT_PUBLIC_[A-Z_]+=' .env.local)"
-  set +a
+  # A value already in the environment wins over .env.local, so a production
+  # build can set NEXT_PUBLIC_SITE_URL without editing the local file.
+  while IFS= read -r line; do
+    k=${line%%=*}
+    [ -n "${!k:-}" ] || { eval "$line"; export "$k"; }
+  done < <(grep -E '^NEXT_PUBLIC_[A-Z_]+=' .env.local)
   mv .env.local .env.local.cfbuild
   trap 'mv .env.local.cfbuild .env.local' EXIT
 fi

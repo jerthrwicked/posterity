@@ -1,7 +1,21 @@
 # Stage 3.5 — Moving hosting from Vercel to Cloudflare · Walker Brown
 
 Draft migration plan, 2026-10-10. The roadmap's first Stage 3.5 item is this plan, decided with Jeremy.
-Nothing here is deployed. The site still runs on Vercel and the DNS is unchanged.
+
+**Cut over 2026-10-11.** www.yourposterity.com is served by the Worker, and the bare domain redirects
+to www through a Cloudflare redirect rule. The Vercel preview step below was skipped: there are no
+customers, so the move went straight to the live domain. Deployed by hand:
+`NEXT_PUBLIC_SITE_URL=https://www.yourposterity.com bash scripts/cf-build.sh && npx wrangler deploy`.
+
+Done: the Worker on www, the five runtime values as Worker secrets, both Vercel records replaced, the
+apex redirect rule, and Supabase's site address and allowed redirects. Checked live: the public pages,
+the 404, the signed-out dashboard redirect and checkout's 401.
+Open: a signed-in session and a test checkout on the new host; the webhook stays dormant until
+`STRIPE_WEBHOOK_SECRET` is set; deploys from GitHub (decision 1); retiring the Vercel project.
+
+**The way back:** take www off the Worker, delete the apex `AAAA 100::` record and the redirect rule,
+and restore the two Vercel CNAMEs (both pointed at `0b1f223f52b56ee2.vercel-dns-017.com`, DNS only).
+Vercel still holds its last build.
 
 ## What is already proven, on branch `walker/cloudflare`
 

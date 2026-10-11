@@ -12,10 +12,13 @@ Entries predating September 12, 2026 were written under stage numbering that has
 
 ## Hosting Migration
 
-Groundwork for Stage 3.5 on the branch walker/cloudflare. Nothing is deployed, the site still runs on Vercel, and the Stage 3.5 items stay on the roadmap until the migration plan is decided. The draft plan is BUILD/CLOUDFLARE_MIGRATION.md.
+Stage 3.5. The site moved from Vercel to Cloudflare on October 11, 2026, and www.yourposterity.com is served by the Cloudflare Worker. The plan and the way back are in BUILD/CLOUDFLARE_MIGRATION.md.
 
 | Item | Date Completed |
 | :-- | :-- |
+| The site runs on Cloudflare at www.yourposterity.com, deployed by hand with wrangler. The bare domain redirects to www through a Cloudflare redirect rule that keeps the path and query string, as Vercel did. Both Vercel DNS records are removed, and the mail records are unchanged. Checked live: the public pages load, an unknown page returns 404, the dashboard redirects a signed-out visitor to login, and checkout refuses a signed-out visitor. A signed-in session and a test checkout on the new host remain untested | October 11, 2026 |
+| The server secrets and the site address live on Cloudflare as Worker secrets. The site address is https://www.yourposterity.com, so checkout's Stripe return addresses point at the live domain. scripts/cf-build.sh lets a site address given on the command line win over the local one, so the production build needs no edit to .env.local | October 11, 2026 |
+| Supabase's site address and allowed auth redirects point at https://www.yourposterity.com, with localhost kept for local development. The site address had been http://localhost:3000, so signup confirmation emails linked to localhost | October 11, 2026 |
 | The site builds for Cloudflare Workers through scripts/cf-build.sh, which keeps every server secret out of the Worker. The adapter copies every .env file into the Worker, and the first build carried the service-role key, the Stripe secret key and the Supabase management token inside it. The script builds with the public values only and fails if a secret reaches the bundle | October 10, 2026 |
 | Tested locally in the Workers runtime: the public pages load, an unknown page returns 404, the dashboard redirects a signed-out visitor to login, checkout refuses a signed-out visitor, and the Stripe webhook rejects a bad signature and accepts a correctly signed event. A signed-in session and a real checkout remain untested | October 10, 2026 |
 | The Stripe client is built on first use rather than when a route loads, since on Cloudflare the key is a runtime secret and a load-time client crashed the build | October 10, 2026 |
