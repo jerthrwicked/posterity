@@ -5,10 +5,11 @@ const PHASE_HUES = ["#93ab99", "#879d98", "#7b8f97", "#708096", "#647295", "#586
 const PHASES = [
   { name: "Horizon", copy: "Your legacy starts here. Build your account before committing." },
   { name: "Planning", copy: "Some or all of the plans within your account have received funding. Content continues to be created and refined." },
-  { name: "Abeyance", copy: "A period of waiting between the triggering of your account and its activation." },
+  { name: "Interlude", copy: "A period of waiting between the triggering of your account and its activation." },
   { name: "Active", copy: "Your account is live. The custom content you\u2019ve created is delivered to your loved ones in the exact way, at the exact time you designed it to be." },
-  { name: "Twilight", copy: "A neutral, free year. If you choose, trusted contacts can gather and download approved content within your account." },
-  { name: "Posterity", copy: "Optional. Should you wish it, the approved portions of your account become a permanent archive — your legacy, living on." },
+  { name: "Reprise", copy: "A neutral, free year. If you choose, trusted contacts can gather and download approved content within your account." },
+  // Approved copy, from the specification's Brand Copy. Used exactly as written.
+  { name: "Posterity", copy: "Your Posterity account will become a living representation of the legacy you created." },
 ];
 
 export default function Home() {

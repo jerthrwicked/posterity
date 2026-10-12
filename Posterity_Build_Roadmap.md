@@ -126,15 +126,7 @@ Runs after the Stripe work, not before it. The live application carries content 
 
 Build Items:
 
-- Phase names on the homepage and the dashboard read Abeyance and Twilight. The confirmed names are Interlude and Reprise
-- Plan card bullets count messages and video messages. The confirmed terminology is Standard Deliveries and Feature Deliveries
-- Grace Storage does not appear
 - Custom routes to a mail link rather than a contact surface, and Grace is shown as Contact Us rather than as a free plan chosen at plan selection
-- Get Started routing is untested against the updated products
-- Various links contain incorrect or outdated material and some may be inactive
-- The Stripe product descriptions for Basic, Premium, and Legacy still state the June prices of $39, $99, and $299 per year, and Stripe's checkout page shows each beneath the July price
-- A checkout that fails leaves the customer on the plans page with no message. The button returns to rest and nothing says what happened
-- The site address variable, the Supabase authentication redirects, and the Stripe checkout return addresses still point at posterity-seven.vercel.app. Move each to www.yourposterity.com and retest login and checkout.
 
 ### STAGE 3.2 — Twilio
 

@@ -5,14 +5,17 @@ import { LogoutButton } from './LogoutButton'
 import { StorageNotice } from '../components/StorageNotice'
 import { storageIsCurrent, trialDaysLeft } from '../../lib/posterity/storage'
 
-// The six phases, in the product's own language. Never clinical.
+// The six phases, in the product's own language. Never clinical. The keys are the
+// database's phase values, which still carry the earlier names abeyance and twilight;
+// customers see the confirmed names Interlude and Reprise.
 const PHASES = {
   horizon:   { name: 'Horizon',   line: 'You are building. Take all the time you need.' },
   planning:  { name: 'Planning',  line: 'Your account is initiated. Your legacy is safe with us.' },
-  abeyance:  { name: 'Abeyance',  line: 'A quiet pause. Nothing is delivered during this phase.' },
+  abeyance:  { name: 'Interlude', line: 'A quiet pause. Nothing is delivered during this phase.' },
   active:    { name: 'Active',    line: 'Your legacy is being delivered, on the dates you chose.' },
-  twilight:  { name: 'Twilight',  line: 'The final plan year is complete.' },
-  posterity: { name: 'Posterity', line: 'A permanent archive, in the care of your trusted contact.' },
+  twilight:  { name: 'Reprise',   line: 'The final plan year is complete.' },
+  // The Posterity line is approved copy from the specification's Brand Copy, used exactly as written.
+  posterity: { name: 'Posterity', line: 'Your Posterity account will become a living representation of the legacy you created.' },
 }
 
 function Card({ title, blurb, value, hint, href }) {

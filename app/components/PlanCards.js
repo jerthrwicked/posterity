@@ -2,6 +2,18 @@
 import { useState } from "react";
 import { PLANS as PLAN_CATALOG } from "../../lib/posterity/plans";
 
+// Shown beneath a plan's button when its checkout fails to open. Awaits approved copy.
+const CHECKOUT_FAILED = "[Placeholder: Product surface copy — error messages: a checkout that fails to open]";
+
+// A tier's delivery counts read from the catalog, in the specification's terms.
+function deliveryBullets(id) {
+  const { standard, feature } = PLAN_CATALOG[id];
+  return [
+    `${standard} Standard ${standard === 1 ? "Delivery" : "Deliveries"} per plan year`,
+    `${feature} Feature ${feature === 1 ? "Delivery" : "Deliveries"} per plan year`,
+  ];
+}
+
 const PLANS = [
   {
     id: "horizon",
@@ -23,9 +35,8 @@ const PLANS = [
     border: "border-gray-700",
     description: "A steady cadence — quarterly messages for the people who matter most.",
     bullets: [
-      "4 messages, posts, or shares per plan year",
-      "1 video message per plan year",
-      "Optional handwritten note per message",
+      ...deliveryBullets("basic"),
+      "Optional handwritten note per delivery",
     ],
   },
   {
@@ -38,9 +49,8 @@ const PLANS = [
     featured: true,
     description: "Monthly moments across the year — birthdays, anniversaries, ordinary Tuesdays.",
     bullets: [
-      "12 messages, posts, or shares per plan year",
-      "4 video messages per plan year",
-      "Optional handwritten note per message",
+      ...deliveryBullets("premium"),
+      "Optional handwritten note per delivery",
     ],
   },
   {
@@ -52,33 +62,36 @@ const PLANS = [
     badge: "Limited availability",
     description: "A message every week — a full, living presence that lasts the whole year through.",
     bullets: [
-      "52 messages, posts, or shares per plan year",
-      "12 video messages per plan year",
-      "Optional handwritten note per message",
+      ...deliveryBullets("legacy"),
+      "Optional handwritten note per delivery",
     ],
   },
 ];
 
 export default function PlanCards() {
   const [loading, setLoading] = useState(null);
+  const [failed, setFailed] = useState(null);
 
   const handleCheckout = async (planId, index) => {
     setLoading(index);
+    setFailed(null);
     const res = await fetch("/api/create-checkout-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ plan: planId }),
-    });
-    if (res.status === 401) {
+    }).catch(() => null);
+    if (res && res.status === 401) {
       // must be signed in to check out — the server owns the price, so this is required
       window.location.href = "/login?next=/pricing";
       return;
     }
-    const data = await res.json().catch(() => ({}));
+    const data = res ? await res.json().catch(() => ({})) : {};
     if (data && data.url) {
       window.location.href = data.url;
     } else {
+      // The button returns to rest, and the card says checkout did not open.
       setLoading(null);
+      setFailed(index);
     }
   };
 
@@ -158,6 +171,9 @@ export default function PlanCards() {
               >
                 {loading === i ? "Loading..." : "Get Started"}
               </button>
+              {failed === i && (
+                <p role="alert" className="text-sm text-gray-400 mt-3 text-center">{CHECKOUT_FAILED}</p>
+              )}
             </div>
           ))}
         </div>
@@ -167,7 +183,7 @@ export default function PlanCards() {
       <div className="max-w-2xl mx-auto text-center px-6 py-10">
         <div className="w-10 h-px mx-auto mb-5" style={{ background: "#93ab99" }} />
         <p className="serif-accent" style={{ fontSize: "18px", lineHeight: "1.75" }}>
-          Quarterly, monthly, weekly — that&rsquo;s just how we count. Every message and video message posts on any date you choose, anytime across the plan year.
+          Quarterly, monthly, weekly — that&rsquo;s just how we count. Every delivery posts on any date you choose, anytime across the plan year.
         </p>
       </div>
     </>

@@ -9,6 +9,9 @@ Runs every tier's checkout in a real browser, the way a customer would.
   - the browser must come back to /dashboard?success=true
   - each session is then read back from Stripe: paid, the right amount, the right
     mode (Horizon a subscription, the plans one-time), and carrying the account
+  - a checkout that fails to open leaves a message on its card
+  - Custom and Posterity Grace route to Contact Us, Grace shows Grace Storage at its
+    catalog price, and the public checkout refuses Custom, Grace, and Grace Storage
 
 Refuses to run unless STRIPE_SECRET_KEY is a test key. The throwaway user is
 deleted at the end. The paid test sessions and the Horizon test subscription stay
@@ -31,7 +34,7 @@ import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import puppeteer from 'puppeteer';
 import Stripe from 'stripe';
-import { PLANS } from '../lib/posterity/plans.js';
+import { PLANS, GRACE_STORAGE } from '../lib/posterity/plans.js';
 
 const env = {};
 for (const raw of readFileSync(homedir() + '/posterity/.env.local', 'utf8').split(/\r?\n/)) {
@@ -123,6 +126,48 @@ try {
     } catch (e) {
       check('checkout completed', false, e.message.split('\n')[0]);
     }
+  }
+
+  console.log('\nA checkout that fails to open');
+  // The checkout route is made to fail for this one click, as an outage would.
+  await page.setRequestInterception(true);
+  const failOnce = (req) => req.url().endsWith('/api/create-checkout-session')
+    ? req.respond({ status: 500, contentType: 'application/json', body: '{}' }) : req.continue();
+  page.on('request', failOnce);
+  try {
+    await page.goto(`${BASE}/pricing`, { waitUntil: 'networkidle2', timeout: 120000 });
+    await hydrated('main button');
+    await (await page.$$('main button'))[1].click();
+    await page.waitForSelector('main [role=alert]', { timeout: 30000 });
+    const shown = await page.$$eval('main [role=alert]', (els) => els.map((e) => e.closest('div[class*="border"]')?.querySelector('h2')?.innerText));
+    const rest = await page.$$eval('main button', (bs) => bs[1].innerText.trim());
+    check('the card says checkout did not open, and only that card', shown.length === 1 && shown[0] === 'Basic', shown.join(', '));
+    check('the button returns to rest', rest === 'Get Started', rest);
+  } catch (e) {
+    check('the failure message appeared', false, e.message.split('\n')[0]);
+  } finally {
+    page.off('request', failOnce);
+    await page.setRequestInterception(false);
+  }
+
+  console.log('\nCustom and Posterity Grace');
+  await page.goto(`${BASE}/pricing`, { waitUntil: 'networkidle2', timeout: 120000 });
+  const cardOf = (name) => page.evaluate((n) => {
+    const card = [...document.querySelectorAll('main h2')].find((h) => h.innerText.trim() === n)?.parentElement;
+    return card && { text: card.innerText, href: card.querySelector('a')?.getAttribute('href') };
+  }, name);
+  for (const name of ['Custom', 'Posterity Grace']) {
+    const card = await cardOf(name);
+    check(`${name}: Contact Us writes to admin@yourposterity.com`, card?.href === 'mailto:admin@yourposterity.com', card?.href);
+  }
+  const grace = await cardOf('Posterity Grace');
+  check(`Posterity Grace shows Grace Storage at ${GRACE_STORAGE.price}/year`, !!grace?.text.includes(`Grace Storage at ${GRACE_STORAGE.price}/year`));
+  // None of these has a public checkout, so the route refuses each by name.
+  for (const plan of ['custom', 'grace', GRACE_STORAGE.id]) {
+    const status = await page.evaluate(async (p) => (await fetch('/api/create-checkout-session', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ plan: p }),
+    })).status, plan);
+    check(`${plan}: refused by the public checkout`, status === 400, `got ${status}`);
   }
 
   console.log('\nRecorded within Stripe');

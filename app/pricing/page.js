@@ -1,5 +1,6 @@
 ﻿"use client";
 import PlanCards from "../components/PlanCards";
+import { GRACE_STORAGE } from "../../lib/posterity/plans";
 
 
 export default function Pricing() {
@@ -31,7 +32,7 @@ export default function Pricing() {
               Every legacy is different. If your vision doesn&rsquo;t fit a standard plan, we&rsquo;ll build something that does — contact us to get started
             </p>
             <a
-              href="mailto:hello@posterity.app"
+              href="mailto:admin@yourposterity.com"
               className="inline-block border border-white text-white px-6 py-3 rounded-full text-base font-semibold hover:bg-white hover:text-black transition"
             >
               Contact Us
@@ -42,12 +43,15 @@ export default function Pricing() {
             className="rounded-2xl p-10 flex flex-col items-center"
             style={{ backgroundColor: "#0d0d0d", border: "1px solid #262626" }}
           >
-            <h2 className="text-2xl font-bold mb-4">Posterity Grace</h2>
+            <h2 className="text-2xl font-bold mb-2">Posterity Grace</h2>
+            <p className="text-gray-300 text-base mb-4">
+              Free, with Grace Storage at {GRACE_STORAGE.price}<span className="text-gray-500">/year</span>
+            </p>
             <p className="text-gray-400 text-base leading-relaxed mb-8">
               Everyone deserves a legacy. Financial hardship shouldn&rsquo;t stand between you and your posterity. Contact us to discuss your options — we&rsquo;ll find a way forward together
             </p>
             <a
-              href="mailto:hello@posterity.app"
+              href="mailto:admin@yourposterity.com"
               className="inline-block border border-white text-white px-6 py-3 rounded-full text-base font-semibold hover:bg-white hover:text-black transition"
             >
               Contact Us
