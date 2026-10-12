@@ -1,7 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "posterity",
-  "main": ".open-next/worker.js",
+  // worker.js passes the site through and adds the dispatch scheduler's cycle.
+  "main": "worker.js",
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
@@ -13,5 +14,7 @@
   "routes": [
     { "pattern": "www.yourposterity.com", "custom_domain": true }
   ],
-  "workers_dev": false
+  "workers_dev": false,
+  // Wakes the Communication Dispatch System's scheduler every minute (worker.js).
+  "triggers": { "crons": ["* * * * *"] }
 }

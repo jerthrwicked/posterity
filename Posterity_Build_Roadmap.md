@@ -185,7 +185,6 @@ Subjects: the Communication Dispatch System, customer contact and communication,
 
 Build Items:
 
-- A scheduler that wakes on a cycle and asks what is due
 - A Postmark sender and a Twilio sender, each taking a message and a destination. Both are built as channels behind one interface, since Meta joins them as a third channel when social media publishing is built
 - A Postmark sandbox server for test sends. It accepts messages without delivering them, so testing does not draw from the free tier's monthly allowance.
 - Channel policy applied at send, texting only a person whose agreement is on file. This covers the sending window, immediate sends for texts a person sets off themselves, the confirmation text after each agreement, the Reassigned Numbers Database check, and inbound texts read for STOP replies and check-ins by text

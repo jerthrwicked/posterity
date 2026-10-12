@@ -2,8 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 import { timingSafeEqual } from 'node:crypto';
 import { runPass } from '../../../../lib/dispatch/run';
 
-// Runs one pass of the Communication Dispatch System's scheduler. Whatever wakes
-// it on a cycle (a cron at the host) calls this with the shared secret:
+// Runs one pass of the Communication Dispatch System's scheduler. The Worker's
+// cron (worker.js, every minute) calls this with the shared secret:
 //   POST /api/dispatch/run   Authorization: Bearer <DISPATCH_RUN_SECRET>
 //
 // It refuses every call until DISPATCH_RUN_SECRET is set and both senders
