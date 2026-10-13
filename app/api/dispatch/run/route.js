@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { timingSafeEqual } from 'node:crypto';
 import { runPass } from '../../../../lib/dispatch/run';
+import { postmarkSender, twilioSender } from '../../../../lib/dispatch/senders';
 
 // Runs one pass of the Communication Dispatch System's scheduler. The Worker's
 // cron (worker.js, every minute) calls this with the shared secret:
@@ -11,10 +12,17 @@ import { runPass } from '../../../../lib/dispatch/run';
 
 export const maxDuration = 300;
 
-// The Postmark and Twilio senders join here once their keys arrive. Until then
-// there is nothing to send through and the pass does not run.
+// Both senders, built from the deploy's keys, or null while either is missing
+// so that the pass does not run with one channel and no way to send the other.
 function channels() {
-  return null;
+  const token = process.env.POSTMARK_SERVER_TOKEN;
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  if (!token || !accountSid || !authToken) return null;
+  return {
+    email: postmarkSender({ token }),
+    sms: twilioSender({ accountSid, authToken }),
+  };
 }
 
 function authorized(req, secret) {
