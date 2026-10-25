@@ -19,8 +19,23 @@ const lora = Lora({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://www.yourposterity.com"),
   title: "Posterity",
   description: "Your voice. Forever.",
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Posterity",
+    title: "Posterity",
+    description: "Messages, memories, and videos — delivered to the ones you love, even after you're gone.",
+    images: [{ url: "/brand/link-preview-1200x630.png", width: 1200, height: 630, alt: "Posterity. Your Voice. Forever." }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Posterity",
+    description: "Messages, memories, and videos — delivered to the ones you love, even after you're gone.",
+    images: ["/brand/link-preview-1200x630.png"],
+  },
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
