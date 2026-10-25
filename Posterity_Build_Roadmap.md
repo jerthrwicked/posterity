@@ -58,11 +58,15 @@ The markdown is the record and every change reaches it directly, whether it is b
 
 # Current Status
 
-As of October 6, 2026.
+As of October 24, 2026.
 
 The Master Specification is current. The Social Media Integration and Delivery System design records are complete, and each is the single authoritative copy of every rule within it. Posterity Social is complete in concept and awaits its own design pass. Every build-stage reference has been swept out of the Master Specification, so this file is the only place build order is recorded.
 
-Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 requires input and Stage 3.5 requires system design, and neither holds up the stages around it. Walker's July Stripe work stands in test mode, and Stage 3.1 holds what remains. The storage state was built and applied to the live database on September 18: the three-month free trial on every account, a paid-through date only the server writes, and a gate at the database that pauses building, not viewing, while storage is not current. Checkout was tested end to end in a browser for every tier on October 6, so the live-mode prices are the next item within Stage 3.1. Stage 3.4 is under way. Its storage is applied to the live database, and the build resumes at the Postmark sandbox server. The payment model is decided: upfront pre-load with year-by-year release.
+Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 and Stage 3.5 require input, and neither holds up the stages around it. The site has run on Cloudflare since October 11, and what remains within Stage 3.5 is the deployment flow and retiring the Vercel project.
+
+Walker's Stripe work stands in test mode, and Stage 3.1 holds what remains. The storage state was built and applied to the live database on September 18: the three-month free trial on every account, a paid-through date only the server writes, and a gate at the database that pauses building, not viewing, while storage is not current. Checkout was tested end to end in a browser for every tier on October 6, and the Site Consistency Sweep was finished on October 11. Every test-mode product exists, and storage renewal, automatic payments, and prepaid years were built on October 12. The live-mode products are the next item within Stage 3.1, followed by the decision on which plan year each payment funds, which the webhook waits on. The payment model is decided: upfront pre-load with year-by-year release.
+
+Stage 3.4 is under way. Its storage is applied to the live database, and the queue, the channel policy, the email frame, the event log, the confirmation text after each agreement, the scheduler's cycle, and both senders are built. Nothing sends yet. The scheduler refuses each wake until the Postmark and Twilio keys and its shared secret are set as Worker secrets, and the build resumes there, followed by the Postmark sandbox server and the test against Twilio's test credentials.
 
 Stage 4 was finalized within its own Doc on September 25, 2026. It moves into this file once the build reaches it, and nothing within it is built before then. Its numbering is fixed: 4.1 Account Status, 4.2 Settings, 4.3 User Profiles, 4.4 Video and Image Systems, 4.5 Content Builder and Delivery System, 4.6 Legacy Guard Setup, 4.7 Account Lifecycle and Delivery Automation, 4.8 Check-in System, and 4.9 Preview Mode. Every stage after Stage 4 is unwritten.
 
@@ -116,14 +120,6 @@ Build Items:
 
 - Every signed-in account reaches User Profiles, and the account status check built within Stage 4.1 governs what opens within it
 - Open intake at launch. No approval gating, cold traffic from day one
-
-#### Site Consistency Sweep
-
-Runs after the Stripe work, not before it. The live application carries content predating several confirmed decisions.
-
-Build Items:
-
-- Custom routes to a mail link rather than a contact surface, and Grace is shown as Contact Us rather than as a free plan chosen at plan selection
 
 ### STAGE 3.2 — Twilio
 
@@ -188,18 +184,18 @@ Build Items:
 - An event log recording every send by account and by outcome, along with every agreement to texts and every stop, so a delivery can be evidenced years later. The log was built with the queue and the confirmation text and was tested by October 12, 2026. It records each send attempt and its outcome by account, every agreement with who agreed, how, and the disclosure shown, and every stop. It accepts no edits and outlasts a deleted account. Delivered and bounced outcomes remain, since Postmark and Twilio report them only once the senders exist
 - The Swallow Seal within the email frame. Status: requires input. The frame carries the seal as an inline vector, as the Website Design Standards require, and Gmail and Outlook show no vector image, so the seal is absent for their readers. Should the frame carry a high-resolution picture of the seal, generated from the vector and used only in email, as an approved exception to the rule against raster? The alternative keeps the vector alone and sets the name Posterity in text beside it.
 - Texts to numbers outside North America. Status: requires input. Channel policy judges the sending window by area code, and the table it reads covers only the +1 numbers of the United States, Canada, and the Caribbean, so a number from any other country has no local time to judge. Such a number is not texted, and its messages go by email alone. Canadian and Caribbean numbers share the +1 code and are texted under the same rules as the United States. Should Posterity text numbers outside North America, and should it text the Canadian and Caribbean numbers it texts now? Carrier registration, consent rules, and pricing differ by country.
-- Postmark account approval, requested once this system sends email and the Site Consistency Sweep within Stage 3.1 is finished. Until approval, Postmark delivers only to addresses on yourposterity.com.
+- Postmark account approval, requested once this system sends email. The Site Consistency Sweep it also waited on was finished on October 11, 2026. Until approval, Postmark delivers only to addresses on yourposterity.com.
 
 ### STAGE 3.5 — Hosting Migration
 
-Status: requires system design. The migration plan remains outstanding.
+Status: requires input. Each open issue is named on the build item it affects.
 
-The site runs on Vercel. It needs to move hosting to Cloudflare, where the domain and its records already sit. Nothing else within Stage 3 depends on the move, so it closes the stage and holds nothing ahead of it.
+The site moved from Vercel to Cloudflare on October 11, 2026, where the domain and its records already sat, and the move is recorded under Hosting Migration within the Build Log. The plan and the way back are in BUILD/CLOUDFLARE_MIGRATION.md. Nothing else within Stage 3 depends on the move, so it closes the stage and holds nothing ahead of it.
 
 Subjects: tech stack, environment variables, important links.
 
 Build Items:
 
-- A migration plan covering the Next.js build adapter for Cloudflare, the environment variables, the deployment flow from GitHub, and the Supabase and Stripe redirect addresses, decided with the co-founder.
-- Retest login, checkout, and every link within automated email against the new host.
-- Retire the Vercel project once the Cloudflare deployment is confirmed.
+- Deploy from GitHub. Status: requires input. Cloudflare's Workers Builds can deploy main on every push, which needs Jeremy to install Cloudflare's GitHub app on jerthrwicked/posterity. The alternative keeps deploying by hand with wrangler, which keeps a person between every push and the live site
+- Retest every link within automated email against the new host. Login and checkout were retested on the live site on October 11, 2026. No automated email sends yet, so its links wait on the senders within Stage 3.4
+- Retire the Vercel project. Status: requires input. The migration plan kept Vercel for a week as the way back, and that week ended October 18, 2026. Retiring it removes that way back, so it waits on the founder's go
