@@ -58,19 +58,17 @@ The markdown is the record and every change reaches it directly, whether it is b
 
 # Current Status
 
-As of October 24, 2026.
+As of October 26, 2026.
 
 The Master Specification is current. The Social Media Integration and Delivery System design records are complete, and each is the single authoritative copy of every rule within it. Posterity Social is complete in concept and awaits its own design pass. Every build-stage reference has been swept out of the Master Specification, so this file is the only place build order is recorded.
 
-Stage 3 holds the only written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 and Stage 3.5 require input, and neither holds up the stages around it. The site has run on Cloudflare since October 11, and what remains within Stage 3.5 is the deployment flow and retiring the Vercel project.
+Stage 3 and Stage 4 hold the written stages. Stage 3.1, Stage 3.3, and Stage 3.4 read designed, with open items marked where they sit. Stage 3.2 and Stage 3.5 require input, and neither holds up the stages around it. The site has run on Cloudflare since October 11, and what remains within Stage 3.5 is the deployment flow and retiring the Vercel project.
 
-Walker's Stripe work stands in test mode, and Stage 3.1 holds what remains. The storage state was built and applied to the live database on September 18: the three-month free trial on every account, a paid-through date only the server writes, and a gate at the database that pauses building, not viewing, while storage is not current. Checkout was tested end to end in a browser for every tier on October 6, and the Site Consistency Sweep was finished on October 11. Every test-mode product exists, and storage renewal, automatic payments, and prepaid years were built on October 12. The live-mode products are the next item within Stage 3.1, followed by the decision on which plan year each payment funds, which the webhook waits on. The payment model is decided: upfront pre-load with year-by-year release.
+Walker's Stripe work stands in test mode, and Stage 3.1 holds what remains. The storage state was built and applied to the live database on September 18: the three-month free trial on every account, a paid-through date only the server writes, and a gate at the database that pauses building, not viewing, while storage is not current. Checkout was tested end to end in a browser for every tier on October 6, and the Site Consistency Sweep was finished on October 11. Every test-mode product exists, and storage renewal, automatic payments, and prepaid years were built on October 12. The live-mode products wait on the business formation, since Stripe's live mode is activated under the business. The plan payments the webhook records are built with the cart within Stage 4.3, which carries each payment's plan and plan year, and the failed storage charge record, refunds, and PayPal return within Stage 4.1, Stage 4.2, and Stage 4.3 as each first needs them. The payment model is decided: upfront pre-load with year-by-year release.
 
-Stage 3.4 is under way. Its storage is applied to the live database, and the queue, the channel policy, the email frame, the event log, the confirmation text after each agreement, the scheduler's cycle, and both senders are built. Nothing sends yet. The scheduler refuses each wake until the Postmark and Twilio keys and its shared secret are set as Worker secrets, and the build resumes there, followed by the Postmark sandbox server and the test against Twilio's test credentials.
+Stage 3.4 is under way. Its storage is applied to the live database, and the queue, the channel policy, the email frame, the event log, the confirmation text after each agreement, the scheduler's cycle, and both senders are built. Nothing sends yet. The Postmark and Twilio keys and the scheduler's shared secret were set as Worker secrets by October 26. The Postmark sandbox server and the test against Twilio's test credentials remain.
 
-Stage 4 was finalized within its own Doc on September 25, 2026. It moves into this file once the build reaches it, and nothing within it is built before then. Its numbering is fixed: 4.1 Account Status, 4.2 Settings, 4.3 User Profiles, 4.4 Video and Image Systems, 4.5 Content Builder and Delivery System, 4.6 Legacy Guard Setup, 4.7 Account Lifecycle and Delivery Automation, 4.8 Check-in System, and 4.9 Preview Mode. Every stage after Stage 4 is unwritten.
-
-Link: [Stage 4 Roadmap](https://docs.google.com/document/d/1AsaowbnlZ9CoX4lDu70yzBmQh5ex1WmvacbCr2wxVpY/edit?usp=sharing)
+Stage 4 was finalized within its own Doc on September 25, 2026, and joined this file on October 26, 2026. Stage 4.1 is the next stage open to build. Stage 4 follows Stage 3, and the Stage 3 items still open beside it do not hold it, since each that Stage 4 needs returns within the sub-stage that first needs it. Every stage after Stage 4 is held within the Build Queue.
 
 # STAGE 3
 
@@ -81,6 +79,8 @@ Status: designed.
 Payment is the first thing the application needs and nothing else within the build depends on it, so it opens the sequence. Subjects: subscription tiers, the Horizon tier, custom plans and Posterity Grace, plan years and skipped years, additional recipients, and the financial architecture.
 
 #### Pricing and Products
+
+Status: requires input. The live-mode products wait on the business formation, since Stripe's live mode is activated under the business. Everything within this heading stands in test mode until then.
 
 Build Items:
 
@@ -97,12 +97,14 @@ Build Items:
 
 Build Items:
 
-- Before activating the webhook built at app/api/webhooks/stripe/route.js, decide which plan year each payment funds and how skipped-year storage is recorded. Checkout sends a tier and no plan year, since no cart exists yet. A plan payment belongs on its row within plans and a skipped year within storage_fees, and until then the webhook records each plan payment within subscriptions
+- Before activating the webhook built at app/api/webhooks/stripe/route.js, decide which plan year each payment funds and how skipped-year storage is recorded. Checkout sends a tier and no plan year, since no cart exists yet. A plan payment belongs on its row within plans and a skipped year within storage_fees, and until then the webhook records each plan payment within subscriptions. It is built with the cart within Stage 4.3, which carries each payment's plan and plan year
 - Activate the webhook by setting STRIPE_WEBHOOK_SECRET and registering the endpoint for checkout.session.completed, customer.subscription.updated, and customer.subscription.deleted
-- Record within Supabase when a failed storage charge's retry fails or a payment request goes unpaid past its due date, so the account status check built within Stage 4.1 and the storage lapse sequence built within Stage 4.7 can both read it. Stripe was set on October 12, 2026 to retry a failed storage charge once, three days after the first attempt, and to mark the subscription unpaid when that retry fails
-- Refunds through Stripe, following the refund policy held within Legal and Compliance. A customer's plan deletion, downgrade, or account deletion issues its refund when it is made. A lapsed account's deletion issues its refund from a staff task built within the Operational Dashboard stage
+- Record within Supabase when a failed storage charge's retry fails or a payment request goes unpaid past its due date, so the account status check built within Stage 4.1 and the storage lapse sequence built within Stage 4.7 can both read it. It is built with the account status check, the first thing to read it. Stripe was set on October 12, 2026 to retry a failed storage charge once, three days after the first attempt, and to mark the subscription unpaid when that retry fails
+- Refunds through Stripe, following the refund policy held within Legal and Compliance. A customer's plan deletion, downgrade, or account deletion issues its refund when it is made. A lapsed account's deletion issues its refund from a staff task built within the Operational Dashboard stage. It is built with account deletion within Stage 4.2, the first thing to issue one
 
 #### PayPal
+
+It is added once the cart within Stage 4.3 takes payment, so every path it is confirmed against exists.
 
 Build Items:
 
@@ -199,3 +201,290 @@ Build Items:
 - Deploy from GitHub. Status: requires input. Cloudflare's Workers Builds can deploy main on every push, which needs Jeremy to install Cloudflare's GitHub app on jerthrwicked/posterity. The alternative keeps deploying by hand with wrangler, which keeps a person between every push and the live site
 - Retest every link within automated email against the new host. Login and checkout were retested on the live site on October 11, 2026. No automated email sends yet, so its links wait on the senders within Stage 3.4
 - Retire the Vercel project. Status: requires input. The migration plan kept Vercel for a week as the way back, and that week ended October 18, 2026. Retiring it removes that way back, so it waits on the founder's go
+
+# STAGE 4
+
+Stage 4 builds the customer's side of Posterity, from what an account may do through the delivery of its content. It follows Stage 3 because every payment, message, and record within it runs through what Stage 3 builds. It is a grouping number with no status of its own, and its sub-stages run in the order each one first needs the one before it. Five conventions hold across every sub-stage:
+
+- Every surface reads the account status check built within 4.1 rather than checking the account on its own.
+- Every automated message leaves through the Communication Dispatch System. Customer-facing text without approved copy follows the placeholder convention within How to Use.
+- Every staff task a sub-stage creates is recorded for the Operational Dashboard stage to surface.
+- Every customer election, confirmation, and system event is written to the event log built within Stage 3.4. The Operational Dashboard stage builds admin notifications from that log, so no sub-stage builds its own.
+- Every record and file ties to its account, so account deletion removes it. The event log is the exception and follows the retention rule held within Legal and Compliance. Every account deletion ends its storage subscription under the rule held within Stage 3.1.
+
+### STAGE 4.1 — Account Status
+
+Status: designed.
+
+It comes first because every surface after it reads what the account may do, so that reading exists before any surface is built.
+
+Subjects: account lifecycle and phases, key terms, Horizon tier, storage lapse grace period, plan year system, posterity social, custom plans and posterity grace.
+
+Build Items:
+
+- The account's phase, set to Horizon at signup. Each transition is written by the sub-stage that owns it: initiation and the return to Horizon by User Profiles, and every transition after Planning by the account lifecycle. 5.4 also writes initiation when a Legacy Guard's payment funds an account's first plan. The account lifecycle also writes the return to Planning through Account Restoration.
+- The account status check, the single reading every surface uses. It reports the phase, the storage standing (trial, current, or lapsed), the storage product beside it, whether building is open, and the state of Posterity Social. That state follows the rule held within the Posterity Social document. Storage standing ends with the storage subscription at the Account Trigger, and Account Restoration brings it back.
+- Beyond the phase, the check reads only the trial and payment records Stage 3.1 writes. It works out the building lock from the lapse date, so it depends on nothing built after it.
+- Every signed-in account reaches User Profiles, and the check governs what opens within it.
+
+### STAGE 4.2 — Settings
+
+Status: designed.
+
+It depends only on Stage 3 and the account status check, and it produces the evidence of text agreement that carrier registration within Stage 3.2 waits on.
+
+Subjects: settings, communication dispatch system, Horizon tier, legal and compliance, legacy guard system.
+
+Build Items:
+
+- Its own page. The global navigation dropdown built within 4.3 carries its link.
+- Account details: name, legal name, email address, phone number, and recovery email address. The name starts as the legal name and changes here. The email address receives every automated message. Each detail is editable. The email confirmation by link, the double verification on an email change, and the recovery email address's confirmation by link are built here. Settings within the Master Specification holds the rule.
+- Password change and reset. Reset runs from the sign-in page through a link sent to the email address held within Settings, and it leaves through the Communication Dispatch System, so Supabase's own authentication emails stay off. A customer who has lost that address resets through the recovery email address, or through a code by text where they have agreed to texts, which opens once carrier registration clears.
+- Account recovery, under the rule held within the Master Specification's Settings. The request from the sign-in page, its check for a browser that has signed in before, its seven-day wait with a notice to every address and number on file, and the thirty-day lock on the Begin button and account deletion are built here. 5.2 builds the Legacy Guard's recovery code.
+- The text message switch and its disclosure. Turning it on requires a phone number on file. It records the agreement and sends the confirmation text. Email carries no switch. The switch reads the agreement record, so a STOP reply shows it as off. A number edited here starts its agreement over under the rule held within the Communication Dispatch System.
+- Payment setup, through the payment form built within Stage 3.1.
+- The automatic payments switch, on by default, controlling the renewal behavior built within Stage 3.1.
+- Double verification, built once for every action that needs it: password re-entry and a confirmation code sent by email, or by text where the person has agreed to texts. Account deletion and the email change use it here. The Begin button, the Legacy Guard confirmation, and Account Restoration reuse it.
+- Account deletion, available through the Horizon and Planning Phases and confirmed by double verification. It follows the deletion convention above, so the event log stays. It issues any refund owed through the refund built within Stage 3.1 and sends the refund notice. Settings within the Master Specification holds the rule. Stage 6.4 adds the Page handback.
+- Later insertion: the delivery window, waiting within the Build Queue for the Operational Dashboard stage.
+
+### STAGE 4.3 — User Profiles
+
+Status: designed.
+
+Every later sub-stage inserts its panels into it, and the plans and cart it builds are what the rest of Stage 4 builds against.
+
+Subjects: user profiles, plan year system, calendar system, subscription tiers, Horizon tier, purchases, custom plans and posterity grace, key terms, legal and compliance.
+
+#### Layout
+
+The build produces the shell and the panels this sub-stage owns, and the User Profiles section within the Master Specification places them. Styling follows the Website Design Standards, and the Design stage refines it.
+
+Build Items:
+
+- The logged-in home, replacing the existing Dashboard page and reached from Account within the global navigation dropdown. The dropdown carries Account, Add a plan, Purchases, and Settings, and 5.1 adds the Legacy Guard portal link.
+- The four tabs: Plans, People, Social Media, and Account. Each later insertion lands within the tab the Master Specification names for it.
+- The strip across the top of every tab, carrying the phase display and the place for the check-in button, which 4.8 inserts.
+- The phase display, reading the account status check.
+- The place for the Account Restoration banner at the top of every tab.
+- The empty spaces later sub-stages fill.
+
+#### Plans and Cart
+
+Build Items:
+
+- Plan records carrying tier, plan year, delivery time zone, allowances, Additional Recipient slots, payment status, and a Custom plan's price. A Grace plan takes its preset, and each Custom plan takes its admin-set parameters.
+- Plan Selection on the year calendar, with year arrows, the plan year list, and manual year input. Each year shows its plan, tier, and status, and skipped years carry the storage fee notice.
+- Add a plan, which places a new plan with its tier.
+- Plan options, each feeding the cart: skipped years before the plan, Additional Recipient slots, delivery time zone, a change of tier with its confirmation on a downgrade, and deletion with its confirmation. The time zone defaults to the browser's and locks at Interlude. The fit check on a change of tier arrives with the delivery count within 4.5. A change of tier or a deletion on a paid plan follows the rule held within Plan Selection in the Master Specification. A downgrade or deletion issues any refund owed through the refund built within Stage 3.1 and sends the refund notice. Deleting the last funded plan writes the account's return to the Horizon Phase.
+- The live cart, holding plans being built with their Additional Recipient slots and skipped-year storage fees, and the storage fee as its own line with the next payment date. Plans pay one at a time or together, each carrying its inclusions. Checkout runs through the payment form built within Stage 3.1 and adds the storage fee wherever it is not current. The first plan paid initiates the account. Its placement and persistence across sessions follow User Profiles within the Master Specification.
+- Grace selection with its hardship request, recorded for the Operational Dashboard stage to show staff. No Grace plan is placed until approval. The approval and decline actions are built here for that stage to call. Approval places one Grace plan year and initiates the account. Storage moves to Grace Storage with it. Each action sends the customer its notice. The Grace plan limit is held within Custom Plans and Posterity Grace.
+- Custom plans, placed into the cart once an admin sets their parameters and closed to building until paid. The manual input panel belongs to the Operational Dashboard stage.
+
+#### Purchases
+
+Purchases is its own page reached from the global navigation dropdown, and the Master Specification's Purchases section describes it. It reads the payment records Stage 3.1 writes and the plan records built here.
+
+Build Items:
+
+- The Held and Applied groups, and the storage standing read from the account status check.
+- Additional Recipient slots, storage years paid in advance, and Reprise years paid in advance, each added from here to the cart. The storage years control carries the statement held within Purchases in the Master Specification.
+
+### STAGE 4.4 — Video and Image Systems
+
+Status: designed.
+
+The Content Builder uploads through it and calls its checks. Building it ahead of 4.5 leaves the builder nothing to stand in for.
+
+Subjects: video and image storage and compression, video and content delivery, the content builder, social media integration.
+
+Build Items:
+
+- Validation at upload, rejecting on size, format, resolution, or length with a specific message built within the surface. Accepted formats, the HEIC conversion, and the compressed output all follow Video and Image Storage and Compression. Any other format is rejected.
+- Video compression within the browser through FFmpeg.wasm, with the minimum resolution and the length limit at the upload surface. The size ceiling is built in order: measure compression time at the provisional ceiling on a representative machine, confirm or move the ceiling from that measurement, then reject files over it. A file still over its limit after compression is rejected.
+- Image compression through compressorjs, running only on an image over the limit and correcting that image's orientation. Every other image is saved as uploaded, and a GIF over the limit is rejected.
+- Storage within Supabase Storage, with each file tied to its piece and account.
+- The July legacy-media bucket, brought in line with Video and Image Storage and Compression. It caps every file at 25 MB today and accepts WebP and HEIF but not GIF. A bucket holds one cap for every file, so the image limit is checked on the server.
+- Supabase stays on the Free plan through the build, so the migration sets the bucket's cap at the Free plan's limit of 50 MB. The project moves to Pro before the first customer subscribes, and the bucket then takes the confirmed ceiling. Full-size uploads are tested once it does.
+- Short-lived signed links, drawn each time a stored file is read.
+
+#### Detection
+
+Sightengine runs both checks under the rule held within Social Media Integration. Frames for videos and GIFs are pulled within the browser at upload and pass through the server, which holds the Sightengine credentials. They are stored with the piece, so the commit check reads the frames pulled at upload. Advisory or blocking is a stored setting, and so is the frame rate.
+
+Build Items:
+
+- The nudity scan at upload.
+- The Community Standards check the Delivery Builder calls when a social media entry commits.
+- Both stay advisory until tested against real content, and become blocking once they have.
+
+### STAGE 4.5 — Content Builder and Delivery System
+
+Status: designed.
+
+Pieces are built into the plans User Profiles creates and uploaded through the pipeline before it. What it builds is delivered within 4.7 and previewed within 4.9.
+
+Subjects: the content builder, the Delivery System document, subscription tiers, calendar system, video and content delivery, user profiles, legacy completion moment, communication dispatch system, social media integration.
+
+#### Content Builder
+
+Build Items:
+
+- The window, which opens on top of the application without closing the page beneath it. It minimizes to a right-aligned tab at the bottom.
+- Select a plan, offering only plans open for building that hold the allowance and Additional Recipient slots the piece needs.
+- Upload through the pipeline built within 4.4, with one photo, GIF, or video per piece beside its message, and the metadata generated for it.
+- Title, delivery date, and the Include in Posterity toggle with its delivery instruction field. The delivery date offers February 29 under the rule held within the Calendar System. A phone entry whose message will arrive as a link carries the notice held within Video and Content Delivery.
+- The content calendar, built once as a single component shown here and within Plan Content.
+- Draft and finalized states and lock status shown on each piece, under the finalization rule and warning held within the Content Builder section. Building opens and closes with the account status check.
+- The delivery count, built once and used by everything after it. It holds each plan's remaining Standard, Feature, and social media allowances and its Additional Recipient slots. A social media post draws on two allowances, and unused Feature Deliveries serve as Standard Deliveries. It leaves out pieces marked as sent through Account Restoration.
+
+#### Delivery System
+
+Build Items:
+
+- The Delivery Builder and Delivery Path, as the Delivery System document describes them. This includes the Social Gate hold, the phone number filter, and no + new recipient under phone number.
+- Social media appears as a method only on an account whose Page 6.2 has verified.
+- A social media entry calls the Community Standards check from 4.4 when it commits.
+
+#### Saved Recipients and Master Recipient
+
+Build Items:
+
+- Saved Recipients, with an email address required on every entry. Each phone number carries its status, and invitations go singly or in bulk, with the confirmation step before they send. A text agreement belongs to the number, so each number's status reads this account's own invitation. One customer therefore never learns that another account saved it. The build includes the agreement page and the notice to the customer when a recipient stops. A number edited within Posterity starts its agreement over under the rule held within the Communication Dispatch System. Editing a Saved Recipient and deleting one in use follow the rule held within the Delivery System document's Saved Recipients.
+- The Master Recipient, with its confirmation link, resend, and pending status. A confirmed Master Recipient joins Saved Recipients and satisfies the Social Gate across the account. Removing one that social media entries rely on follows the rule held within the Delivery System document's Social Gate.
+
+#### Legacy Completion Moment
+
+Build Items:
+
+- Detects the first time every available post across the account's initiated plans is finalized, reading the delivery count. Every available post means the Standard and Feature Deliveries of those plans, since the social media allowance is drawn from within them. It then sends the founder message by email. The screen takeover waits within the Build Queue for the Design stage.
+
+#### Handwritten Note
+
+Build Items:
+
+- The note's slot beside the piece's photo, GIF, or video. Every note, photographed or drawn on screen, passes through the pipeline built within 4.4.
+- The on-screen canvas with undo and clear. It takes touch or a mouse and saves the note as an image.
+- The notice on a piece carrying a social media entry, since a social media post goes without its note.
+
+#### User Profiles Insertions
+
+Build Items:
+
+- Plan Content, the Saved Recipients section, the Master Recipient, and the button that opens the Content Builder.
+- The fit check on a change of tier within Plan Selection.
+
+### STAGE 4.6 — Legacy Guard Setup
+
+Status: designed.
+
+Its panel sits within User Profiles and its invitations leave through the Communication Dispatch System. The account lifecycle and the Check-in System after it both notify the Legacy Guards it records.
+
+Subjects: legacy guard system, user profiles, communication dispatch system.
+
+Build Items:
+
+- The record: a label, an email address the customer confirms before anything sends, phone number, and order, with the first added as primary. It also holds payment authority (off by default, with its disclaimer), the personal note and delivery instructions, and a status of invited, accepted, or declined. The order changes by dragging, and the primary is the first in order who has not declined.
+- The setup panel, inserted into User Profiles, with the recommended onboarding message beside it and Add Legacy Guard at the end of the list. The list shows each Legacy Guard by label, with their legal name beside it once they accept, and each opens to its own page. A note starts from an existing note, the template, or blank fields. Where more than one note exists, the first is offered by default. Removing a Legacy Guard ends their resends and sends them the removal notice, and 5.1 deletes their Legacy Guard login. An edited email address is confirmed like a new one. An invitation not yet accepted then goes again to it, and the earlier invitation's links stop working. Setup locks at Interlude through the account status check. Invitation resends continue after the lock.
+- The invitation, carrying the note in its current form, with its unique first message and its six-month resends. It carries a decline link, and the customer can resend it from setup. Each resend comes with a reminder to the customer. Declining ends the resends and notifies the customer. A declined Legacy Guard stays listed until removed, and the customer can send the invitation again.
+- Acceptance, the customer's notice of it, and the text message switch belong to 5.1. The manual resend belongs to the Operational Dashboard stage.
+
+### STAGE 4.7 — Account Lifecycle and Delivery Automation
+
+Status: designed.
+
+It moves the accounts and delivers the content everything before it builds, and the Check-in System after it calls its trigger.
+
+Subjects: account lifecycle and phases, key terms, plan year system, calendar system, Horizon tier, storage lapse grace period, check-in system, legacy guard system, user profiles, video and content delivery, the Delivery System document, purchases, legal and compliance.
+
+#### Account Trigger
+
+Build Items:
+
+- One trigger with four callers: the missed check-in sequence, the Begin button, a Legacy Guard confirmation left unanswered for a month, and the first plan a Legacy Guard funds on an account held for funding. 5.4 builds the last. It fires only on an initiated account. It carries only the account's funded plans forward under the rule held within Key Terms.
+- Firing moves the account into Interlude and locks content in its latest state. It ends the storage subscription along with any storage years still unused, and it ends any storage lapse sequence. It also records what storage remains unpaid and tells Legacy Guards holding payment authority. Storage Lapse Grace Period holds that rule.
+- User Profiles insertion: the Begin button. It shows only on an initiated account and is confirmed by double verification. It carries its explanation and the list held within the Begin button bullet of User Profiles in the Master Specification.
+
+#### Account Restoration
+
+Build Items:
+
+- The return to the Planning Phase for a trigger fired on Silence, under the rule held within the Master Specification's Check-in System. It opens at the trigger and closes at Reprise entry. Double verification confirms it.
+- The storage subscription resumed with the time it held at the trigger, and the check-in clock restarted from that day. A storage lapse sequence running at the trigger resumes where it stood, with the time it held.
+- The sent mark on each delivered piece, inserted into the Content Builder with the customer's choice to send the piece again. Each sent piece returns to its plan's allowance.
+- The notice to every Legacy Guard, with staff notified through the event log.
+- User Profiles insertion: the Account Restoration option and its banner.
+- A request to remove a published social media post becomes a staff task, and 6.3 builds the removal.
+- The fund reversal waits within the Build Queue for the Operational Dashboard stage.
+
+#### Activation and Delivery
+
+Build Items:
+
+- January 1 activation, with Interlude extending through skipped initial years, and the yearly schedule generated each January 1. Schedule generation places a February 29 date under the rule held within the Calendar System. Each plan year's start is recorded for the fund release waiting within the Build Queue. Schedule generation leaves out any piece missing its Primary Recipient or delivery date, under the rule held within the Content Builder section.
+- The daily check for what is due. Automated deliveries go at noon in each plan's time zone, and manual deliveries are allowed from six in the morning. Every time is stored against one universal time.
+- Sending several deliveries at once. Video reaches email and text as a link to the delivery page. An image or a handwritten note reaches email as an attachment. By text each goes as a picture message and falls back to a link. A message too long for a text arrives as a link under the rule held within Video and Content Delivery. Each recipient gets their own link to the delivery page.
+- Failed deliveries reroute through Alternative Recipients and then the Master Recipient, under Capacity and Delivery Order within the Delivery System document. Every attempt and outcome is logged by piece.
+- Social media deliveries publish through 6.3.
+
+#### Delivery Page
+
+Build Items:
+
+- The page every recipient link opens, as Video and Content Delivery describes it. Each recipient's link stays active for 90 days.
+- The one new link an expired page offers.
+
+#### Storage and Payment Notices
+
+Build Items:
+
+- The storage lapse sequence, for both starting conditions: a lapse recorded by Stage 3.1, and a trial's end. Its cadence, labels, and reminders to payment-authority Legacy Guards are held within Storage Lapse Grace Period. Building locks after three months through the account status check, and every notice before the lock states the date it takes effect. When the year ends, a Horizon Phase account is deleted once its final notice is sent and recorded. A Planning Phase account instead has its unpaid storage added to the cart, and a staff contact task is recorded for the Operational Dashboard stage. Storage Lapse Grace Period holds both rules.
+- The notice seven days before a trial ends.
+- Where automatic payments are off, the reminder thirty days before renewal and the payment request on the due date.
+
+#### Reprise and the Posterity Transition
+
+Build Items:
+
+- Reprise entry on day one of the year after the final active plan year, with its first year free.
+- The Posterity Transition check at the end of each Reprise year. Where no storage fee covers the year ahead, the account is tabled for deletion and a staff task records it. The task includes the Page where the customer elected deletion with the account.
+- The Posterity Transition check counts every Reprise year paid for, whether bought ahead within Purchases or within the Legacy Guard portal.
+- The Facebook Page checks at the start of each Reprise year belong to 6.4. The second legacy and the Legacy Guard Reprise sequence belong to 5.5.
+- The route for an account never initiated belongs to 5.3 and 5.4, under the rule held within the Master Specification's Legacy Guard Portal.
+
+### STAGE 4.8 — Check-in System
+
+Status: designed.
+
+It calls the Account Trigger built within 4.7 and notifies the Legacy Guards recorded within 4.6.
+
+Subjects: check-in system, legacy guard system, communication dispatch system, user profiles.
+
+Build Items:
+
+- The six-month cycle from initiation, for Planning Phase accounts only. It continues through a storage lapse. The check-in request goes out on the due date, and the missed check-in sequence follows it under the rule held within the Check-in System.
+- Check-in by button, by the one-tap link within each check-in email, and by text through Stage 3.4's inbound handling once carrier registration clears.
+- The missed check-in sequence as the Check-in System section holds it. It goes to the customer and to Legacy Guards primary-first, with the acknowledgment link that keeps later notices with the primary Legacy Guard. No response through the sequence calls the Account Trigger, and the final notice confirms it has fired. Declined and removed Legacy Guards receive none of the sequence, and the primary follows the rule held within the Legacy Guard System.
+- 5.3 builds the Legacy Guard confirmation, and a check-in during its month cancels it.
+- User Profiles insertion: the check-in button within the strip, showing its confirmation, the next check-in date, and the reminder to review contact details.
+
+### STAGE 4.9 — Preview Mode
+
+Status: designed.
+
+It previews what Stage 3.4 and 4.7 produce, and nothing after it waits on it.
+
+Subjects: user profiles, onboarding, core values, video and content delivery, customer contact and communication.
+
+Build Items:
+
+- The Preview button on each piece, within the Content Builder and within Plan Content.
+- One view for each channel the piece uses, shown on screen only. It is reachable during the Horizon and Planning Phases and locks at Interlude.
+- Draft previews, so a piece can be previewed before it is finalized.
+- Stage 6.3 adds the social media view.
+
+# STAGES AFTER STAGE 4
+
+Stages after Stage 4 are held within the Build Queue.
+
+Link: [Posterity Roadmap Build Queue](https://docs.google.com/document/d/1QJYWiQ7QiWxb4dCdK-3D_5vOCfPus6-vm0qX79bli3w/edit?usp=sharing)
