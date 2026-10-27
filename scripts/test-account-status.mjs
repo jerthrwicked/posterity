@@ -17,6 +17,9 @@ What matters most:
   - the customer cannot move their phase or any storage state, cannot read
     another customer's status, and cannot delete their account row and insert
     one with storage paid through any date
+  - the customer cannot delete or demote the primary legacy, so its messages
+    cannot be cascaded away, and cannot write a plan: every plan column is set
+    by payment (20261026020000)
 
 Dates are moved with the service role, standing in for the webhook and the
 Account Trigger, which are the only things that will ever write them.
@@ -273,6 +276,45 @@ try {
     body: { user_id: uidA, storage_paid_through: '2099-01-01' },
   });
   check('inserting a fresh account with storage paid is REFUSED', st >= 400 && /created at signup/.test(JSON.stringify(r)), `got ${st} ${JSON.stringify(r)}`);
+
+  console.log('\nThe primary legacy cannot be deleted or demoted (20261026020000)');
+  [st, r] = await svc('/rest/v1/content_items', {
+    method: 'POST', prefer: 'return=representation',
+    body: { legacy_id: legacy, account_id: acct, kind: 'message', body: 'Still here.', recipient_id: recId, deliver_on: '2045-01-01' },
+  });
+  check('a message sits in the primary legacy', ok(st), `${st} ${JSON.stringify(r)}`);
+  [st, r] = await call(`/rest/v1/legacies?id=eq.${legacy}`, { method: 'DELETE', token: tok, prefer: 'return=representation' });
+  check('deleting the primary legacy is REFUSED (no row deleted)', st >= 400 || (Array.isArray(r) && r.length === 0), `got ${st} ${JSON.stringify(r)}`);
+  [st, r] = await svc(`/rest/v1/content_items?legacy_id=eq.${legacy}&select=id`);
+  check('its message is still there', st === 200 && r.length === 1, `${st} ${JSON.stringify(r)}`);
+  [st, r] = await call(`/rest/v1/legacies?id=eq.${legacy}`, { method: 'PATCH', token: tok, prefer: 'return=representation', body: { is_primary: false } });
+  check('demoting the primary legacy is REFUSED by the guard', st >= 400 && /set by Posterity/.test(JSON.stringify(r)), `got ${st} ${JSON.stringify(r)}`);
+  [st, r] = await call('/rest/v1/legacies', { method: 'POST', token: tok, prefer: 'return=representation', body: { account_id: acct, title: 'Another' } });
+  check('inserting a second primary legacy is REFUSED', st >= 400 && /created at signup/.test(JSON.stringify(r)), `got ${st} ${JSON.stringify(r)}`);
+  [st, r] = await call('/rest/v1/legacies', { method: 'POST', token: tok, prefer: 'return=representation', body: { account_id: acct, is_primary: false, title: 'Another' } });
+  check('a second, non-primary legacy can be added', ok(st) && r.length === 1, `${st} ${JSON.stringify(r)}`);
+  const second = r[0]?.id;
+  [st, r] = await call(`/rest/v1/legacies?id=eq.${second}`, { method: 'PATCH', token: tok, prefer: 'return=representation', body: { is_primary: true } });
+  check('promoting it to primary is REFUSED by the guard', st >= 400 && /set by Posterity/.test(JSON.stringify(r)), `got ${st} ${JSON.stringify(r)}`);
+  [st, r] = await call(`/rest/v1/legacies?id=eq.${second}`, { method: 'DELETE', token: tok, prefer: 'return=representation' });
+  check('the second legacy can be deleted', ok(st) && r.length === 1, `${st} ${JSON.stringify(r)}`);
+
+  console.log('\nPlans are read-only to the customer (20261026020000)');
+  [st, r] = await svc('/rest/v1/plans', { method: 'POST', prefer: 'return=representation', body: { account_id: acct, plan_year: 1, tier: 'basic' } });
+  check('the service role writes an unpaid plan, as the webhook will', ok(st) && r.length === 1, `${st} ${JSON.stringify(r)}`);
+  const planId = r[0]?.id;
+  [st, r] = await call('/rest/v1/plans?select=id', { token: tok });
+  check('the customer can read their plan', st === 200 && r.length === 1, `${st} ${JSON.stringify(r)}`);
+  for (const [col, val] of Object.entries({ paid_at: '2026-10-01T00:00:00Z', tier: 'legacy', plan_year: 2, delivery_year: 2030, funds_released_at: '2026-10-01T00:00:00Z' })) {
+    [st, r] = await call(`/rest/v1/plans?id=eq.${planId}`, { method: 'PATCH', token: tok, prefer: 'return=representation', body: { [col]: val } });
+    check(`setting their plan's ${col} is REFUSED by the guard`, st >= 400 && /set by payment/.test(JSON.stringify(r)), `got ${st} ${JSON.stringify(r)}`);
+  }
+  [st, r] = await call('/rest/v1/plans', { method: 'POST', token: tok, prefer: 'return=representation', body: { account_id: acct, plan_year: 2, tier: 'legacy', paid_at: '2026-10-01T00:00:00Z' } });
+  check('inserting a paid plan is REFUSED', st >= 400 && /set by payment/.test(JSON.stringify(r)), `got ${st} ${JSON.stringify(r)}`);
+  [st, r] = await call(`/rest/v1/plans?id=eq.${planId}`, { method: 'DELETE', token: tok, prefer: 'return=representation' });
+  check('deleting their plan is REFUSED (no row deleted)', st >= 400 || (Array.isArray(r) && r.length === 0), `got ${st} ${JSON.stringify(r)}`);
+  [st, r] = await svc(`/rest/v1/plans?id=eq.${planId}&select=paid_at,tier`);
+  check('the plan is still there, unpaid and on its tier', st === 200 && r.length === 1 && r[0].paid_at === null && r[0].tier === 'basic', `${st} ${JSON.stringify(r)}`);
 } catch (err) {
   console.log(`  ✗ test stopped: ${err.message}`);
   fails++;
