@@ -3,17 +3,17 @@ import { createClient } from '../../lib/supabase/server'
 import { Wordmark } from '../components/brand/Wordmark'
 import { LogoutButton } from './LogoutButton'
 import { StorageNotice } from '../components/StorageNotice'
-import { storageIsCurrent, trialDaysLeft } from '../../lib/posterity/storage'
+import { trialDaysLeft } from '../../lib/posterity/storage'
+import { accountStatus } from '../../lib/posterity/account'
 
 // The six phases, in the product's own language. Never clinical. The keys are the
-// database's phase values, which still carry the earlier names abeyance and twilight;
-// customers see the confirmed names Interlude and Reprise.
+// database's phase values (public.account_phase).
 const PHASES = {
   horizon:   { name: 'Horizon',   line: 'You are building. Take all the time you need.' },
   planning:  { name: 'Planning',  line: 'Your account is initiated. Your legacy is safe with us.' },
-  abeyance:  { name: 'Interlude', line: 'A quiet pause. Nothing is delivered during this phase.' },
+  interlude: { name: 'Interlude', line: 'A quiet pause. Nothing is delivered during this phase.' },
   active:    { name: 'Active',    line: 'Your legacy is being delivered, on the dates you chose.' },
-  twilight:  { name: 'Reprise',   line: 'The final plan year is complete.' },
+  reprise:   { name: 'Reprise',   line: 'The final plan year is complete.' },
   // The Posterity line is approved copy from the specification's Brand Copy, used exactly as written.
   posterity: { name: 'Posterity', line: 'Your Posterity account will become a living representation of the legacy you created.' },
 }
@@ -48,9 +48,10 @@ export default async function Dashboard() {
 
   const { data: account } = await supabase
     .from('accounts')
-    .select('id, phase, next_checkin_due, trial_ends_at, storage_paid_through')
+    .select('id, phase, next_checkin_due')
     .eq('user_id', user.id)
     .single()
+  const status = await accountStatus(supabase, account?.id)
 
   // Every count below runs under RLS as this user — they cannot read anyone else's.
   const counts = { content: 0, recipients: 0, contacts: 0, plans: 0 }
@@ -70,15 +71,15 @@ export default async function Dashboard() {
   const phase = PHASES[account?.phase] ?? PHASES.horizon
   const name = user.user_metadata?.full_name || 'Friend'
 
-  // Storage state, in the product's words. The trial is the spec's three-month
-  // free trial (Horizon Tier); once a storage year is paid, the trial line goes
-  // away and the paid-through date takes over.
-  const canBuild = storageIsCurrent(account)
-  const daysLeft = trialDaysLeft(account)
+  // Storage state, in the product's words, as account_status() reads it. The
+  // trial is the spec's three-month free trial (Horizon Tier); once a storage
+  // year is paid, the trial line goes away.
+  const canBuild = status?.building_open === true
   let storageLine = null
-  if (account?.storage_paid_through && canBuild) {
+  if (status?.storage_standing === 'current') {
     storageLine = 'Storage is current.'
-  } else if (canBuild && daysLeft !== null) {
+  } else if (status?.storage_standing === 'trial') {
+    const daysLeft = trialDaysLeft(status)
     storageLine = daysLeft === 1 ? 'Your free trial ends tomorrow.' : `Your free trial: ${daysLeft} days left.`
   }
 
