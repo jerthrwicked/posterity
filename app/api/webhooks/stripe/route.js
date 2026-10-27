@@ -83,7 +83,7 @@ function periodEnd(sub) {
 // A paid storage year (Horizon or Grace Storage) keeps the account current
 // through the end of its billing period. Only an active subscription extends it,
 // and it only ever moves forward: a cancellation leaves the paid year standing.
-// storage_paid_through is a server-only column (guard_storage_columns blocks the
+// storage_paid_through is a server-only column (guard_account_columns blocks the
 // customer's own token), and this is the server path that writes it.
 async function extendStorage(db, accountId, sub) {
   const end = periodEnd(sub);
