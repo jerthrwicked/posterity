@@ -129,6 +129,8 @@ async function upload(name) {
   files.push(path);
   return call(`/storage/v1/object/legacy-media/${path}`, { method: 'POST', token: tok, raw: PNG, ctype: 'image/png' });
 }
+// Replacing a file already in the bucket is an UPDATE on storage.objects, not an insert.
+const overwrite = () => call(`/storage/v1/object/legacy-media/${acct}/${legacy}/trial.png`, { method: 'PUT', token: tok, raw: PNG, ctype: 'image/png' });
 const ok = (st) => st === 200 || st === 201;
 
 async function building(open, n) {
@@ -139,6 +141,8 @@ async function building(open, n) {
     check('editing a message works', ok(st) && r.length === 1, `${st} ${JSON.stringify(r)}`);
     [st, r] = await upload(`open-${n}.png`);
     check('an upload to the media bucket works', ok(st), `${st} ${JSON.stringify(r)}`);
+    [st, r] = await overwrite();
+    check('replacing a file in the media bucket works', ok(st), `${st} ${JSON.stringify(r)}`);
   } else {
     let [st, r] = await addRecipient(`Closed${n}`);
     check('adding a recipient is REFUSED', st >= 400, `got ${st} ${JSON.stringify(r)}`);
@@ -151,6 +155,8 @@ async function building(open, n) {
     check('editing a message is REFUSED (no row updated)', st >= 400 || (Array.isArray(r) && r.length === 0), `got ${st} ${JSON.stringify(r)}`);
     [st, r] = await upload(`closed-${n}.png`);
     check('an upload to the media bucket is REFUSED', st >= 400, `got ${st} ${JSON.stringify(r)}`);
+    [st, r] = await overwrite();
+    check('replacing a file in the media bucket is REFUSED', st >= 400, `got ${st} ${JSON.stringify(r)}`);
     [st, r] = await call('/rest/v1/content_items?select=id', { token: tok });
     check('the customer can still read everything', st === 200 && r.length >= 1, `${st} ${JSON.stringify(r)}`);
   }
@@ -256,16 +262,17 @@ try {
   [st, r] = await call(`/rest/v1/content_items?id=eq.${itemId}`, { method: 'DELETE', token: tok, prefer: 'return=representation' });
   check('the customer can still delete their own message (deletion at Interlude is Stage 4.7)', ok(st) && r.length === 1, `${st} ${JSON.stringify(r)}`);
 
-  console.log('\nThe account row cannot be replaced');
+  console.log('\nThe account row cannot be deleted or replaced');
   await set({ phase: 'horizon', storage_paid_through: null, trial_ends_at: ago(400 * DAY) });
   [st, r] = await call(`/rest/v1/accounts?id=eq.${acct}`, { method: 'DELETE', token: tok, prefer: 'return=representation' });
-  const deleted = ok(st) && r.length === 1;
+  check('deleting their own account row is REFUSED (no row deleted)', st >= 400 || (Array.isArray(r) && r.length === 0), `got ${st} ${JSON.stringify(r)}`);
+  [st, r] = await svc(`/rest/v1/accounts?id=eq.${acct}&select=id`);
+  check('the account row is still there', st === 200 && r.length === 1, `${st} ${JSON.stringify(r)}`);
   [st, r] = await call('/rest/v1/accounts', {
     method: 'POST', token: tok, prefer: 'return=representation',
     body: { user_id: uidA, storage_paid_through: '2099-01-01' },
   });
   check('inserting a fresh account with storage paid is REFUSED', st >= 400 && /created at signup/.test(JSON.stringify(r)), `got ${st} ${JSON.stringify(r)}`);
-  check('(the customer was able to delete their own row first, so the refusal came from the guard)', deleted);
 } catch (err) {
   console.log(`  ✗ test stopped: ${err.message}`);
   fails++;

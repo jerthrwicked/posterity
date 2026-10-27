@@ -61,12 +61,13 @@ RLS is on every table. These migrations are all applied and live:
 4. `20260713160000_trusted_contacts` — same reachability rule; promoting a primary is one database transaction (`set_primary_trusted_contact`, SECURITY INVOKER so RLS applies)
 5. `20260713180000_media_storage` — the private `legacy-media` bucket; 25 MB ceiling and formats enforced by the bucket; objects keyed to the account by path
 6. `20260716120000_trigger_staff_death_verification` — `staff_verified` and `vetoed` paths on `trigger_confirmations`, additive, nothing reads them yet
-7. `20260925000000_communication_dispatch` — the Communication Dispatch System's storage: five server-only tables (`dispatch_copy`, `dispatch_messages`, `text_agreements`, `dispatch_inbound`, and the append-only `dispatch_events`), RLS on with no policies and client grants revoked. `dispatch_events` has no foreign keys, so it survives account deletion.
-8. `20260918120000_trial_and_storage_state` — `accounts.trial_ends_at` and `accounts.storage_paid_through`, the first storage gate
-9. `20260918123000_storage_paid_through_whole_day` — a paid-through date holds until that day has ended everywhere (UTC-12)
+7. `20260918120000_trial_and_storage_state` — `accounts.trial_ends_at` and `accounts.storage_paid_through`, the first storage gate
+8. `20260918123000_storage_paid_through_whole_day` — a paid-through date holds until that day has ended everywhere (UTC-12)
+9. `20260925000000_communication_dispatch` — the Communication Dispatch System's storage: five server-only tables (`dispatch_copy`, `dispatch_messages`, `text_agreements`, `dispatch_inbound`, and the append-only `dispatch_events`), RLS on with no policies and client grants revoked. `dispatch_events` has no foreign keys, so it survives account deletion.
 10. `20261007000000_dispatch_email_frame` — `dispatch_copy` rows gain a kind; the one `frame` row wraps every email
 11. `20261007010000_dispatch_copy_dash` — restores the em dash in the seeded text-agreement placeholder
 12. `20261026000000_account_status` — Stage 4.1: the phases renamed to Interlude and Reprise; the lapse, building, and social rules in `account_status()`; `guard_account_columns` keeps phase and storage out of the customer's hands
+13. `20261026010000_account_guard` — the customer cannot delete their own account row, and a file in the media bucket cannot be replaced while building is locked
 
 The one object in the live database that no migration creates is the function `rls_auto_enable`. Leave it alone until a migration records it.
 
@@ -82,7 +83,7 @@ Vocabulary the schema uses: accounts move through phases; only accounts shift ph
 
 **Webhook, dormant:** `app/api/webhooks/stripe/route.js` is signature-verified and writes to `subscriptions` with the service-role key. It wakes when `STRIPE_WEBHOOK_SECRET` is set and the endpoint is registered in Stripe. Its initiate logic needs review first — which plan year a payment funds and skipped-year storage are not derivable from one price, and the one-time insert is not idempotent on retries.
 
-**Not built:** the check-in and the trigger; the delivery engine; the Communication Dispatch System beyond its storage, which migration 7 applied on September 25, 2026; Grace Storage, the storage charge, additional recipient slots; media compression and thumbnails; account deletion (deleting a user does not delete their storage files).
+**Not built:** the check-in and the trigger; the delivery engine; the Communication Dispatch System beyond its storage, which migration 9 applied on September 25, 2026; Grace Storage, the storage charge, additional recipient slots; media compression and thumbnails; account deletion (deleting a user does not delete their storage files).
 
 **Still on the site from before the confirmed decisions:** plan bullets counting messages rather than Standard and Feature Deliveries; Grace Storage absent; Custom and Grace routed to a mail link. The Stage 3.1 Site Consistency Sweep lists these.
 
