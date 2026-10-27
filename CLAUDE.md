@@ -68,7 +68,8 @@ RLS is on every table. These migrations are all applied and live:
 11. `20261007010000_dispatch_copy_dash` — restores the em dash in the seeded text-agreement placeholder
 12. `20261026000000_account_status` — Stage 4.1: the phases renamed to Interlude and Reprise; the lapse, building, and social rules in `account_status()`; `guard_account_columns` keeps phase and storage out of the customer's hands
 13. `20261026010000_account_guard` — the customer cannot delete their own account row, and a file in the media bucket cannot be replaced while building is locked
-14. `20261026020000_legacy_and_plan_guard` — the customer cannot delete or demote the primary legacy (one per account, by index), and plans are read-only to the customer: every plan column is set by payment
+14. `20261026020000_legacy_and_plan_guard` — the customer cannot delete or demote the primary legacy (one per account, by index), and plans are read-only to the customer: every plan column is set by payment. The guards read the request's token, so anything that writes plans for the customer runs with the service role.
+15. `20261026030000_legacy_default_not_primary` — a new legacy is not the primary unless it says so
 
 The one object in the live database that no migration creates is the function `rls_auto_enable`. Leave it alone until a migration records it.
 

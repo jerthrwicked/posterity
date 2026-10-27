@@ -289,10 +289,10 @@ try {
   check('its message is still there', st === 200 && r.length === 1, `${st} ${JSON.stringify(r)}`);
   [st, r] = await call(`/rest/v1/legacies?id=eq.${legacy}`, { method: 'PATCH', token: tok, prefer: 'return=representation', body: { is_primary: false } });
   check('demoting the primary legacy is REFUSED by the guard', st >= 400 && /set by Posterity/.test(JSON.stringify(r)), `got ${st} ${JSON.stringify(r)}`);
-  [st, r] = await call('/rest/v1/legacies', { method: 'POST', token: tok, prefer: 'return=representation', body: { account_id: acct, title: 'Another' } });
+  [st, r] = await call('/rest/v1/legacies', { method: 'POST', token: tok, prefer: 'return=representation', body: { account_id: acct, is_primary: true, title: 'Another' } });
   check('inserting a second primary legacy is REFUSED', st >= 400 && /created at signup/.test(JSON.stringify(r)), `got ${st} ${JSON.stringify(r)}`);
-  [st, r] = await call('/rest/v1/legacies', { method: 'POST', token: tok, prefer: 'return=representation', body: { account_id: acct, is_primary: false, title: 'Another' } });
-  check('a second, non-primary legacy can be added', ok(st) && r.length === 1, `${st} ${JSON.stringify(r)}`);
+  [st, r] = await call('/rest/v1/legacies', { method: 'POST', token: tok, prefer: 'return=representation', body: { account_id: acct, title: 'Another' } });
+  check('a second legacy can be added, and is not the primary unless it says so (20261026030000)', ok(st) && r.length === 1 && r[0].is_primary === false, `${st} ${JSON.stringify(r)}`);
   const second = r[0]?.id;
   [st, r] = await call(`/rest/v1/legacies?id=eq.${second}`, { method: 'PATCH', token: tok, prefer: 'return=representation', body: { is_primary: true } });
   check('promoting it to primary is REFUSED by the guard', st >= 400 && /set by Posterity/.test(JSON.stringify(r)), `got ${st} ${JSON.stringify(r)}`);

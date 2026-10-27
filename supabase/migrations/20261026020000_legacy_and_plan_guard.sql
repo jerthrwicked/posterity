@@ -12,8 +12,14 @@
 -- Every column on a plan is set by payment: the plan year, the tier, when it
 -- was paid, the delivery year, and when its funds were released. The customer's
 -- token could write all of them, and Stage 4.3 will trust them. Plans are now
--- read-only to the customer; the webhook writes them with the service role. The
--- cart in Stage 4.3 opens whatever it needs and no more.
+-- read-only to the customer; the webhook writes them with the service role.
+-- The guards ask auth.role(), which reads the request's token, so a SECURITY
+-- DEFINER function called by a signed-in customer is refused as well: the cart
+-- in Stage 4.3 writes plans through a server route holding the service role.
+--
+-- Deleting a second legacy, and deleting a message, stay open while building is
+-- locked, as they were before (Master Spec, Storage Lapse Grace Period: the
+-- customer can still view and delete).
 --
 -- Deleting the account with the service role (Stage 4.7) still cascades
 -- through both tables: a cascade is not subject to row-level security, and
