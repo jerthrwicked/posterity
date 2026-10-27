@@ -12,12 +12,11 @@ Combined September 15, 2026 from Walker's July file and the September briefing.
 
 ## 1. The record — read this before doing anything
 
-Two markdown files at the repository root hold the build record and its authority. Each has a Google Doc as a readable copy, and those copies carry no authority.
+The build record is one Google Doc, **Posterity Build Roadmap (Draft) — October 26** (ID 1gwcdTcveNo7nlFlA473sATKKDHF_-vpfg4cUNICsDlc), kept in Drive beside Jeremy's Posterity Build Roadmap (Draft). It holds every remaining build item in suggested build order, then the Build Log: everything already built, newest first, in one table. Nothing is ever removed from the Build Log. Start with its *How This Document Is Edited* and *Current Status* sections. Walker builds to it as he sees fit; Jeremy agreed.
 
-- **`Posterity_Build_Roadmap.md`** — every remaining build item, in suggested build order. Start with its *How to Use This Document* and *Current Status* sections.
-- **`Posterity_Build_Log.md`** — everything already built, by category, newest first within each. Nothing is ever removed from it.
+`Posterity_Build_Roadmap.md` and `Posterity_Build_Log.md` at the repository root are the record as it stood until October 26, 2026. They carry no authority now and are no longer updated.
 
-Every other project document works the other way around. Its definitive version is the Google Doc in Jeremy's Google Drive, and this repository keeps no copy of it. That covers the Master Specification, its design records (Social Media Integration, the Delivery System, and Posterity Social), the Founder Build Roadmap, and the Build Queue.
+Every other project document is likewise a Google Doc in Drive, and this repository keeps no copy of it. Its definitive version is the Google Doc in Jeremy's Google Drive, and this repository keeps no copy of it. That covers the Master Specification, its design records (Social Media Integration, the Delivery System, and Posterity Social), the Founder Build Roadmap, and the Build Queue.
 
 The **Master Specification** governs what gets built. Each stage names the subjects to read within it. A session reads a Google Doc when its work needs one or when asked, and never by default at opening. It pulls the Doc's markdown through the Doc's export link into `live-docs/`, a folder git ignores. The ID comes from any link to the Doc, whether in the Master Specification's Important Links, this repository, or the prompt. The Master Specification's own ID is 14OoN3GlzDnJjo0ll6hIN6pjU7nCEsWB2MA39R-jWhPY. Each pull overwrites the last, so the copy matches its Doc on the day it is pulled. A session searches that copy for a stage's subjects before building against them. If a download comes back as a web page rather than markdown, stop and ask Jeremy. He can save the Doc through File, then Download, then Markdown into the same folder.
 
@@ -26,15 +25,15 @@ mkdir -p live-docs
 curl -sL "https://docs.google.com/document/d/<ID>/export?format=md" -o live-docs/<Doc_Name>.md
 ```
 
-**Session opening:** pull `main` and read both files in full.
+**Session opening:** pull `main` and read the roadmap Doc's *How This Document Is Edited* and *Current Status*.
 
 ## 2. What Claude Code may do on its own
 
 **Build progress is the whole of the standing permission.** Work only on build items whose status reads *designed*, where nothing above them in the hierarchy carries another status. The roadmap's Current Status says which stages are open.
 
-When a build item is finished, in the same pass: remove it from its stage in the roadmap and add it to the matching category in the Build Log, newest first. Neither file is ever updated without the other. The Build Log records build items only, never document edits.
+When a build item is finished and its code has reached `main`, in the same pass: remove it from its stage in the roadmap Doc and add a row to the top of the Doc's Build Log table, naming the commit that built it. Neither part is ever updated without the other. The Build Log records build items only, never document edits.
 
-Change nothing else within either file without approval from Jeremy or Walker. Never edit the Master Specification or any file within `live-docs/`.
+Change nothing else within the roadmap Doc without approval from Jeremy or Walker. Never edit the Master Specification or any file within `live-docs/`.
 
 **Print every change back rather than summarizing it, then stop.** A truncated or misplaced write surfaces while the work that produced it is still open.
 
@@ -54,7 +53,7 @@ A migration on `main` is not a migration applied — they run only when someone 
 
 In the Build Log, mark a database change as a database change, separately from code. Code on a branch is undone by a reset; a migration is undone only by another migration.
 
-RLS is on every table. Seven migrations, all applied and live:
+RLS is on every table. These migrations are all applied and live:
 
 1. `20260713000000_initial_schema` — the first migration this project ever had
 2. `20260713120000_account_on_signup` — the account row is created by a trigger in the same transaction as the user
@@ -63,8 +62,13 @@ RLS is on every table. Seven migrations, all applied and live:
 5. `20260713180000_media_storage` — the private `legacy-media` bucket; 25 MB ceiling and formats enforced by the bucket; objects keyed to the account by path
 6. `20260716120000_trigger_staff_death_verification` — `staff_verified` and `vetoed` paths on `trigger_confirmations`, additive, nothing reads them yet
 7. `20260925000000_communication_dispatch` — the Communication Dispatch System's storage: five server-only tables (`dispatch_copy`, `dispatch_messages`, `text_agreements`, `dispatch_inbound`, and the append-only `dispatch_events`), RLS on with no policies and client grants revoked. `dispatch_events` has no foreign keys, so it survives account deletion.
+8. `20260918120000_trial_and_storage_state` — `accounts.trial_ends_at` and `accounts.storage_paid_through`, the first storage gate
+9. `20260918123000_storage_paid_through_whole_day` — a paid-through date holds until that day has ended everywhere (UTC-12)
+10. `20261007000000_dispatch_email_frame` — `dispatch_copy` rows gain a kind; the one `frame` row wraps every email
+11. `20261007010000_dispatch_copy_dash` — restores the em dash in the seeded text-agreement placeholder
+12. `20261026000000_account_status` — Stage 4.1: the phases renamed to Interlude and Reprise; the lapse, building, and social rules in `account_status()`; `guard_account_columns` keeps phase and storage out of the customer's hands
 
-Objects in the live database that no migration creates: the functions `guard_storage_columns`, `storage_is_current`, and `rls_auto_enable`, and the columns `accounts.trial_ends_at` and `accounts.storage_paid_through`. Leave them alone until a migration records them.
+The one object in the live database that no migration creates is the function `rls_auto_enable`. Leave it alone until a migration records it.
 
 Two constraints to understand before touching them: `recipients_reachable_without_meta` and `trusted_contacts_reachable`. A Facebook account can be memorialized by any relative, which locks it against posting forever. A recipient reachable only through Facebook is a message with nowhere to go; an unreachable trusted contact means the escalation has nowhere to go at all.
 
@@ -80,7 +84,7 @@ Vocabulary the schema uses: accounts move through phases; only accounts shift ph
 
 **Not built:** the check-in and the trigger; the delivery engine; the Communication Dispatch System beyond its storage, which migration 7 applied on September 25, 2026; Grace Storage, the storage charge, additional recipient slots; media compression and thumbnails; account deletion (deleting a user does not delete their storage files).
 
-**Still on the site from before the confirmed decisions:** the phase names Abeyance and Twilight on the homepage and the dashboard (confirmed names: Interlude and Reprise); plan bullets counting messages rather than Standard and Feature Deliveries; Grace Storage absent; Custom and Grace routed to a mail link. The Stage 3.1 Site Consistency Sweep lists these.
+**Still on the site from before the confirmed decisions:** plan bullets counting messages rather than Standard and Feature Deliveries; Grace Storage absent; Custom and Grace routed to a mail link. The Stage 3.1 Site Consistency Sweep lists these.
 
 **Infrastructure, set up by hand September 15 (Jeremy):** domain at Cloudflare; site on Vercel at www.yourposterity.com with the apex redirecting; `admin@yourposterity.com` forwards in and cannot send; Postmark on the Developer tier, verified for the domain, unapproved so it delivers only to `@yourposterity.com`; Twilio pay as you go with a New Orleans number, voicemail via two TwiML Bins, messaging disabled until carrier registration. The site address variable, the Supabase auth redirects, and the Stripe return addresses still point at `posterity-seven.vercel.app`. API keys for Postmark and Twilio come from Jeremy directly when needed.
 
@@ -96,11 +100,11 @@ When Walker's notes or this file contradict Jeremy's documents, ask Jeremy. Do n
 
 ## 6. Git
 
-- `origin` is `git@github.com:jerthrwicked/posterity.git`. `main` is the record; only approved pushes reach it.
+- `origin` is `git@github.com:jerthrwicked/posterity.git`. `main` holds the code; only approved pushes reach it. The record is the roadmap Doc (Section 1).
 - Walker's work happens on `walker/build`, merged to `main` on approval. Pull `--rebase` before every commit.
 - Authored edits to the roadmap, the Build Log, or this file, written in Claude.ai and handed over as a prompt, follow the roadmap's *How to Manually Edit This Document* route: a short branch cut from `main`, a printback, one approval, and a pull request merged at once. Build progress follows the rules above.
-- `scripts/hooks/pre-commit` (installed by `bash scripts/install-hooks.sh`) rejects any commit touching `app/`, `lib/`, `proxy.js`, `supabase/migrations/`, or `scripts/` unless `Posterity_Build_Log.md` is also staged — the Build Log is the record, and a build change that is not in it did not happen from the founder's side.
+- `scripts/hooks/pre-commit` (installed by `bash scripts/install-hooks.sh`) prints a reminder on any commit touching `app/`, `lib/`, `proxy.js`, `supabase/migrations/`, or `scripts/`: once it reaches `main`, the change goes in the roadmap Doc's Build Log. A hook cannot see the Doc, so it reminds rather than blocks.
 
 ## 7. Files Walker authored
 
-`BUILD/CHANGELOG.md` was the record from July 13 until the Build Log took over; its entries are carried across into the Build Log and it is no longer updated. `BUILD/README.md` describes the July git setup, and Section 6 supersedes it. `BUILD/CODE_AUDIT.md` is the July 13 read of the codebase. `BUILD/BUILD_ORDER.md` is superseded by the roadmap. `BUILD/META_DELIVERY.md` is superseded by the Social Media Integration design record, and `BUILD/POSTERITY_SOCIAL.md` is the design note behind risk 3. `scripts/sb.sh`, `scripts/test-*.py`, `scripts/stripe-*.py` are the database and Stripe tools. `lib/posterity/plans.js` and `lib/posterity/account.js` are the catalog and the auth helper.
+`BUILD/CHANGELOG.md` was the record from July 13 until the Build Log took over; its entries are carried across into the Build Log and it is no longer updated. `BUILD/README.md` describes the July git setup, and Section 6 supersedes it. `BUILD/CODE_AUDIT.md` is the July 13 read of the codebase. `BUILD/BUILD_ORDER.md` is superseded by the roadmap. `BUILD/META_DELIVERY.md` is superseded by the Social Media Integration design record, and `BUILD/POSTERITY_SOCIAL.md` is the design note behind risk 3. `scripts/sb.sh`, `scripts/test-*.py` and `scripts/test-*.mjs`, `scripts/stripe-*.py` are the database and Stripe tools. `lib/posterity/plans.js` and `lib/posterity/account.js` are the catalog and the auth helper.

@@ -1,41 +1,22 @@
 #!/usr/bin/env bash
-# Posterity — Rule 1 enforcement · Walker Brown
-# Rule 1: if you changed the app or the database, you update the Build Log.
+# Posterity — the Build Log reminder · Walker Brown
+# If you changed the app or the database, the Build Log gets an entry.
 #
-# Posterity_Build_Log.md is the record of everything built. A rule in CLAUDE.md
-# is a request; this is a wall.
+# The record is the Google Doc "Posterity Build Roadmap (Draft) — October 26"
+# (1gwcdTcveNo7nlFlA473sATKKDHF_-vpfg4cUNICsDlc), and a hook cannot see it, so
+# this reminds rather than blocks. The entry is written once the build item's
+# code reaches main, naming the commit that built it.
 set -euo pipefail
 
 STAGED="$(git diff --cached --name-only)"
-
-# Does this commit touch anything that belongs in the Build Log?
 SUBSTANTIVE="$(printf '%s\n' "$STAGED" | grep -E '^(app/|lib/|proxy\.js$|supabase/migrations/|scripts/)' || true)"
 [ -n "$SUBSTANTIVE" ] || exit 0
 
-# Did it also update the changelog?
-grep -qx 'Posterity_Build_Log.md' <<<"$STAGED" && exit 0
-
 cat >&2 <<'MSG'
 
-  ✗ COMMIT BLOCKED — Posterity_Build_Log.md was not updated.
-
-  This commit changes code or the database, but leaves the Build Log alone.
-
-  Posterity_Build_Log.md is the record of everything built. A build change that
-  is not in it did not happen from the founder's side, and the roadmap item it
-  closes stays open.
-
-  Files in this commit that belong in the Build Log:
-MSG
-printf '      %s\n' $SUBSTANTIVE >&2
-cat >&2 <<'MSG'
-
-  Update Posterity_Build_Log.md (and the roadmap, same pass) and stage it, then commit again.
-  Mark DATABASE changes separately from code changes — the DB ones are already live on
-  Supabase and are not undone by a git reset.
-
-  (--no-verify exists. Reaching for it here is doing the exact thing this hook
-   is here to prevent.)
+  Reminder: this commit changes code or the database. When it reaches main, add
+  it to the Build Log in the roadmap Doc and remove the item from its stage, in
+  the same pass. Mark DATABASE changes separately: they are already live.
 
 MSG
-exit 1
+exit 0

@@ -6,5 +6,4 @@ cd "$(dirname "$0")/.."
 git config core.hooksPath scripts/hooks
 chmod +x scripts/hooks/*
 echo "✓ hooks installed (core.hooksPath = scripts/hooks)"
-echo "  pre-commit — blocks any commit that changes code or the database"
-echo "               without updating Posterity_Build_Log.md"
+echo "  pre-commit — reminds you to log a code or database change in the roadmap Doc"
