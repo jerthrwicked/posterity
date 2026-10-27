@@ -47,7 +47,7 @@ def admin_create(email):
     req.add_header("Authorization", "Bearer " + SERVICE)
     req.add_header("Content-Type", "application/json")
     body = json.dumps({"email": email, "password": "test-password-123",
-                       "email_confirm": True, "user_metadata": {"full_name": "Flow Test"}}).encode()
+                       "email_confirm": True, "user_metadata": {"legal_name": "Flow Test"}}).encode()
     with urllib.request.urlopen(req, body) as r:
         return json.load(r)["id"]
 

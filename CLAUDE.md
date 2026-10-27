@@ -71,6 +71,7 @@ RLS is on every table. These migrations are all applied and live:
 14. `20261026020000_legacy_and_plan_guard` — the customer cannot delete or demote the primary legacy (one per account, by index), and plans are read-only to the customer: every plan column is set by payment. The guards read the request's token, so anything that writes plans for the customer runs with the service role.
 15. `20261026030000_legacy_default_not_primary` — a new legacy is not the primary unless it says so
 16. `20261027010000_drop_staff_verification` — removes the staff verification and veto columns migration 6 added, with their check and index; neither the Master Specification nor the roadmap holds a staff check
+17. `20261027020000_account_names_and_phone` — the account's `legal_name`, `name` (what recipients see; the legal name unless signup gave one), and `phone` (E.164), written by `handle_new_user` from signup's metadata and editable by the customer
 
 The one object in the live database that no migration creates is the function `rls_auto_enable`. Leave it alone until a migration records it.
 

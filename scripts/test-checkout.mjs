@@ -75,7 +75,7 @@ let uid, browser;
 try {
   const created = await (await admin('/auth/v1/admin/users', {
     method: 'POST',
-    body: JSON.stringify({ email: EMAIL, password: PASSWORD, email_confirm: true, user_metadata: { full_name: 'Checkout Test' } }),
+    body: JSON.stringify({ email: EMAIL, password: PASSWORD, email_confirm: true, user_metadata: { legal_name: 'Checkout Test' } }),
   })).json();
   uid = created.id;
   const account = (await (await admin(`/rest/v1/accounts?user_id=eq.${uid}&select=id`)).json())[0].id;

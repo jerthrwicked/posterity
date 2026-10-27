@@ -48,7 +48,7 @@ export default async function Dashboard() {
 
   const { data: account } = await supabase
     .from('accounts')
-    .select('id, phase, next_checkin_due')
+    .select('id, phase, next_checkin_due, name')
     .eq('user_id', user.id)
     .single()
   const status = await accountStatus(supabase, account?.id)
@@ -69,7 +69,7 @@ export default async function Dashboard() {
   }
 
   const phase = PHASES[account?.phase] ?? PHASES.horizon
-  const name = user.user_metadata?.full_name || 'Friend'
+  const name = account?.name || 'Friend'
 
   // Storage state, in the product's words, as account_status() reads it. The
   // trial is the spec's three-month free trial (Horizon Tier); once a storage
