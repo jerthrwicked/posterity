@@ -45,7 +45,8 @@ def admin_create(email):
     for h, v in (("apikey", SERVICE), ("Authorization", "Bearer " + SERVICE), ("Content-Type", "application/json")):
         r.add_header(h, v)
     with urllib.request.urlopen(r, json.dumps(
-        {"email": email, "password": "test-password-123", "email_confirm": True}).encode()) as resp:
+        {"email": email, "password": "test-password-123", "email_confirm": True,
+         "user_metadata": {"legal_name": "Media Test"}}).encode()) as resp:
         return json.load(resp)["id"]
 
 def admin_delete(uid):

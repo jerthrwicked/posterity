@@ -53,7 +53,7 @@ const svc = (path, opts = {}) => call(path, { ...opts, key: SERVICE });
 
 async function adminCreate(email) {
   let [st, r] = await svc('/auth/v1/admin/users', {
-    method: 'POST', body: { email, password: 'test-password-123', email_confirm: true },
+    method: 'POST', body: { email, password: 'test-password-123', email_confirm: true, user_metadata: { legal_name: 'Status Test' } },
   });
   if (st === 422) {
     // Left over from a run that crashed before cleanup. Remove it and retry once.
@@ -61,7 +61,7 @@ async function adminCreate(email) {
     const old = (list.users || []).find((u) => u.email === email);
     if (old) await adminDelete(old.id);
     [st, r] = await svc('/auth/v1/admin/users', {
-      method: 'POST', body: { email, password: 'test-password-123', email_confirm: true },
+      method: 'POST', body: { email, password: 'test-password-123', email_confirm: true, user_metadata: { legal_name: 'Status Test' } },
     });
   }
   if (st !== 200) throw new Error(`admin create ${email}: ${st} ${JSON.stringify(r)}`);

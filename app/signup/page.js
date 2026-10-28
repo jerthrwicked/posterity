@@ -3,17 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '../../lib/supabase/client'
 import { Wordmark } from '../components/brand/Wordmark'
-
-// The phone number is held as E.164, the form the Communication Dispatch System
-// sends to. A ten-digit number is read as a US number.
-function toE164(raw) {
-  const digits = raw.replace(/\D/g, '')
-  if (raw.trim().startsWith('+')) return /^[1-9]\d{7,14}$/.test(digits) ? `+${digits}` : null
-  // A US or Canadian area code never starts with 0 or 1.
-  if (/^[2-9]\d{9}$/.test(digits)) return `+1${digits}`
-  if (/^1[2-9]\d{9}$/.test(digits)) return `+${digits}`
-  return null
-}
+import { toE164 } from '../../lib/posterity/phone'
 
 export default function Signup() {
   const [legalName, setLegalName] = useState('')
@@ -28,7 +18,10 @@ export default function Signup() {
   const handleSignup = async () => {
     setError('')
 
-    if (!legalName.trim()) return setError('Please enter your legal name.')
+    // The database refuses a name without a letter or number, or over 200 characters.
+    if (!/[\p{L}\p{Nd}]/u.test(legalName)) return setError('Please enter your legal name.')
+    if (name.trim() && !/[\p{L}\p{Nd}]/u.test(name)) return setError('Please check the name your recipients see, or leave it blank.')
+    if (legalName.trim().length > 200 || name.trim().length > 200) return setError('Please keep each name to 200 characters.')
     if (!email.trim()) return setError('Please enter your email.')
     const e164 = phone.trim() ? toE164(phone) : null
     if (phone.trim() && !e164) return setError('Please check your phone number, or leave it blank.')
