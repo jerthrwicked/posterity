@@ -97,8 +97,8 @@ export default async function TrustedContacts() {
           confirmation. A trusted contact's confirmation is one of the three ways
           the trigger fires — it is the single most dangerous input in this
           product, and it ships with its safeguards (double verification, the
-          six-notification escalation, a human-in-the-loop hold) or it does not
-          ship. Phase 1.2. Naming the people is safe. Letting them press the
+          customer's month to check in, and Account Restoration) or it does not
+          ship. Stage 5.3. Naming the people is safe. Letting them press the
           button is not, yet.
         */}
         <p className="text-gray-600 text-xs mt-12 leading-relaxed border-t border-gray-900 pt-6">

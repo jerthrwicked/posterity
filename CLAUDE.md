@@ -60,7 +60,7 @@ RLS is on every table. These migrations are all applied and live:
 3. `20260713140000_fallback_and_legacy` — a recipient must have an email or a phone; every account gets its primary legacy at signup
 4. `20260713160000_trusted_contacts` — same reachability rule; promoting a primary is one database transaction (`set_primary_trusted_contact`, SECURITY INVOKER so RLS applies)
 5. `20260713180000_media_storage` — the private `legacy-media` bucket; 25 MB ceiling and formats enforced by the bucket; objects keyed to the account by path
-6. `20260716120000_trigger_staff_death_verification` — `staff_verified` and `vetoed` paths on `trigger_confirmations`, additive, nothing reads them yet
+6. `20260716120000_trigger_staff_death_verification` — `staff_verified` and `vetoed` paths on `trigger_confirmations`; never read, and removed by 16
 7. `20260918120000_trial_and_storage_state` — `accounts.trial_ends_at` and `accounts.storage_paid_through`, the first storage gate
 8. `20260918123000_storage_paid_through_whole_day` — a paid-through date holds until that day has ended everywhere (UTC-12)
 9. `20260925000000_communication_dispatch` — the Communication Dispatch System's storage: five server-only tables (`dispatch_copy`, `dispatch_messages`, `text_agreements`, `dispatch_inbound`, and the append-only `dispatch_events`), RLS on with no policies and client grants revoked. `dispatch_events` has no foreign keys, so it survives account deletion.
@@ -70,6 +70,8 @@ RLS is on every table. These migrations are all applied and live:
 13. `20261026010000_account_guard` — the customer cannot delete their own account row, and a file in the media bucket cannot be replaced while building is locked
 14. `20261026020000_legacy_and_plan_guard` — the customer cannot delete or demote the primary legacy (one per account, by index), and plans are read-only to the customer: every plan column is set by payment. The guards read the request's token, so anything that writes plans for the customer runs with the service role.
 15. `20261026030000_legacy_default_not_primary` — a new legacy is not the primary unless it says so
+16. `20261027010000_drop_staff_verification` — removes the staff verification and veto columns migration 6 added, with their check and index; neither the Master Specification nor the roadmap holds a staff check
+17. `20261027020000_account_names_and_phone` — the account's `legal_name`, `name` (what recipients see; the legal name unless signup gave one), and `phone` (E.164), written by `handle_new_user` from signup's metadata and editable by the customer
 
 The one object in the live database that no migration creates is the function `rls_auto_enable`. Leave it alone until a migration records it.
 

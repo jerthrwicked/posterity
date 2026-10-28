@@ -4,9 +4,22 @@ import { useState } from 'react'
 import { createClient } from '../../lib/supabase/client'
 import { Wordmark } from '../components/brand/Wordmark'
 
+// The phone number is held as E.164, the form the Communication Dispatch System
+// sends to. A ten-digit number is read as a US number.
+function toE164(raw) {
+  const digits = raw.replace(/\D/g, '')
+  if (raw.trim().startsWith('+')) return /^[1-9]\d{7,14}$/.test(digits) ? `+${digits}` : null
+  // A US or Canadian area code never starts with 0 or 1.
+  if (/^[2-9]\d{9}$/.test(digits)) return `+1${digits}`
+  if (/^1[2-9]\d{9}$/.test(digits)) return `+${digits}`
+  return null
+}
+
 export default function Signup() {
-  const [fullName, setFullName] = useState('')
+  const [legalName, setLegalName] = useState('')
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -15,8 +28,10 @@ export default function Signup() {
   const handleSignup = async () => {
     setError('')
 
-    if (!fullName.trim()) return setError('Please enter your name.')
+    if (!legalName.trim()) return setError('Please enter your legal name.')
     if (!email.trim()) return setError('Please enter your email.')
+    const e164 = phone.trim() ? toE164(phone) : null
+    if (phone.trim() && !e164) return setError('Please check your phone number, or leave it blank.')
     if (password.length < 8) return setError('Please choose a password of at least 8 characters.')
 
     setLoading(true)
@@ -25,7 +40,7 @@ export default function Signup() {
       email: email.trim(),
       password,
       options: {
-        data: { full_name: fullName.trim() },
+        data: { legal_name: legalName.trim(), ...(name.trim() && { name: name.trim() }), ...(e164 && { phone: e164 }) },
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     })
@@ -80,14 +95,29 @@ export default function Signup() {
 
         <div className="bg-gray-900 rounded-2xl p-8 flex flex-col gap-4">
           <div>
-            <label htmlFor="name" className="text-sm text-gray-400 mb-1 block">Name</label>
+            <label htmlFor="name" className="text-sm text-gray-400 mb-1 block">Legal name</label>
             <input
               id="name"
               type="text"
               autoComplete="name"
-              placeholder="Your name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Your full legal name"
+              value={legalName}
+              onChange={(e) => setLegalName(e.target.value)}
+              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="display-name" className="text-sm text-gray-400 mb-1 block">
+              Name your recipients see <span className="text-gray-600">· optional</span>
+            </label>
+            <input
+              id="display-name"
+              type="text"
+              autoComplete="nickname"
+              placeholder="Same as your legal name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
             />
           </div>
@@ -103,6 +133,24 @@ export default function Signup() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
             />
+          </div>
+
+          <div>
+            <label htmlFor="phone" className="text-sm text-gray-400 mb-1 block">
+              Phone number <span className="text-gray-600">· optional, recommended</span>
+            </label>
+            <input
+              id="phone"
+              type="tel"
+              autoComplete="tel"
+              placeholder="(504) 555-1234"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
+            />
+            <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+              A second way to reach you. Nothing is texted to you unless you turn texts on.
+            </p>
           </div>
 
           <div>

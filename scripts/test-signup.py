@@ -18,7 +18,7 @@ email = sys.argv[1] if len(sys.argv) > 1 else "phase0-test@example.com"
 body = json.dumps({
     "email": email,
     "password": "correct-horse-battery-staple",
-    "data": {"full_name": "Phase Zero Test"},
+    "data": {"legal_name": "Phase Zero Test"},
 }).encode()
 
 req = urllib.request.Request(
