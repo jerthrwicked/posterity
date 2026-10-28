@@ -87,7 +87,11 @@ export default async function Dashboard() {
     <main className="min-h-screen bg-black text-white">
       <nav className="flex justify-between items-center px-8 py-6 border-b border-gray-800">
         <Wordmark size="sm" withMark />
-        <LogoutButton />
+        {/* Settings moves into the global navigation dropdown with Stage 4.3. */}
+        <div className="flex items-center gap-6">
+          <a href="/dashboard/settings" className="text-gray-400 hover:text-white transition text-sm">Settings</a>
+          <LogoutButton />
+        </div>
       </nav>
 
       <div className="max-w-4xl mx-auto px-8 py-16">

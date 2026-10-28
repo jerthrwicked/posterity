@@ -42,7 +42,8 @@ def admin_create(email):
     req = urllib.request.Request(URL + "/auth/v1/admin/users", method="POST")
     for h, v in (("apikey", SERVICE), ("Authorization", "Bearer " + SERVICE), ("Content-Type", "application/json")):
         req.add_header(h, v)
-    body = json.dumps({"email": email, "password": "test-password-123", "email_confirm": True}).encode()
+    body = json.dumps({"email": email, "password": "test-password-123", "email_confirm": True,
+                       "user_metadata": {"legal_name": "Contacts Test"}}).encode()
     with urllib.request.urlopen(req, body) as r:
         return json.load(r)["id"]
 

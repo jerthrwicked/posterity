@@ -85,7 +85,7 @@ try {
   const created = await fetch(`${env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/admin/users`, {
     method: 'POST',
     headers: { apikey: env.SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: `dispatch-run-${run}@posterity.app`, password: `x-${run}-${Math.random()}`, email_confirm: true }),
+    body: JSON.stringify({ email: `dispatch-run-${run}@posterity.app`, password: `x-${run}-${Math.random()}`, email_confirm: true, user_metadata: { legal_name: 'Dispatch Run Test' } }),
   }).then((r) => r.json());
   uid = created.id;
   if (!uid) throw new Error('could not create the test user');
