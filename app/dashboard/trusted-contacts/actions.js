@@ -3,6 +3,7 @@
 // Posterity — trusted contact actions · Walker Brown
 import { revalidatePath } from 'next/cache'
 import { requireAccount } from '../../../lib/posterity/account'
+import { GUARD_SETUP_LOCKED_MESSAGE } from '../../../lib/posterity/legacy-guards'
 
 export async function addTrustedContact(_prev, formData) {
   const { supabase, account } = await requireAccount()
@@ -36,6 +37,8 @@ export async function addTrustedContact(_prev, formData) {
     is_primary: (count ?? 0) === 0,
   })
 
+  // 42501 is the setup lock at Interlude (20261030000000).
+  if (error?.code === '42501') return { error: GUARD_SETUP_LOCKED_MESSAGE }
   if (error) return { error: error.message }
 
   revalidatePath('/dashboard/trusted-contacts')

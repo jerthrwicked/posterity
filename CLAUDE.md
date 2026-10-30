@@ -73,6 +73,7 @@ RLS is on every table. These migrations are all applied and live:
 16. `20261027010000_drop_staff_verification` — removes the staff verification and veto columns migration 6 added, with their check and index; neither the Master Specification nor the roadmap holds a staff check
 17. `20261027020000_account_names_and_phone` — the account's `legal_name`, `name` (what recipients see; the legal name unless signup gave one), and `phone` (E.164), written by `handle_new_user` from signup's metadata and editable by the customer
 18. `20261028010000_account_details` — the legal name and name are required (a blank name becomes the legal name; each needs a letter or number and runs 200 characters at most), and `phone_confirmed_at`, set by Posterity only, clears whenever the number changes; `tidy_account_details` runs after `guard_account_columns`
+19. `20261030000000_legacy_guard_setup_lock` — Legacy Guard setup (adding, editing, promoting, removing a trusted contact) locks at Interlude: open in Horizon and Planning only, by phase, so a storage lapse leaves it open. The trigger refuses the customer's token with a reason and lets the service role through, so automatic invitation resends must run with the service role, and so must anything that deletes an account
 
 The one object in the live database that no migration creates is the function `rls_auto_enable`. Leave it alone until a migration records it.
 
