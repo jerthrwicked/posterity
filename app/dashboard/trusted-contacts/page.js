@@ -4,16 +4,21 @@ import { Wordmark } from '../../components/brand/Wordmark'
 import { LogoutButton } from '../LogoutButton'
 import { TrustedContactForm } from './TrustedContactForm'
 import { makePrimary, deleteTrustedContact } from './actions'
+import { GUARD_SETUP_LOCKED_MESSAGE } from '../../../lib/posterity/legacy-guards'
 
 export default async function TrustedContacts() {
-  const { supabase, account } = await requireAccount()
+  const { supabase, account, status } = await requireAccount()
 
+  // Setup locks at Interlude. The page reads the account status check, and the
+  // trigger that refuses a locked write reads the same field
+  // (20261030010000). An account whose status cannot be read counts as locked.
   const { data: contacts } = await supabase
     .from('trusted_contacts')
     .select('id, name, email, phone, is_primary, accepted_at')
     .eq('account_id', account.id)
     .order('is_primary', { ascending: false })
     .order('created_at', { ascending: true })
+  const locked = status?.legacy_guard_setup_open !== true
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -37,7 +42,13 @@ export default async function TrustedContacts() {
           now than for someone else to have later.
         </p>
 
-        <TrustedContactForm />
+        {locked ? (
+          <p className="bg-gray-900 rounded-2xl p-8 border border-gray-800 text-gray-400">
+            {GUARD_SETUP_LOCKED_MESSAGE}
+          </p>
+        ) : (
+          <TrustedContactForm />
+        )}
 
         <div className="mt-10">
           {!contacts?.length ? (
@@ -70,22 +81,24 @@ export default async function TrustedContacts() {
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-4 shrink-0">
-                    {!c.is_primary && (
-                      <form action={makePrimary}>
+                  {!locked && (
+                    <div className="flex items-center gap-4 shrink-0">
+                      {!c.is_primary && (
+                        <form action={makePrimary}>
+                          <input type="hidden" name="id" value={c.id} />
+                          <button type="submit" className="text-gray-500 hover:text-white transition text-sm cursor-pointer">
+                            Make primary
+                          </button>
+                        </form>
+                      )}
+                      <form action={deleteTrustedContact}>
                         <input type="hidden" name="id" value={c.id} />
-                        <button type="submit" className="text-gray-500 hover:text-white transition text-sm cursor-pointer">
-                          Make primary
+                        <button type="submit" className="text-gray-600 hover:text-red-400 transition text-sm cursor-pointer">
+                          Remove
                         </button>
                       </form>
-                    )}
-                    <form action={deleteTrustedContact}>
-                      <input type="hidden" name="id" value={c.id} />
-                      <button type="submit" className="text-gray-600 hover:text-red-400 transition text-sm cursor-pointer">
-                        Remove
-                      </button>
-                    </form>
-                  </div>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
