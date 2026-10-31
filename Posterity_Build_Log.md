@@ -216,7 +216,6 @@ The bridge is retired. Claude Code replaced it, and these entries stand as histo
 
 | Item | Date Completed |
 | :-- | :-- |
-| Link preview image and share metadata added to the site | October 25, 2026 |
 | Homepage cards updated to match the pricing cards | June 10, 2026 |
 | Hamburger dropdown updated with logged in and logged out states | June 9, 2026 |
 | Hero buttons removed | June 9, 2026 |
