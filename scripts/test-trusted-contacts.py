@@ -82,14 +82,17 @@ try:
     st, _ = call("/rest/v1/trusted_contacts", "POST",
                  {"account_id": acct_a, "name": "Phone Only", "phone": "+15045550101"}, token=tok_a)
     check("a contact with a phone but NO email is REJECTED (20261030020000)", st >= 400, f"got {st}")
+    st, _ = call("/rest/v1/trusted_contacts", "POST",
+                 {"account_id": acct_a, "name": "Email Only", "email": "e@example.com"}, token=tok_a)
+    check("a contact with an email but NO phone is REJECTED (20261031010000)", st >= 400, f"got {st}")
 
     print("\nPrimary")
     st, c1 = call("/rest/v1/trusted_contacts", "POST",
-                  {"account_id": acct_a, "name": "Brother", "email": "b@example.com", "is_primary": True},
+                  {"account_id": acct_a, "name": "Brother", "email": "b@example.com", "phone": "+15045550102", "is_primary": True},
                   token=tok_a, prefer="return=representation")
     check("first contact added as primary", st in (200, 201), f"{st} {c1}")
     st, c2 = call("/rest/v1/trusted_contacts", "POST",
-                  {"account_id": acct_a, "name": "Sister", "email": "s@example.com", "is_primary": False},
+                  {"account_id": acct_a, "name": "Sister", "email": "s@example.com", "phone": "+15045550103", "is_primary": False},
                   token=tok_a, prefer="return=representation")
     check("second contact added", st in (200, 201), f"{st} {c2}")
     id1, id2 = c1[0]["id"], c2[0]["id"]
