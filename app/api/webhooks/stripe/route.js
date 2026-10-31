@@ -27,8 +27,9 @@ function must({ data, error }) {
 
 // Stripe → Posterity payment webhook.
 //
-// ⚠️ TO ACTIVATE (Jeremy): set STRIPE_WEBHOOK_SECRET in .env.local and register
-// this endpoint (`/api/webhooks/stripe`) in the Stripe dashboard for the events
+// ⚠️ TO ACTIVATE (Jeremy): set STRIPE_WEBHOOK_SECRET as a Worker secret
+// (`wrangler secret put` or the Cloudflare dashboard, never in the build) and
+// register this endpoint (`/api/webhooks/stripe`) in the Stripe dashboard for the events
 // checkout.session.completed, customer.subscription.updated|deleted. The path
 // must be excluded from any auth middleware (Stripe calls it unauthenticated).
 export async function POST(req) {

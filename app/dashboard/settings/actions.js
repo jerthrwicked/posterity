@@ -13,6 +13,19 @@ import { toE164 } from '../../../lib/posterity/phone'
 //
 // Account details stay editable whatever the account's storage standing, so
 // this does not read canBuild.
+//
+// No approved text exists yet for these errors, so each is a placeholder naming
+// the Writing Requirements item that will supply it. Not exported: a 'use
+// server' file exports only async functions.
+const ERRORS = {
+  noAccount: '[Placeholder: Product surface copy — error messages: the account record cannot be found]',
+  legalName: '[Placeholder: Product surface copy — error messages: the legal name is blank]',
+  tooLong: '[Placeholder: Product surface copy — error messages: a name runs past 200 characters]',
+  name: '[Placeholder: Product surface copy — error messages: the name has no letter or number]',
+  phone: '[Placeholder: Product surface copy — error messages: the phone number cannot be read]',
+  notSaved: '[Placeholder: Product surface copy — error messages: the details were not saved]',
+}
+
 export async function saveAccountDetails(_prev, formData) {
   const { supabase, account } = await requireAccount()
 
@@ -22,18 +35,18 @@ export async function saveAccountDetails(_prev, formData) {
     phone: (formData.get('phone') || '').trim(),
   }
 
-  if (!account) return { values, error: 'We couldn’t find your account record. Please contact us.' }
-  if (!/[\p{L}\p{Nd}]/u.test(values.legal_name)) return { values, error: 'Please enter your legal name.' }
+  if (!account) return { values, error: ERRORS.noAccount }
+  if (!/[\p{L}\p{Nd}]/u.test(values.legal_name)) return { values, error: ERRORS.legalName }
   if (values.legal_name.length > 200 || values.name.length > 200) {
-    return { values, error: 'Please keep each name to 200 characters.' }
+    return { values, error: ERRORS.tooLong }
   }
   if (values.name && !/[\p{L}\p{Nd}]/u.test(values.name)) {
-    return { values, error: 'Your name needs at least one letter or number, or leave it blank to use your legal name.' }
+    return { values, error: ERRORS.name }
   }
 
   const phone = values.phone ? toE164(values.phone) : null
   if (values.phone && !phone) {
-    return { values, error: 'That phone number doesn’t look right. A US number is ten digits; any other starts with + and its country code.' }
+    return { values, error: ERRORS.phone }
   }
 
   const { error } = await supabase
@@ -41,7 +54,7 @@ export async function saveAccountDetails(_prev, formData) {
     .update({ legal_name: values.legal_name, name: values.name || null, phone })
     .eq('id', account.id)
 
-  if (error) return { values, error: 'Your details weren’t saved. Please try again.' }
+  if (error) return { values, error: ERRORS.notSaved }
 
   revalidatePath('/dashboard/settings')
   revalidatePath('/dashboard')

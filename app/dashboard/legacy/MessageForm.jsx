@@ -4,6 +4,7 @@
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { addMessage } from './actions'
+import { INCLUDE_IN_POSTERITY_HELP } from '../../../lib/posterity/content'
 
 const input =
   'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition'
@@ -77,16 +78,16 @@ export function MessageForm({ recipients }) {
         </div>
       </div>
 
+      {/* The Master Specification's Content Builder: the toggle is off by default. */}
       <label className="flex items-start gap-3 text-sm text-gray-400 cursor-pointer mt-1">
         <input
           type="checkbox"
           name="include_in_posterity"
-          defaultChecked
           className="mt-1 accent-white cursor-pointer"
         />
         <span>
-          Keep this in my Posterity — the permanent archive your trusted contact can hold onto after
-          everything has been delivered.
+          Include in Posterity
+          <span className="block text-gray-600">{INCLUDE_IN_POSTERITY_HELP}</span>
         </span>
       </label>
 

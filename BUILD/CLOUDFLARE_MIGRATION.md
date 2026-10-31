@@ -9,8 +9,9 @@ customers, so the move went straight to the live domain. Deployed by hand:
 
 Done: the Worker on www, the five runtime values as Worker secrets, both Vercel records replaced, the
 apex redirect rule, and Supabase's site address and allowed redirects. Checked live: the public pages,
-the 404, the signed-out dashboard redirect and checkout's 401.
-Open: a signed-in session and a test checkout on the new host; the webhook stays dormant until
+the 404, the signed-out dashboard redirect and checkout's 401, and on October 11 a signed-in session
+and a test checkout of every plan on the new host (18 checks).
+Open: the webhook stays dormant until
 `STRIPE_WEBHOOK_SECRET` is set; deploys from GitHub (decision 1); retiring the Vercel project.
 
 **The way back:** take www off the Worker, delete the apex `AAAA 100::` record and the redirect rule,

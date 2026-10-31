@@ -35,16 +35,16 @@ export function TrustedContactForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="email" className={label}>Email</label>
-          <input id="email" name="email" type="email" className={input} placeholder="them@example.com" />
+          <input id="email" name="email" type="email" required className={input} placeholder="them@example.com" />
         </div>
         <div>
-          <label htmlFor="phone" className={label}>Phone</label>
+          <label htmlFor="phone" className={label}>Phone <span className="text-gray-600">(optional)</span></label>
           <input id="phone" name="phone" type="tel" className={input} placeholder="(555) 555-5555" />
         </div>
       </div>
 
       <p className="text-xs text-gray-500 leading-relaxed -mt-1">
-        One of these is required. This is the person we reach out to — we have to be able to.
+        [Placeholder: Product surface copy — why a Legacy Guard needs an email address]
       </p>
 
       <div>
