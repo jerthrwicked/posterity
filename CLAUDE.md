@@ -57,8 +57,8 @@ RLS is on every table. These migrations are all applied and live:
 
 1. `20260713000000_initial_schema` — the first migration this project ever had
 2. `20260713120000_account_on_signup` — the account row is created by a trigger in the same transaction as the user
-3. `20260713140000_fallback_and_legacy` — a recipient must have an email or a phone; every account gets its primary legacy at signup
-4. `20260713160000_trusted_contacts` — same reachability rule; promoting a primary is one database transaction (`set_primary_trusted_contact`, SECURITY INVOKER so RLS applies)
+3. `20260713140000_fallback_and_legacy` — a recipient must have an email or a phone (since 21, an email); every account gets its primary legacy at signup
+4. `20260713160000_trusted_contacts` — same reachability rule (since 21, an email); promoting a primary is one database transaction (`set_primary_trusted_contact`, SECURITY INVOKER so RLS applies)
 5. `20260713180000_media_storage` — the private `legacy-media` bucket; 25 MB ceiling and formats enforced by the bucket; objects keyed to the account by path
 6. `20260716120000_trigger_staff_death_verification` — `staff_verified` and `vetoed` paths on `trigger_confirmations`; never read, and removed by 16
 7. `20260918120000_trial_and_storage_state` — `accounts.trial_ends_at` and `accounts.storage_paid_through`, the first storage gate
