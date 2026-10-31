@@ -12,9 +12,9 @@ Combined September 15, 2026 from Walker's July file and the September briefing.
 
 ## 1. The record — read this before doing anything
 
-The build record is one Google Doc, **Posterity Build Roadmap (Draft) — October 26** (ID 1gwcdTcveNo7nlFlA473sATKKDHF_-vpfg4cUNICsDlc), kept in Drive beside Jeremy's Posterity Build Roadmap (Draft). It holds every remaining build item in suggested build order, then the Build Log: everything already built, newest first, in one table. Nothing is ever removed from the Build Log. Start with its *How This Document Is Edited* and *Current Status* sections. Walker builds to it as he sees fit; Jeremy agreed.
+The build record is one Google Doc, **Posterity Build Roadmap** (ID 1efUJ8Qha9Pg0nN5qVW__kup1xpfZvCg2QMs7DhG568I), in Jeremy's Posterity folder in Drive. Its Build Roadmap tab holds every remaining build item in suggested build order, and its Build Log tab holds everything already built, newest first, in one table. Nothing is ever removed from the Build Log. It is the only copy of either, and every session, Jeremy's and Walker's alike, records build progress there. Start with its *How This Document Is Edited* and *Current Status* sections.
 
-`Posterity_Build_Roadmap.md` and `Posterity_Build_Log.md` at the repository root are the record as it stood until October 26, 2026. They carry no authority now and are no longer updated.
+`Posterity_Build_Roadmap.md` and `Posterity_Build_Log.md` at the repository root hold only a note pointing to that Doc. Their earlier contents, the record until October 26, 2026, stay in the repository's history.
 
 Every other project document is likewise a Google Doc in Drive, and this repository keeps no copy of it. Its definitive version is the Google Doc in Jeremy's Google Drive, and this repository keeps no copy of it. That covers the Master Specification, its design records (Social Media Integration, the Delivery System, and Posterity Social), the Founder Build Roadmap, and the Build Queue.
 
@@ -108,7 +108,7 @@ When Walker's notes or this file contradict Jeremy's documents, ask Jeremy. Do n
 
 - `origin` is `git@github.com:jerthrwicked/posterity.git`. `main` holds the code; only approved pushes reach it. The record is the roadmap Doc (Section 1).
 - Walker's work happens on `walker/build`, merged to `main` on approval. Pull `--rebase` before every commit.
-- Authored edits to the roadmap, the Build Log, or this file, written in Claude.ai and handed over as a prompt, follow the roadmap's *How to Manually Edit This Document* route: a short branch cut from `main`, a printback, one approval, and a pull request merged at once. Build progress follows the rules above.
+- Authored edits to this file run on a short branch cut from `main`, with a printback, one approval, and a pull request merged at once. The roadmap Doc is edited directly, as its *How This Document Is Edited* section sets out. Build progress follows the rules above.
 - `scripts/hooks/pre-commit` (installed by `bash scripts/install-hooks.sh`) prints a reminder on any commit touching `app/`, `lib/`, `proxy.js`, `supabase/migrations/`, or `scripts/`: once it reaches `main`, the change goes in the roadmap Doc's Build Log. A hook cannot see the Doc, so it reminds rather than blocks.
 
 ## 7. Files Walker authored

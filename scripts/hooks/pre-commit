@@ -2,8 +2,8 @@
 # Posterity — the Build Log reminder · Walker Brown
 # If you changed the app or the database, the Build Log gets an entry.
 #
-# The record is the Google Doc "Posterity Build Roadmap (Draft) — October 26"
-# (1gwcdTcveNo7nlFlA473sATKKDHF_-vpfg4cUNICsDlc), and a hook cannot see it, so
+# The record is the Build Log tab of the Google Doc "Posterity Build Roadmap"
+# (1efUJ8Qha9Pg0nN5qVW__kup1xpfZvCg2QMs7DhG568I), and a hook cannot see it, so
 # this reminds rather than blocks. The entry is written once the build item's
 # code reaches main, naming the commit that built it.
 set -euo pipefail
