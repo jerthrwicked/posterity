@@ -99,7 +99,7 @@ const statusOpen = async () => {
 const isOpen = (token = tok) => call('/rest/v1/rpc/legacy_guard_setup_is_open', { method: 'POST', token, body: { p_account_id: acct } });
 const add = (name, extra = {}) => call('/rest/v1/trusted_contacts', {
   method: 'POST', token: tok, prefer: 'return=representation',
-  body: { account_id: acct, name, email: `${name.toLowerCase()}@example.com`, ...extra },
+  body: { account_id: acct, name, email: `${name.toLowerCase()}@example.com`, phone: '+15045550100', ...extra },
 });
 const edit = (id, body) => call(`/rest/v1/trusted_contacts?id=eq.${id}`, { method: 'PATCH', token: tok, prefer: 'return=representation', body });
 const promote = (id) => call('/rest/v1/rpc/set_primary_trusted_contact', { method: 'POST', token: tok, body: { p_contact_id: id } });

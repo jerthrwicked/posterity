@@ -23,6 +23,12 @@ export async function addTrustedContact(_prev, formData) {
     return { error: '[Placeholder: Product surface copy — error messages: a Legacy Guard without an email address]' }
   }
 
+  // A Legacy Guard holds a phone number too (Master Spec; Walker, October 31).
+  // The database enforces it (20261031010000_legacy_guard_phone_required).
+  if (!phone) {
+    return { error: '[Placeholder: Product surface copy — error messages: a Legacy Guard without a phone number]' }
+  }
+
   // The first contact added becomes primary. Someone has to be, and asking a
   // customer to nominate one before they have two is a decision without a choice.
   const { count } = await supabase
@@ -34,7 +40,7 @@ export async function addTrustedContact(_prev, formData) {
     account_id: account.id,
     name,
     email: email || null,
-    phone: phone || null,
+    phone,
     personal_note: note || null,
     is_primary: (count ?? 0) === 0,
   })

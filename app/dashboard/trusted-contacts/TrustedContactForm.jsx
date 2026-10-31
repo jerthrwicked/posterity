@@ -38,8 +38,8 @@ export function TrustedContactForm() {
           <input id="email" name="email" type="email" required className={input} placeholder="them@example.com" />
         </div>
         <div>
-          <label htmlFor="phone" className={label}>Phone <span className="text-gray-600">(optional)</span></label>
-          <input id="phone" name="phone" type="tel" className={input} placeholder="(555) 555-5555" />
+          <label htmlFor="phone" className={label}>Phone</label>
+          <input id="phone" name="phone" type="tel" required className={input} placeholder="(555) 555-5555" />
         </div>
       </div>
 
