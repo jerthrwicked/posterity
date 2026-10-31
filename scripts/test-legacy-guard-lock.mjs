@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Posterity — Legacy Guard setup locks at Interlude, tested live as a real signed-in user · Walker Brown
 /*
-20261030000000_legacy_guard_setup_lock. Through PostgREST with the customer's
-own token, so the trigger is tested where the customer meets it.
+20261030000000_legacy_guard_setup_lock and
+20261030010000_legacy_guard_setup_in_account_status. Through PostgREST with the
+customer's own token, so the trigger is tested where the customer meets it.
 
 What matters most:
   - in Horizon the customer adds, edits, promotes, and removes Legacy Guards
@@ -10,8 +11,9 @@ What matters most:
   - from Interlude, adding, editing, promoting, and removing are each REFUSED
     with a reason, and the customer can still read their Legacy Guards
   - the service role still writes a resend, as automatic invitation resends will
-  - legacy_guard_setup_is_open() agrees at each step, and another customer
-    reading it gets nothing
+  - account_status().legacy_guard_setup_open, which the page reads, and
+    legacy_guard_setup_is_open(), which the trigger reads, agree at each step,
+    and another customer reading it gets nothing
 
 The phase and the dates are moved with the service role, standing in for the
 Account Trigger and the webhook.
@@ -90,6 +92,10 @@ async function set(cols) {
   const [st, r] = await svc(`/rest/v1/accounts?id=eq.${acct}`, { method: 'PATCH', body: cols, prefer: 'return=representation' });
   if (st !== 200 || r.length !== 1) throw new Error(`set ${JSON.stringify(cols)}: ${st} ${JSON.stringify(r)}`);
 }
+const statusOpen = async () => {
+  const [st, r] = await call('/rest/v1/rpc/account_status', { method: 'POST', token: tok, body: { p_account_id: acct } });
+  return [st, Array.isArray(r) && r.length === 1 ? r[0].legacy_guard_setup_open : r];
+};
 const isOpen = (token = tok) => call('/rest/v1/rpc/legacy_guard_setup_is_open', { method: 'POST', token, body: { p_account_id: acct } });
 const add = (name, extra = {}) => call('/rest/v1/trusted_contacts', {
   method: 'POST', token: tok, prefer: 'return=representation',
@@ -108,6 +114,8 @@ try {
   acct = r[0].id;
   [st, r] = await isOpen();
   check('legacy_guard_setup_is_open() reads true', st === 200 && r === true, `${st} ${JSON.stringify(r)}`);
+  [st, r] = await statusOpen();
+  check('the account status check reads setup open', st === 200 && r === true, `${st} ${JSON.stringify(r)}`);
   [st, r] = await isOpen(tokB);
   check('another customer reading it gets nothing', st === 200 && r === null, `${st} ${JSON.stringify(r)}`);
   [st, r] = await add('Maria', { is_primary: true });
@@ -131,6 +139,8 @@ try {
   check('building is locked', st === 200 && r === false, `${st} ${JSON.stringify(r)}`);
   [st, r] = await isOpen();
   check('legacy_guard_setup_is_open() still reads true', st === 200 && r === true, `${st} ${JSON.stringify(r)}`);
+  [st, r] = await statusOpen();
+  check('the account status check still reads setup open', st === 200 && r === true, `${st} ${JSON.stringify(r)}`);
   [st, r] = await edit(first, { personal_note: 'Thank you.' });
   check('editing a Legacy Guard still works', ok(st) && r.length === 1, `${st} ${JSON.stringify(r)}`);
 
@@ -138,6 +148,8 @@ try {
   await set({ phase: 'interlude' });
   [st, r] = await isOpen();
   check('legacy_guard_setup_is_open() reads false', st === 200 && r === false, `${st} ${JSON.stringify(r)}`);
+  [st, r] = await statusOpen();
+  check('the account status check reads setup locked', st === 200 && r === false, `${st} ${JSON.stringify(r)}`);
   [st, r] = await add('Late');
   check('adding a Legacy Guard is REFUSED with a reason', refused(st, r), `got ${st} ${JSON.stringify(r)}`);
   [st, r] = await edit(first, { name: 'Changed' });

@@ -7,20 +7,18 @@ import { makePrimary, deleteTrustedContact } from './actions'
 import { GUARD_SETUP_LOCKED_MESSAGE } from '../../../lib/posterity/legacy-guards'
 
 export default async function TrustedContacts() {
-  const { supabase, account } = await requireAccount()
+  const { supabase, account, status } = await requireAccount()
 
-  // Setup locks at Interlude (20261030000000). The database refuses a locked
-  // write regardless; the page reads the same function to show the lock.
-  const [{ data: contacts }, { data: setupOpen }] = await Promise.all([
-    supabase
-      .from('trusted_contacts')
-      .select('id, name, email, phone, is_primary, accepted_at')
-      .eq('account_id', account.id)
-      .order('is_primary', { ascending: false })
-      .order('created_at', { ascending: true }),
-    supabase.rpc('legacy_guard_setup_is_open', { p_account_id: account.id }),
-  ])
-  const locked = setupOpen !== true
+  // Setup locks at Interlude. The page reads the account status check, and the
+  // trigger that refuses a locked write reads the same field
+  // (20261030010000). An account whose status cannot be read counts as locked.
+  const { data: contacts } = await supabase
+    .from('trusted_contacts')
+    .select('id, name, email, phone, is_primary, accepted_at')
+    .eq('account_id', account.id)
+    .order('is_primary', { ascending: false })
+    .order('created_at', { ascending: true })
+  const locked = status?.legacy_guard_setup_open !== true
 
   return (
     <main className="min-h-screen bg-black text-white">
