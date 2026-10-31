@@ -48,7 +48,7 @@ export default async function Dashboard() {
 
   const { data: account } = await supabase
     .from('accounts')
-    .select('id, phase, next_checkin_due, name')
+    .select('id, next_checkin_due, name')
     .eq('user_id', user.id)
     .single()
   const status = await accountStatus(supabase, account?.id)
@@ -68,7 +68,8 @@ export default async function Dashboard() {
     counts.plans = plans.count ?? 0
   }
 
-  const phase = PHASES[account?.phase] ?? PHASES.horizon
+  // The phase comes from the account status check, as every surface's does.
+  const phase = PHASES[status?.phase] ?? PHASES.horizon
   const name = account?.name || 'Friend'
 
   // Storage state, in the product's words, as account_status() reads it. The

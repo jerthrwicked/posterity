@@ -4,8 +4,11 @@
 Signup -> account -> legacy -> recipient -> message, against the live database,
 through PostgREST as a real signed-in user (so RLS is actually exercised).
 
-Also checks the two things that matter most:
-  - a recipient with no email and no phone is REJECTED
+Also checks the things that matter most:
+  - a recipient with no email is REJECTED, even with a phone
+    (20261030020000_contact_email_required)
+  - a message saved without the Include in Posterity toggle is not included
+    (20261030030000_include_in_posterity_off_by_default)
   - one customer cannot see another customer's legacy
 """
 import json, os, sys, urllib.request, urllib.error
@@ -94,6 +97,10 @@ try:
                   "platform": "facebook", "platform_handle": "@them"},
                  token=tok_a, prefer="return=representation")
     check("recipient with NO email and NO phone is REJECTED", st >= 400, f"got {st}")
+    st, r = call("/rest/v1/recipients", "POST",
+                 {"account_id": acct_a, "name": "Phone Only", "phone": "+15045550101"},
+                 token=tok_a, prefer="return=representation")
+    check("recipient with a phone but NO email is REJECTED", st >= 400, f"got {st}")
 
     print("\nCustomer A builds a legacy")
     st, rec = call("/rest/v1/recipients", "POST",
@@ -111,9 +118,11 @@ try:
                     token=tok_a, prefer="return=representation")
     check("message saved to the legacy", st in (200, 201), f"{st} {item}")
 
-    st, items = call("/rest/v1/content_items?select=title,body,deliver_on,recipients(name)", token=tok_a)
+    st, items = call("/rest/v1/content_items?select=title,body,deliver_on,include_in_posterity,recipients(name)", token=tok_a)
     check("A can read it back",
           st == 200 and len(items) == 1 and items[0]["recipients"]["name"] == "Daughter", f"{st} {items}")
+    check("a message saved without the toggle is NOT included in Posterity",
+          st == 200 and len(items) == 1 and items[0]["include_in_posterity"] is False, f"{st} {items}")
 
     print("\nCustomer B must not see any of it")
     uid_b = admin_create(B)

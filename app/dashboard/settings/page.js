@@ -42,8 +42,7 @@ export default async function Settings() {
         ) : (
           <div className="rounded-2xl p-6 border border-yellow-900 bg-yellow-950/30">
             <p className="text-yellow-200 text-sm">
-              We couldn&rsquo;t find your account record. Nothing is lost — please contact us and
-              we&rsquo;ll put it right.
+              [Placeholder: Product surface copy — error messages: the account record cannot be found]
             </p>
           </div>
         )}

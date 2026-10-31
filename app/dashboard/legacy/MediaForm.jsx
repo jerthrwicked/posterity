@@ -4,6 +4,7 @@
 import { useState } from 'react'
 import { createClient } from '../../../lib/supabase/client'
 import { addMedia } from './actions'
+import { INCLUDE_IN_POSTERITY_HELP } from '../../../lib/posterity/content'
 
 const input =
   'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition'
@@ -157,9 +158,13 @@ export function MediaForm({ recipients, accountId, legacyId }) {
         </div>
       </div>
 
+      {/* The Master Specification's Content Builder: the toggle is off by default. */}
       <label className="flex items-start gap-3 text-sm text-gray-400 cursor-pointer mt-1">
-        <input type="checkbox" name="include_in_posterity" defaultChecked className="mt-1 accent-white cursor-pointer" />
-        <span>Keep this in my Posterity — the permanent archive, after everything has been delivered.</span>
+        <input type="checkbox" name="include_in_posterity" className="mt-1 accent-white cursor-pointer" />
+        <span>
+          Include in Posterity
+          <span className="block text-gray-600">{INCLUDE_IN_POSTERITY_HELP}</span>
+        </span>
       </label>
 
       {error && <p className="text-sm text-red-400">{error}</p>}

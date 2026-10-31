@@ -14,11 +14,13 @@ export async function addTrustedContact(_prev, formData) {
   const note = (formData.get('personal_note') || '').trim()
 
   if (!name) return { error: 'Please enter their name.' }
-  if (!email && !phone) {
-    return {
-      error:
-        'Please add an email or a phone number. This is the person we reach out to — we have to be able to.',
-    }
+
+  // A Legacy Guard holds an email address (Master Spec). The database enforces
+  // it too (20261030020000_contact_email_required); it is checked here so the
+  // customer reads a sentence rather than a constraint. No approved text exists
+  // yet.
+  if (!email) {
+    return { error: '[Placeholder: Product surface copy — error messages: a Legacy Guard without an email address]' }
   }
 
   // The first contact added becomes primary. Someone has to be, and asking a
