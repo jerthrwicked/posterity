@@ -2,7 +2,7 @@
 
 # Posterity — CLAUDE.md
 
-One file for every Claude Code session on this project, whoever is running it. Jeremy Grego is the founder. Walker Brown is the co-founder and builder. Both run Claude Code against this repository; Jeremy approves every push.
+One file for every Claude Code session on this project, whoever is running it. Jeremy Grego is the founder. Walker Brown is the co-founder and builder. Both run Claude Code against this repository; Jeremy approves each change once, before its commit.
 
 Jeremy works across several Claude.ai chats within the Posterity project, and the Project Instructions Doc owns their names and roles under THE CHATS. Its ID is 1e2hjCL4d3Fie5_0WAlZLHc4b1M7ly9j3zcU9QoF3Brg. Any of them may hand this repository work, and authored edits still run under Section 6. A session reads THE CHATS through its export link under Section 1 when its work needs the roles.
 
@@ -16,7 +16,7 @@ The build record is one Google Doc, **Posterity Build Roadmap** (ID 1efUJ8Qha9Pg
 
 `Posterity_Build_Roadmap.md` and `Posterity_Build_Log.md` at the repository root hold only a note pointing to that Doc. Their earlier contents, the record until October 26, 2026, stay in the repository's history.
 
-Every other project document is likewise a Google Doc in Drive, and this repository keeps no copy of it. Its definitive version is the Google Doc in Jeremy's Google Drive, and this repository keeps no copy of it. That covers the Master Specification, its design records (Social Media Integration, the Delivery System, and Posterity Social), the Founder Build Roadmap, and the Build Queue.
+Every other project document is likewise a Google Doc in Jeremy's Google Drive, which holds its definitive version, and this repository keeps no copy of it. That covers the Master Specification, its design records (Social Media Integration, the Delivery System, and Posterity Social), the Founder Build Roadmap, and the Build Queue.
 
 The **Master Specification** governs what gets built. Each stage names the subjects to read within it. A session reads a Google Doc when its work needs one or when asked, and never by default at opening. It pulls the Doc's markdown through the Doc's export link into `live-docs/`, a folder git ignores. The ID comes from any link to the Doc, whether in the Master Specification's Important Links, this repository, or the prompt. The Master Specification's own ID is 14OoN3GlzDnJjo0ll6hIN6pjU7nCEsWB2MA39R-jWhPY. Each pull overwrites the last, so the copy matches its Doc on the day it is pulled. A session searches that copy for a stage's subjects before building against them. If a download comes back as a web page rather than markdown, stop and ask Jeremy. He can save the Doc through File, then Download, then Markdown into the same folder.
 
@@ -37,7 +37,7 @@ Change nothing else within the roadmap Doc without approval from Jeremy or Walke
 
 **Print every change back rather than summarizing it, then stop.** A truncated or misplaced write surfaces while the work that produced it is still open.
 
-**For build progress, do not commit or push without approval, including after a correction.** Jeremy approves pushes. Ask for commit, push, and merge separately — never bundle them. Authored edits follow their own route, set out in Section 6.
+**For build progress, do not commit without approval, including after a correction.** Print every change, then ask Jeremy once, before the commit. That approval also covers the push, the pull request, and the merge into `main`, which follow without asking again. A change to the live database keeps an approval of its own under Section 3. Authored edits follow their own route, set out in Section 6.
 
 **Git steps run in Manual mode.** Auto mode's checker blocks a retried commit after a refusal, and it blocks merging a pull request no human approved. If a commit, push, or merge is refused, stop and report it rather than retrying in another form.
 
@@ -104,7 +104,7 @@ Vocabulary the schema uses: accounts move through phases; only accounts shift ph
 
 **Infrastructure, set up by hand September 15 (Jeremy):** domain at Cloudflare; `admin@yourposterity.com` forwards in and cannot send; Postmark on the Developer tier, verified for the domain; Twilio pay as you go with a New Orleans number, voicemail via two TwiML Bins.
 
-**Jeremy's PC:** Windows 11. Python isn't installed, so new scripts are written in Node. The GitHub command-line tool isn't signed in, so when a pull request can't be opened from the terminal, stop and say so, and it is opened and merged on the GitHub website. `.claude/settings.local.json` asks before `git commit`, `git push`, `git merge`, `gh pr`, and `bash scripts/sb.sh -f`. Local build sessions start with `claude --remote-control` so Claude.ai can follow them.
+**Jeremy's PC:** Windows 11. Python isn't installed, so new scripts are written in Node. The GitHub command-line tool is signed in, so pull requests open and merge from the terminal. `.claude/settings.json`, committed so cloud sessions read it too, asks before `git commit` and `bash scripts/sb.sh -f`, lets the push, the pull request, and the merge after an approved commit run without asking, asks before deleting a remote branch, and blocks force pushes. Local build sessions start with `claude --remote-control` so Claude.ai can follow them.
 
 ## 5. The risks that shape the design
 

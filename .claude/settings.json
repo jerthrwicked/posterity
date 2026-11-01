@@ -1,0 +1,53 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(grep:*)",
+      "Bash(sed -n:*)",
+      "Bash(find:*)",
+      "Bash(diff:*)",
+      "Bash(cp:*)",
+      "Bash(mkdir:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(git switch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git push:*)",
+      "Bash(git merge:*)",
+      "Bash(gh pr:*)",
+      "Bash(gh auth status)",
+      "Bash(npm run lint)",
+      "Bash(npm run build)",
+      "Bash(npm run docedit:snapshot:*)",
+      "Bash(npm run docedit:verify:*)",
+      "Bash(npm run docedit:selftest)",
+      "Bash(node scripts/docedit/snapshot.js:*)",
+      "Bash(node scripts/docedit/verify.js:*)",
+      "Bash(node scripts/docedit/selftest.js)",
+      "Bash(node scripts/docedit/checkerview.js:*)",
+      "Bash(node scripts/docedit/diff.js:*)",
+      "Bash(node scratch/assemble.js)"
+    ],
+    "ask": [
+      "Bash(git commit:*)",
+      "Bash(bash scripts/sb.sh -f:*)",
+      "Bash(git push origin --delete:*)",
+      "Bash(git push --delete:*)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(rm -rf:*)",
+      "Bash(node scripts/docedit/apply.js:* --confirm)"
+    ]
+  }
+}
