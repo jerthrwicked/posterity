@@ -3,7 +3,7 @@
 //
 // Run: node scripts/test-dispatch-policy.mjs
 import { decide, zonesFor } from '../lib/dispatch/policy.js';
-import { renderEmail, renderSms, fill } from '../lib/dispatch/render.js';
+import { renderEmail, renderSms, fill, SEAL_SRC } from '../lib/dispatch/render.js';
 
 let passed = 0, failed = 0;
 function check(name, ok, detail = '') {
@@ -84,7 +84,7 @@ check('subject fills unescaped', email.subject === 'A note from Ana <script>');
 check('a value is escaped inside the designed email', email.html.includes('Ana &lt;script&gt; wrote') && !email.html.includes('<script>'));
 check('plain text is derived when only HTML is stored', email.text.startsWith('Ana <script> wrote to you.'));
 check('both versions carry the frame text', email.html.includes('[Placeholder: Product surface copy') && email.text.includes('[Placeholder: Product surface copy'));
-check('the designed email carries the seal inline and the sage accent', email.html.includes('<svg') && email.html.includes('#93AB99'));
+check('the designed email carries the seal as a picture and the sage accent', email.html.includes(`<img src="${SEAL_SRC}"`) && !email.html.includes('<svg') && email.html.includes('#93AB99'));
 check('the frame is light, never the black canvas', !/background:#000(000)?\b/i.test(email.html));
 const textOnly = renderEmail({ key: 't', channel: 'email', subject: 'S', html_body: null, text_body: 'One.\n\nTwo & <three>' }, {}, frame);
 check('HTML is built from text when only text is stored', textOnly.html.includes('<p style="margin:0 0 0px;">Two &amp; &lt;three&gt;</p>'));

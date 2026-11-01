@@ -14,9 +14,10 @@ What matters most:
   - a number that sent STOP and agrees again is texted again, with a fresh
     confirmation
 
-It refuses to run while any real (not is_test) message is queued, since a pass
-claims every due message and these senders deliver nothing. Every row it writes
-is flagged is_test; its events stay in the append-only log permanently.
+Its confirmations carry the caller 'test-dispatch-agreement', and each pass
+claims only those, so a real message queued meanwhile is left to the live
+scheduler, which in turn leaves these alone (20261101020000). Every row it
+writes is flagged is_test; its events stay in the append-only log permanently.
 
 Run: node scripts/test-dispatch-agreement.mjs
 */
@@ -63,6 +64,7 @@ const NIGHT = () => new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(
 
 const run = Date.now().toString(36);
 const PHONE = '+15005550006';
+const CALLER = 'test-dispatch-agreement';
 const WHO = { role: 'customer', note: 'test-dispatch-agreement' };
 const HOW = 'profile_text_switch';
 const DISCLOSURE = '[test] The disclosure shown beside the text message switch.';
@@ -73,8 +75,6 @@ const eventsFor = async (type, since) => must(await db.from('dispatch_events')
   .gte('occurred_at', since).order('id'));
 
 try {
-  const real = must(await db.from('dispatch_messages').select('id').eq('is_test', false).in('status', ['queued', 'sending']));
-  if (real.length) throw new Error(`${real.length} real message(s) queued; this test would claim them. Not running.`);
 
   const created = await fetch(`${env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/admin/users`, {
     method: 'POST',
@@ -85,7 +85,7 @@ try {
   if (!uid) throw new Error('could not create the test user');
   accountId = must(await db.from('accounts').select('id').eq('user_id', uid).single()).id;
   phoneWasNew = !must(await db.from('text_agreements').select('phone').eq('phone', PHONE)).length;
-  const base = { phone: PHONE, accountId, who: WHO, how: HOW, disclosure: DISCLOSURE, isTest: true };
+  const base = { phone: PHONE, accountId, who: WHO, how: HOW, disclosure: DISCLOSURE, isTest: true, caller: CALLER };
   const stored = must(await db.from('dispatch_copy').select('sms_body').eq('key', 'sms.agreement_confirmation').single()).sms_body;
 
   console.log('Refused without what the record needs');
@@ -111,11 +111,11 @@ try {
   check('and that the agreement confirmed the number', cf?.detail?.via === 'agreement' && cf.is_test, JSON.stringify(cf));
   check('one confirmation text is queued to the number, as one the person set off',
     confirmation.channel === 'sms' && confirmation.destination === PHONE && confirmation.copy_key === 'sms.agreement_confirmation' &&
-    confirmation.self_initiated === true && confirmation.status === 'queued' && confirmation.caller === 'agreement' && confirmation.is_test,
+    confirmation.self_initiated === true && confirmation.status === 'queued' && confirmation.caller === CALLER && confirmation.is_test,
     JSON.stringify(confirmation));
 
   console.log('\nThe confirmation goes at once, even at 3 AM');
-  let tally = await runPass(db, { channels, now: NIGHT });
+  let tally = await runPass(db, { caller: CALLER, channels, now: NIGHT });
   const sent = must(await db.from('dispatch_messages').select().eq('id', confirmation.id).single());
   const mineSent = sends.filter((s) => s.id === confirmation.id);
   check('the pass sent it, once, without waiting for the window',
@@ -129,7 +129,7 @@ try {
   check('is agreed again, with the stop cleared',
     again.agreement.status === 'agreed' && !again.agreement.stopped_at && !again.agreement.stopped_via, JSON.stringify(again.agreement));
   check('and gets a fresh confirmation of its own', again.confirmation.id !== confirmation.id && again.confirmation.status === 'queued');
-  tally = await runPass(db, { channels, now: NIGHT });
+  tally = await runPass(db, { caller: CALLER, channels, now: NIGHT });
   check('which goes at once as well',
     must(await db.from('dispatch_messages').select('status').eq('id', again.confirmation.id).single()).status === 'sent', JSON.stringify(tally));
 } catch (err) {
