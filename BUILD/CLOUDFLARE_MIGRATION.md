@@ -12,11 +12,11 @@ apex redirect rule, and Supabase's site address and allowed redirects. Checked l
 the 404, the signed-out dashboard redirect and checkout's 401, and on October 11 a signed-in session
 and a test checkout of every plan on the new host (18 checks).
 Open: the webhook stays dormant until
-`STRIPE_WEBHOOK_SECRET` is set; deploys from GitHub (decision 1); retiring the Vercel project.
+`STRIPE_WEBHOOK_SECRET` is set. Deploys from GitHub (decision 1) run through Workers Builds since November 1, 2026,
+and the Vercel project was deleted that day.
 
-**The way back:** take www off the Worker, delete the apex `AAAA 100::` record and the redirect rule,
-and restore the two Vercel CNAMEs (both pointed at `0b1f223f52b56ee2.vercel-dns-017.com`, DNS only).
-Vercel still holds its last build.
+**The way back:** Vercel was deleted on November 1, 2026. A bad deploy is undone on Cloudflare by rolling the
+Worker back to an earlier version under Workers & Pages > posterity > Deployments.
 
 ## What is already proven, on branch `walker/cloudflare`
 
@@ -46,7 +46,8 @@ Code changes it took:
 1. **Deployment flow.** The roadmap asks for deploys from GitHub. Cloudflare's Workers Builds can watch
    `jerthrwicked/posterity` and deploy `main` on every push, the way Vercel does now. That needs Jeremy
    to install Cloudflare's GitHub app on his repository. The alternative is deploying by hand with
-   `wrangler deploy`, which keeps a person between every push and the live site.
+   `wrangler deploy`, which keeps a person between every push and the live site. Decided: Workers Builds,
+   connected November 1, 2026.
 2. **Plan tier — decided: paid Workers plan at go-live** (Walker, 2026-10-10). The Worker is about
    2.7 MiB compressed, well under the paid plan's 10 MiB limit, and the paid plan lifts the free plan's
    CPU limit per request. Most of the size is Next.js itself; about 0.5 MiB is an image renderer the
