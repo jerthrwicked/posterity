@@ -126,8 +126,8 @@ try {
   [st, r] = await svc('/rest/v1/dispatch_messages', { method: 'POST', body: batch });
   check('eight more messages enqueued', st === 201, `got ${st}`);
   const [[st1, c1], [st2, c2]] = await Promise.all([
-    svc('/rest/v1/rpc/dispatch_claim', { method: 'POST', body: { p_limit: 5 } }),
-    svc('/rest/v1/rpc/dispatch_claim', { method: 'POST', body: { p_limit: 5 } }),
+    svc('/rest/v1/rpc/dispatch_claim', { method: 'POST', body: { p_limit: 5, p_caller: 'test-dispatch-db' } }),
+    svc('/rest/v1/rpc/dispatch_claim', { method: 'POST', body: { p_limit: 5, p_caller: 'test-dispatch-db' } }),
   ]);
   check('both claims succeed', st1 === 200 && st2 === 200, `${st1} ${st2}`);
   const ids1 = new Set(c1.map(m => m.id)), ids2 = c2.map(m => m.id);
@@ -136,7 +136,7 @@ try {
   check('together they claimed all nine due rows', ids1.size + ids2.length === 9, `${ids1.size} + ${ids2.length}`);
   check('every claimed row is marked sending with a lock time',
     [...c1, ...c2].every(m => m.status === 'sending' && m.locked_at));
-  [st, r] = await svc('/rest/v1/rpc/dispatch_claim', { method: 'POST', body: { p_limit: 5 } });
+  [st, r] = await svc('/rest/v1/rpc/dispatch_claim', { method: 'POST', body: { p_limit: 5, p_caller: 'test-dispatch-db' } });
   check('a third claim finds nothing left to take', st === 200 && r.length === 0, `${st} ${JSON.stringify(r)}`);
 
   console.log('\nThe event log is append-only');

@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { timingSafeEqual } from 'node:crypto';
 import { runPass } from '../../../../lib/dispatch/run';
 import { postmarkSender, twilioSender } from '../../../../lib/dispatch/senders';
+import { SITE, STATUS_CALLBACK_PATH } from '../../../../lib/dispatch/reports';
 
 // Runs one pass of the Communication Dispatch System's scheduler. The Worker's
 // cron (worker.js, every minute) calls this with the shared secret:
@@ -14,6 +15,7 @@ export const maxDuration = 300;
 
 // Both senders, built from the deploy's keys, or null while either is missing
 // so that the pass does not run with one channel and no way to send the other.
+// Every text asks Twilio to report its final status to the site.
 function channels() {
   const token = process.env.POSTMARK_SERVER_TOKEN;
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -21,7 +23,7 @@ function channels() {
   if (!token || !accountSid || !authToken) return null;
   return {
     email: postmarkSender({ token }),
-    sms: twilioSender({ accountSid, authToken }),
+    sms: twilioSender({ accountSid, authToken, statusCallback: `${SITE}${STATUS_CALLBACK_PATH}` }),
   };
 }
 
