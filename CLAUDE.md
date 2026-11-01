@@ -16,9 +16,9 @@ The build record is one Google Doc, **Posterity Build Roadmap** (ID 1efUJ8Qha9Pg
 
 `Posterity_Build_Roadmap.md` and `Posterity_Build_Log.md` at the repository root hold only a note pointing to that Doc. Their earlier contents, the record until October 26, 2026, stay in the repository's history.
 
-Every other project document is likewise a Google Doc in Jeremy's Google Drive, which holds its definitive version, and this repository keeps no copy of it. That covers the Master Specification, its design records (Social Media Integration, the Delivery System, and Posterity Social), the Founder Build Roadmap, and the Build Queue.
+Every other project document is likewise a Google Doc in Jeremy's Google Drive, which holds its definitive version, and this repository keeps no copy of it. That covers the Master Specification, its design records (Social Media Integration, the Delivery System, and Posterity Social), the Founder Build Roadmap, and the Build Queue. They are Google Docs, never Claude Docs, so Claude Code does not use the Claude Docs connector for them.
 
-The **Master Specification** governs what gets built. Each stage names the subjects to read within it. A session reads a Google Doc when its work needs one or when asked, and never by default at opening. It pulls the Doc's markdown through the Doc's export link into `live-docs/`, a folder git ignores. The ID comes from any link to the Doc, whether in the Master Specification's Important Links, this repository, or the prompt. The Master Specification's own ID is 14OoN3GlzDnJjo0ll6hIN6pjU7nCEsWB2MA39R-jWhPY. Each pull overwrites the last, so the copy matches its Doc on the day it is pulled. A session searches that copy for a stage's subjects before building against them. If a download comes back as a web page rather than markdown, stop and ask Jeremy. He can save the Doc through File, then Download, then Markdown into the same folder.
+The **Master Specification** governs what gets built. Each stage names the subjects to read within it. A session reads a Google Doc when its work needs one or when asked, and never by default at opening. It reads the Doc through the Google Drive connector first, whose markdown download carries every tab, and otherwise pulls the Doc's markdown through the Doc's export link into `live-docs/`, a folder git ignores. The ID comes from any link to the Doc, whether in the Master Specification's Important Links, this repository, or the prompt. The Master Specification's own ID is 14OoN3GlzDnJjo0ll6hIN6pjU7nCEsWB2MA39R-jWhPY. Each pull overwrites the last, so the copy matches its Doc on the day it is pulled. A session searches that copy for a stage's subjects before building against them. If a download comes back as a web page rather than markdown, stop and ask Jeremy. He can save the Doc through File, then Download, then Markdown into the same folder.
 
 ```bash
 mkdir -p live-docs
@@ -39,15 +39,15 @@ Change nothing else within the roadmap Doc without approval from Jeremy or Walke
 
 **For build progress, do not commit without approval, including after a correction.** Print every change, then ask Jeremy once, before the commit. That approval also covers the push, the pull request, and the merge into `main`, which follow without asking again. A change to the live database keeps an approval of its own under Section 3. Authored edits follow their own route, set out in Section 6.
 
-**Git steps run in Manual mode.** Auto mode's checker blocks a retried commit after a refusal, and it blocks merging a pull request no human approved. If a commit, push, or merge is refused, stop and report it rather than retrying in another form.
+**Sessions run in Auto mode.** Ask rules still stop for the commit and for database changes, and Auto mode's reviewer handles everything else. If a commit, push, or merge is refused, stop and report it rather than retrying in another form.
 
 **Never route around a permission.** Build no scratch copy of a repository tool, and no other workaround, that sidesteps an ask rule. Ask instead.
 
-Never place an API key, token, or password within the repository, the roadmap, the Build Log, or any document. `.env.local` is gitignored and is the only place secrets live. Never print a secret; the scripts echo names and lengths only.
+Never place an API key, token, or password within the repository, the roadmap, the Build Log, or any document, since the repository is public. On the PC, keys live in the gitignored `.env.local`, and the site's keys live in Worker secrets. While Posterity is in build and test, Claude may see and use any key the work needs, and every key is rotated before launch. The scripts echo names and lengths only.
 
 ## 3. The database — changes here are live the moment they run
 
-Supabase project `vypytfmutmeyfwmkapjg`, Jeremy's account. Reach it with `bash scripts/sb.sh "<sql>"` or `bash scripts/sb.sh -f file.sql` (reads a Management API token from `.env.local`). `sb.sh` encodes each query with Node. Inline queries are read-only. Every change to the database runs from a file with `-f`. Each migration is first dry-run in a transaction that rolls back, with a check that nothing remains, before it is applied. Free tier: it pauses after about seven days idle and the first query wakes it.
+Supabase project `vypytfmutmeyfwmkapjg`, Jeremy's account. Reach it with `bash scripts/sb.sh "<sql>"` or `bash scripts/sb.sh -f file.sql` (reads a Management API token from `.env.local`). `sb.sh` encodes each query with Node. Inline queries are read-only. Every change to the database runs from a file with `-f`. Each migration is first dry-run in a transaction that rolls back, with a check that nothing remains, before it is applied. Free tier: it pauses after about seven days idle. A paused project is resumed with the Resume button in the Supabase dashboard, since Supabase does not say whether a query wakes it.
 
 A migration on `main` is not a migration applied — they run only when someone executes them against the project. **Every migration is tested against the live database as a real signed-in user** (`scripts/test-*.py`, or `scripts/test-*.mjs` where Python isn't installed) so row-level security is actually exercised. "A second customer sees zero of the first one's legacy" is proven, not assumed.
 
@@ -104,7 +104,7 @@ Vocabulary the schema uses: accounts move through phases; only accounts shift ph
 
 **Infrastructure, set up by hand September 15 (Jeremy):** domain at Cloudflare; `admin@yourposterity.com` forwards in and cannot send; Postmark on the Developer tier, verified for the domain; Twilio pay as you go with a New Orleans number, voicemail via two TwiML Bins.
 
-**Jeremy's PC:** Windows 11. Python isn't installed, so new scripts are written in Node. The GitHub command-line tool is signed in, so pull requests open and merge from the terminal. `.claude/settings.json`, committed so cloud sessions read it too, asks before `git commit` and `bash scripts/sb.sh -f`, lets the push, the pull request, and the merge after an approved commit run without asking, asks before deleting a remote branch, and blocks force pushes. Local build sessions start with `claude --remote-control` so Claude.ai can follow them.
+**Jeremy's PC:** Windows 11. Python isn't installed, so new scripts are written in Node. The GitHub command-line tool is signed in, so pull requests open and merge from the terminal. `.claude/settings.json`, committed so cloud sessions read it too, asks before `git commit` and `bash scripts/sb.sh -f`, lets the push, the pull request, and the merge after an approved commit run without asking, asks before deleting a remote branch, and blocks force pushes. Local build sessions run in the desktop app's Code tab on this folder, with no terminal, and every new session connects to Remote Control so Claude.ai can follow it. `ANTHROPIC_API_KEY` stays unset: when it is set, Claude Code bills Console credits and loses the claude.ai connectors, Remote Control, and Chrome.
 
 ## 5. The risks that shape the design
 
@@ -116,8 +116,8 @@ When Walker's notes or this file contradict Jeremy's documents, ask Jeremy. Do n
 
 ## 6. Git
 
-- `origin` is `git@github.com:jerthrwicked/posterity.git`. `main` holds the code; only approved pushes reach it. The record is the roadmap Doc (Section 1).
-- Walker's work happens on `walker/build`, merged to `main` on approval. Pull `--rebase` before every commit.
+- `origin` is `https://github.com/jerthrwicked/posterity.git` on Jeremy's PC. `main` holds the code and is protected on GitHub: changes reach it only through a pull request, force pushes and deleting it are refused, and a merged branch deletes itself. The record is the roadmap Doc (Section 1).
+- Walker's work happens on `walker/` branches, merged to `main` on approval. Pull `--rebase` before every commit.
 - Authored edits to this file run on a short branch cut from `main`, with a printback, one approval, and a pull request merged at once. The roadmap Doc is edited directly, as its *How This Document Is Edited* section sets out. Build progress follows the rules above.
 - `scripts/hooks/pre-commit` (installed by `bash scripts/install-hooks.sh`) prints a reminder on any commit touching `app/`, `lib/`, `proxy.js`, `supabase/migrations/`, or `scripts/`: once it reaches `main`, the change goes in the roadmap Doc's Build Log. A hook cannot see the Doc, so it reminds rather than blocks.
 
