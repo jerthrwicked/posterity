@@ -39,7 +39,7 @@ export function TrustedContactForm() {
         </div>
         <div>
           <label htmlFor="phone" className={label}>Phone</label>
-          <input id="phone" name="phone" type="tel" required className={input} placeholder="(555) 555-5555" />
+          <input id="phone" name="phone" type="tel" required className={input} autoComplete="tel" placeholder="(504) 555-1234" />
         </div>
       </div>
 

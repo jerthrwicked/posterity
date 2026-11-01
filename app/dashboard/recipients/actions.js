@@ -4,6 +4,7 @@
 import { revalidatePath } from 'next/cache'
 import { requireAccount } from '../../../lib/posterity/account'
 import { STORAGE_LAPSED_MESSAGE } from '../../../lib/posterity/storage'
+import { toE164 } from '../../../lib/posterity/phone'
 
 export async function addRecipient(_prev, formData) {
   const { supabase, account, canBuild } = await requireAccount()
@@ -15,7 +16,7 @@ export async function addRecipient(_prev, formData) {
 
   const name = (formData.get('name') || '').trim()
   const email = (formData.get('email') || '').trim()
-  const phone = (formData.get('phone') || '').trim()
+  const phoneEntered = (formData.get('phone') || '').trim()
   const platform = (formData.get('platform') || '').trim()
   const handle = (formData.get('platform_handle') || '').trim()
 
@@ -29,11 +30,18 @@ export async function addRecipient(_prev, formData) {
     return { error: '[Placeholder: Product surface copy — error messages: a recipient without an email address]' }
   }
 
+  // Held as E.164, the form the Communication Dispatch System sends to; it
+  // refuses anything else (20261031020000_contact_phone_e164).
+  const phone = phoneEntered ? toE164(phoneEntered) : null
+  if (phoneEntered && !phone) {
+    return { error: '[Placeholder: Product surface copy — error messages: the phone number cannot be read]' }
+  }
+
   const { error } = await supabase.from('recipients').insert({
     account_id: account.id,
     name,
     email: email || null,
-    phone: phone || null,
+    phone,
     platform: platform || null,
     platform_handle: handle || null,
   })

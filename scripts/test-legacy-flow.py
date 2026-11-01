@@ -101,6 +101,11 @@ try:
                  {"account_id": acct_a, "name": "Phone Only", "phone": "+15045550101"},
                  token=tok_a, prefer="return=representation")
     check("recipient with a phone but NO email is REJECTED", st >= 400, f"got {st}")
+    st, r = call("/rest/v1/recipients", "POST",
+                 {"account_id": acct_a, "name": "Typed Phone", "email": "t@example.com",
+                  "phone": "(504) 555-0101"},
+                 token=tok_a, prefer="return=representation")
+    check("recipient with a phone not in E.164 is REJECTED (20261031020000)", st >= 400, f"got {st}")
 
     print("\nCustomer A builds a legacy")
     st, rec = call("/rest/v1/recipients", "POST",
