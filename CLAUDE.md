@@ -102,7 +102,7 @@ Vocabulary the schema uses: accounts move through phases; only accounts shift ph
 
 **Not built:** the check-in and the trigger; the delivery engine; the cart; the Legacy Guard portal and invitations; media compression and thumbnails; account deletion (deleting a user does not delete their storage files).
 
-**Infrastructure, set up by hand September 15 (Jeremy):** domain at Cloudflare; `admin@yourposterity.com` forwards in and cannot send; Postmark on the Developer tier, verified for the domain; Twilio pay as you go with a New Orleans number, voicemail via two TwiML Bins.
+**Infrastructure, set up by hand September 15 (Jeremy):** domain at Cloudflare; every address at the domain forwards to `posterity.admin@gmail.com` (`admin@yourposterity.com` since September 15, every other address since November 1, 2026), and none can send; Postmark on the Developer tier, verified for the domain; Twilio pay as you go with a New Orleans number, voicemail via two TwiML Bins.
 
 **Jeremy's PC:** Windows 11. Python isn't installed, so new scripts are written in Node. The GitHub command-line tool is signed in, so pull requests open and merge from the terminal. `.claude/settings.json`, committed so cloud sessions read it too, asks before `git commit` and `bash scripts/sb.sh -f`, lets the push, the pull request, and the merge after an approved commit run without asking, asks before deleting a remote branch, and blocks force pushes. Local build sessions run in the desktop app's Code tab on this folder, with no terminal, and every new session connects to Remote Control so Claude.ai can follow it. `ANTHROPIC_API_KEY` stays unset: when it is set, Claude Code bills Console credits and loses the claude.ai connectors, Remote Control, and Chrome.
 
