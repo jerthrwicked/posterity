@@ -4,13 +4,14 @@
 import { revalidatePath } from 'next/cache'
 import { requireAccount } from '../../../lib/posterity/account'
 import { GUARD_SETUP_LOCKED_MESSAGE } from '../../../lib/posterity/legacy-guards'
+import { toE164 } from '../../../lib/posterity/phone'
 
 export async function addTrustedContact(_prev, formData) {
   const { supabase, account } = await requireAccount()
 
   const name = (formData.get('name') || '').trim()
   const email = (formData.get('email') || '').trim()
-  const phone = (formData.get('phone') || '').trim()
+  const phoneEntered = (formData.get('phone') || '').trim()
   const note = (formData.get('personal_note') || '').trim()
 
   if (!name) return { error: 'Please enter their name.' }
@@ -25,8 +26,15 @@ export async function addTrustedContact(_prev, formData) {
 
   // A Legacy Guard holds a phone number too (Master Spec; Walker, October 31).
   // The database enforces it (20261031010000_legacy_guard_phone_required).
-  if (!phone) {
+  if (!phoneEntered) {
     return { error: '[Placeholder: Product surface copy — error messages: a Legacy Guard without a phone number]' }
+  }
+
+  // Held as E.164, the form the Communication Dispatch System sends to; it
+  // refuses anything else (20261031020000_contact_phone_e164).
+  const phone = toE164(phoneEntered)
+  if (!phone) {
+    return { error: '[Placeholder: Product surface copy — error messages: the phone number cannot be read]' }
   }
 
   // The first contact added becomes primary. Someone has to be, and asking a

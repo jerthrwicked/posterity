@@ -1,5 +1,6 @@
 // Posterity — recipients · Walker Brown
 import { requireAccount } from '../../../lib/posterity/account'
+import { displayPhone } from '../../../lib/posterity/phone'
 import { Wordmark } from '../../components/brand/Wordmark'
 import { LogoutButton } from '../LogoutButton'
 import { RecipientForm } from './RecipientForm'
@@ -48,7 +49,7 @@ export default async function Recipients() {
                   <div className="min-w-0">
                     <p className="font-semibold truncate">{r.name}</p>
                     <p className="text-gray-500 text-sm truncate">
-                      {[r.email, r.phone].filter(Boolean).join(' · ')}
+                      {[r.email, displayPhone(r.phone)].filter(Boolean).join(' · ')}
                       {r.platform && (
                         <span className="text-gray-600">
                           {' '}· {r.platform}

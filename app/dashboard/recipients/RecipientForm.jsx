@@ -39,7 +39,7 @@ export function RecipientForm() {
         </div>
         <div>
           <label htmlFor="phone" className={label}>Phone <span className="text-gray-600">(optional)</span></label>
-          <input id="phone" name="phone" type="tel" className={input} placeholder="(555) 555-5555" />
+          <input id="phone" name="phone" type="tel" className={input} autoComplete="tel" placeholder="(504) 555-1234" />
         </div>
       </div>
 

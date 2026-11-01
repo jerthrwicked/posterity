@@ -85,6 +85,10 @@ try:
     st, _ = call("/rest/v1/trusted_contacts", "POST",
                  {"account_id": acct_a, "name": "Email Only", "email": "e@example.com"}, token=tok_a)
     check("a contact with an email but NO phone is REJECTED (20261031010000)", st >= 400, f"got {st}")
+    st, _ = call("/rest/v1/trusted_contacts", "POST",
+                 {"account_id": acct_a, "name": "Typed Phone", "email": "t@example.com",
+                  "phone": "(504) 555-0101"}, token=tok_a)
+    check("a contact with a phone not in E.164 is REJECTED (20261031020000)", st >= 400, f"got {st}")
 
     print("\nPrimary")
     st, c1 = call("/rest/v1/trusted_contacts", "POST",

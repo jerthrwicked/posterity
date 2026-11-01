@@ -1,5 +1,6 @@
 // Posterity — trusted contacts · Walker Brown
 import { requireAccount } from '../../../lib/posterity/account'
+import { displayPhone } from '../../../lib/posterity/phone'
 import { Wordmark } from '../../components/brand/Wordmark'
 import { LogoutButton } from '../LogoutButton'
 import { TrustedContactForm } from './TrustedContactForm'
@@ -77,7 +78,7 @@ export default async function TrustedContacts() {
                       )}
                     </p>
                     <p className="text-gray-500 text-sm truncate">
-                      {[c.email, c.phone].filter(Boolean).join(' · ')}
+                      {[c.email, displayPhone(c.phone)].filter(Boolean).join(' · ')}
                     </p>
                   </div>
 
