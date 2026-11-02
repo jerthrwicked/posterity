@@ -16,5 +16,8 @@
   ],
   "workers_dev": false,
   // Wakes the Communication Dispatch System's scheduler every minute (worker.js).
-  "triggers": { "crons": ["* * * * *"] }
+  "triggers": { "crons": ["* * * * *"] },
+  // Workers Logs: keeps each request's console output, readable in the
+  // dashboard under the Worker's Logs, so a missed report can be read afterward.
+  "observability": { "enabled": true }
 }

@@ -21,7 +21,9 @@ export async function POST(req) {
     { auth: { persistSession: false } },
   );
   try {
-    return Response.json(await recordPostmarkReport(db, payload, { token }));
+    const outcome = await recordPostmarkReport(db, payload, { token });
+    console.log(`postmark report: ${payload?.RecordType} ${outcome.result}${outcome.why ? ` (${outcome.why})` : ''}`);
+    return Response.json(outcome);
   } catch (err) {
     console.log(`postmark report: ${String(err?.message ?? err).slice(0, 200)}`);
     return new Response('try again', { status: 503 });
