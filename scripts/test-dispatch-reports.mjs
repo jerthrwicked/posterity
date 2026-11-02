@@ -155,8 +155,14 @@ try {
     const lagging = async () => { const [status, body] = answers.shift(); return new Response(JSON.stringify(body), { status }); };
     const caughtUp = await recordPostmarkReport(db, report, { token: 't', fetch: lagging, wait: async () => {} });
     check('one Postmark records by the second ask goes through (here a duplicate, so still one event)', caughtUp.result === 'duplicate' && (await events(emailMsg.id, 'delivered')).length === 1, JSON.stringify(caughtUp));
-    const notFound = await recordPostmarkReport(db, report, { token: 't', fetch: postmark({}) });
-    check('nor one Postmark answers "not found" for', notFound.result === 'unverified');
+    const missing = postmark({});
+    let lost = false;
+    try { await recordPostmarkReport(db, report, { token: 't', fetch: missing, wait: async () => {} }); } catch { lost = true; }
+    check('a message Postmark cannot find yet is asked about again, then sent back to be reported later', lost && missing.calls.length === 2, JSON.stringify(missing.calls));
+    const finds = [[422, { ErrorCode: 701 }], [200, { MessageEvents: [{ Type: 'Delivered', ReceivedAt: '2026-11-01T12:00:00Z' }] }]];
+    const indexing = async () => { const [status, body] = finds.shift(); return new Response(JSON.stringify(body), { status }); };
+    const found = await recordPostmarkReport(db, report, { token: 't', fetch: indexing, wait: async () => {} });
+    check('one Postmark finds by the second ask goes through (a duplicate here)', found.result === 'duplicate', JSON.stringify(found));
     let threw = false;
     try { await recordPostmarkReport(db, report, { token: 't', fetch: postmark({ [`/messages/outbound/${PM_ID}/details`]: 'down' }) }); } catch { threw = true; }
     check('Postmark out of reach is an error, so the route asks for the report again', threw);
