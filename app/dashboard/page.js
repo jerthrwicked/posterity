@@ -54,17 +54,17 @@ export default async function Dashboard() {
   const status = await accountStatus(supabase, account?.id)
 
   // Every count below runs under RLS as this user — they cannot read anyone else's.
-  const counts = { content: 0, recipients: 0, contacts: 0, plans: 0 }
+  const counts = { content: 0, recipients: 0, guards: 0, plans: 0 }
   if (account) {
-    const [content, recipients, contacts, plans] = await Promise.all([
+    const [content, recipients, guards, plans] = await Promise.all([
       supabase.from('content_items').select('id', { count: 'exact', head: true }).eq('account_id', account.id),
       supabase.from('recipients').select('id', { count: 'exact', head: true }).eq('account_id', account.id),
-      supabase.from('trusted_contacts').select('id', { count: 'exact', head: true }).eq('account_id', account.id),
+      supabase.from('legacy_guards').select('id', { count: 'exact', head: true }).eq('account_id', account.id),
       supabase.from('plans').select('id', { count: 'exact', head: true }).eq('account_id', account.id),
     ])
     counts.content = content.count ?? 0
     counts.recipients = recipients.count ?? 0
-    counts.contacts = contacts.count ?? 0
+    counts.guards = guards.count ?? 0
     counts.plans = plans.count ?? 0
   }
 
@@ -135,11 +135,11 @@ export default async function Dashboard() {
             hint={counts.recipients === 1 ? 'recipient added' : 'recipients added'}
           />
           <Card
-            href="/dashboard/trusted-contacts"
-            title="Trusted Contacts"
+            href="/dashboard/legacy-guards"
+            title="Legacy Guards"
             blurb="The people who can speak for your account."
-            value={counts.contacts}
-            hint={counts.contacts === 1 ? 'contact added' : 'contacts added'}
+            value={counts.guards}
+            hint={counts.guards === 1 ? 'Legacy Guard added' : 'Legacy Guards added'}
           />
         </div>
 
