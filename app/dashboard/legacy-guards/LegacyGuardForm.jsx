@@ -1,9 +1,9 @@
 'use client'
 
-// Posterity — add-a-trusted-contact form · Walker Brown
+// Posterity — add-a-Legacy-Guard form · Walker Brown
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
-import { addTrustedContact } from './actions'
+import { addLegacyGuard } from './actions'
 
 const input =
   'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition'
@@ -17,13 +17,13 @@ function Submit() {
       disabled={pending}
       className="w-full bg-white text-black py-3 rounded-lg font-semibold hover:bg-gray-200 transition disabled:opacity-50 cursor-pointer"
     >
-      {pending ? 'Adding...' : 'Add trusted contact'}
+      {pending ? 'Adding...' : 'Add Legacy Guard'}
     </button>
   )
 }
 
-export function TrustedContactForm() {
-  const [state, action] = useActionState(addTrustedContact, {})
+export function LegacyGuardForm() {
+  const [state, action] = useActionState(addLegacyGuard, {})
 
   return (
     <form action={action} className="bg-gray-900 rounded-2xl p-8 border border-gray-800 flex flex-col gap-4">

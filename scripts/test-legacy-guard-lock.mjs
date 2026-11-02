@@ -97,14 +97,14 @@ const statusOpen = async () => {
   return [st, Array.isArray(r) && r.length === 1 ? r[0].legacy_guard_setup_open : r];
 };
 const isOpen = (token = tok) => call('/rest/v1/rpc/legacy_guard_setup_is_open', { method: 'POST', token, body: { p_account_id: acct } });
-const add = (name, extra = {}) => call('/rest/v1/trusted_contacts', {
+const add = (name, extra = {}) => call('/rest/v1/legacy_guards', {
   method: 'POST', token: tok, prefer: 'return=representation',
   body: { account_id: acct, name, email: `${name.toLowerCase()}@example.com`, phone: '+15045550100', ...extra },
 });
-const edit = (id, body) => call(`/rest/v1/trusted_contacts?id=eq.${id}`, { method: 'PATCH', token: tok, prefer: 'return=representation', body });
-const promote = (id) => call('/rest/v1/rpc/set_primary_trusted_contact', { method: 'POST', token: tok, body: { p_contact_id: id } });
-const remove = (id) => call(`/rest/v1/trusted_contacts?id=eq.${id}`, { method: 'DELETE', token: tok, prefer: 'return=representation' });
-const guards = () => call('/rest/v1/trusted_contacts?select=id,name,is_primary&order=created_at', { token: tok });
+const edit = (id, body) => call(`/rest/v1/legacy_guards?id=eq.${id}`, { method: 'PATCH', token: tok, prefer: 'return=representation', body });
+const promote = (id) => call('/rest/v1/rpc/set_primary_legacy_guard', { method: 'POST', token: tok, body: { p_guard_id: id } });
+const remove = (id) => call(`/rest/v1/legacy_guards?id=eq.${id}`, { method: 'DELETE', token: tok, prefer: 'return=representation' });
+const guards = () => call('/rest/v1/legacy_guards?select=id,name,is_primary&order=created_at', { token: tok });
 
 try {
   console.log('Horizon: setup is open');
@@ -161,7 +161,7 @@ try {
   [st, r] = await guards();
   check('the customer still reads both, unchanged, with Sam primary',
     st === 200 && r.length === 2 && r[0].name === 'Maria' && !r[0].is_primary && r[1].is_primary, `${st} ${JSON.stringify(r)}`);
-  [st, r] = await svc(`/rest/v1/trusted_contacts?id=eq.${first}`, {
+  [st, r] = await svc(`/rest/v1/legacy_guards?id=eq.${first}`, {
     method: 'PATCH', prefer: 'return=representation', body: { invited_at: new Date().toISOString(), invite_resend_count: 1 },
   });
   check('the service role still records a resend, as automatic resends will', ok(st) && r.length === 1 && r[0].invite_resend_count === 1, `${st} ${JSON.stringify(r)}`);
