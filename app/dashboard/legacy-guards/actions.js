@@ -1,12 +1,12 @@
 'use server'
 
-// Posterity — trusted contact actions · Walker Brown
+// Posterity — Legacy Guard actions · Walker Brown
 import { revalidatePath } from 'next/cache'
 import { requireAccount } from '../../../lib/posterity/account'
 import { GUARD_SETUP_LOCKED_MESSAGE } from '../../../lib/posterity/legacy-guards'
 import { toE164 } from '../../../lib/posterity/phone'
 
-export async function addTrustedContact(_prev, formData) {
+export async function addLegacyGuard(_prev, formData) {
   const { supabase, account } = await requireAccount()
 
   const name = (formData.get('name') || '').trim()
@@ -37,14 +37,14 @@ export async function addTrustedContact(_prev, formData) {
     return { error: '[Placeholder: Product surface copy — error messages: the phone number cannot be read]' }
   }
 
-  // The first contact added becomes primary. Someone has to be, and asking a
+  // The first Legacy Guard added becomes primary. Someone has to be, and asking a
   // customer to nominate one before they have two is a decision without a choice.
   const { count } = await supabase
-    .from('trusted_contacts')
+    .from('legacy_guards')
     .select('id', { count: 'exact', head: true })
     .eq('account_id', account.id)
 
-  const { error } = await supabase.from('trusted_contacts').insert({
+  const { error } = await supabase.from('legacy_guards').insert({
     account_id: account.id,
     name,
     email: email || null,
@@ -57,7 +57,7 @@ export async function addTrustedContact(_prev, formData) {
   if (error?.code === '42501') return { error: GUARD_SETUP_LOCKED_MESSAGE }
   if (error) return { error: error.message }
 
-  revalidatePath('/dashboard/trusted-contacts')
+  revalidatePath('/dashboard/legacy-guards')
   revalidatePath('/dashboard')
   return { ok: `${name} added.` }
 }
@@ -67,29 +67,29 @@ export async function addTrustedContact(_prev, formData) {
 export async function makePrimary(formData) {
   const { supabase } = await requireAccount()
   // One statement, one transaction. See the migration: doing this as two
-  // round-trips can leave a customer with no primary contact at all.
-  await supabase.rpc('set_primary_trusted_contact', { p_contact_id: formData.get('id') })
-  revalidatePath('/dashboard/trusted-contacts')
+  // round-trips can leave a customer with no primary Legacy Guard at all.
+  await supabase.rpc('set_primary_legacy_guard', { p_guard_id: formData.get('id') })
+  revalidatePath('/dashboard/legacy-guards')
 }
 
-export async function deleteTrustedContact(formData) {
+export async function deleteLegacyGuard(formData) {
   const { supabase, account } = await requireAccount()
   const id = formData.get('id')
 
-  const { data: contact } = await supabase
-    .from('trusted_contacts')
+  const { data: guard } = await supabase
+    .from('legacy_guards')
     .select('is_primary')
     .eq('id', id)
     .eq('account_id', account.id)
     .single()
 
-  await supabase.from('trusted_contacts').delete().eq('id', id).eq('account_id', account.id)
+  await supabase.from('legacy_guards').delete().eq('id', id).eq('account_id', account.id)
 
-  // If the primary was removed, promote someone. An account with contacts but no
+  // If the primary was removed, promote someone. An account with Legacy Guards but no
   // primary has nobody at the front of the escalation.
-  if (contact?.is_primary) {
+  if (guard?.is_primary) {
     const { data: next } = await supabase
-      .from('trusted_contacts')
+      .from('legacy_guards')
       .select('id')
       .eq('account_id', account.id)
       .order('created_at', { ascending: true })
@@ -97,10 +97,10 @@ export async function deleteTrustedContact(formData) {
       .maybeSingle()
 
     if (next) {
-      await supabase.rpc('set_primary_trusted_contact', { p_contact_id: next.id })
+      await supabase.rpc('set_primary_legacy_guard', { p_guard_id: next.id })
     }
   }
 
-  revalidatePath('/dashboard/trusted-contacts')
+  revalidatePath('/dashboard/legacy-guards')
   revalidatePath('/dashboard')
 }

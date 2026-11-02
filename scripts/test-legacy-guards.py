@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-# Posterity — trusted contacts test · Walker Brown
+# Posterity — Legacy Guards test · Walker Brown
 """
-Exercises trusted contacts against the live database as real signed-in users.
+Exercises Legacy Guards against the live database as real signed-in users.
 
-The one that matters most: the set_primary_trusted_contact RPC is SECURITY
-INVOKER, so a customer must NOT be able to promote a contact on someone else's
+The one that matters most: the set_primary_legacy_guard RPC is SECURITY
+INVOKER, so a customer must NOT be able to promote a Legacy Guard on someone else's
 account. A SECURITY DEFINER function here would silently bypass RLS.
 """
 import json, os, sys, urllib.request, urllib.error
@@ -43,7 +43,7 @@ def admin_create(email):
     for h, v in (("apikey", SERVICE), ("Authorization", "Bearer " + SERVICE), ("Content-Type", "application/json")):
         req.add_header(h, v)
     body = json.dumps({"email": email, "password": "test-password-123", "email_confirm": True,
-                       "user_metadata": {"legal_name": "Contacts Test"}}).encode()
+                       "user_metadata": {"legal_name": "Legacy Guards Test"}}).encode()
     with urllib.request.urlopen(req, body) as r:
         return json.load(r)["id"]
 
@@ -76,56 +76,56 @@ try:
     acct_a = acc_a[0]["id"]
 
     print("Reachability")
-    st, _ = call("/rest/v1/trusted_contacts", "POST",
+    st, _ = call("/rest/v1/legacy_guards", "POST",
                  {"account_id": acct_a, "name": "Unreachable"}, token=tok_a)
-    check("a contact with no email and no phone is REJECTED", st >= 400, f"got {st}")
-    st, _ = call("/rest/v1/trusted_contacts", "POST",
+    check("a Legacy Guard with no email and no phone is REJECTED", st >= 400, f"got {st}")
+    st, _ = call("/rest/v1/legacy_guards", "POST",
                  {"account_id": acct_a, "name": "Phone Only", "phone": "+15045550101"}, token=tok_a)
-    check("a contact with a phone but NO email is REJECTED (20261030020000)", st >= 400, f"got {st}")
-    st, _ = call("/rest/v1/trusted_contacts", "POST",
+    check("a Legacy Guard with a phone but NO email is REJECTED (20261030020000)", st >= 400, f"got {st}")
+    st, _ = call("/rest/v1/legacy_guards", "POST",
                  {"account_id": acct_a, "name": "Email Only", "email": "e@example.com"}, token=tok_a)
-    check("a contact with an email but NO phone is REJECTED (20261031010000)", st >= 400, f"got {st}")
-    st, _ = call("/rest/v1/trusted_contacts", "POST",
+    check("a Legacy Guard with an email but NO phone is REJECTED (20261031010000)", st >= 400, f"got {st}")
+    st, _ = call("/rest/v1/legacy_guards", "POST",
                  {"account_id": acct_a, "name": "Typed Phone", "email": "t@example.com",
                   "phone": "(504) 555-0101"}, token=tok_a)
-    check("a contact with a phone not in E.164 is REJECTED (20261031020000)", st >= 400, f"got {st}")
+    check("a Legacy Guard with a phone not in E.164 is REJECTED (20261031020000)", st >= 400, f"got {st}")
 
     print("\nPrimary")
-    st, c1 = call("/rest/v1/trusted_contacts", "POST",
+    st, c1 = call("/rest/v1/legacy_guards", "POST",
                   {"account_id": acct_a, "name": "Brother", "email": "b@example.com", "phone": "+15045550102", "is_primary": True},
                   token=tok_a, prefer="return=representation")
-    check("first contact added as primary", st in (200, 201), f"{st} {c1}")
-    st, c2 = call("/rest/v1/trusted_contacts", "POST",
+    check("first Legacy Guard added as primary", st in (200, 201), f"{st} {c1}")
+    st, c2 = call("/rest/v1/legacy_guards", "POST",
                   {"account_id": acct_a, "name": "Sister", "email": "s@example.com", "phone": "+15045550103", "is_primary": False},
                   token=tok_a, prefer="return=representation")
-    check("second contact added", st in (200, 201), f"{st} {c2}")
+    check("second Legacy Guard added", st in (200, 201), f"{st} {c2}")
     id1, id2 = c1[0]["id"], c2[0]["id"]
 
-    st, _ = call("/rest/v1/trusted_contacts?id=eq." + id2, "PATCH",
+    st, _ = call("/rest/v1/legacy_guards?id=eq." + id2, "PATCH",
                  {"is_primary": True}, token=tok_a)
     check("two primaries at once is REJECTED by the unique index", st >= 400, f"got {st}")
 
-    st, _ = call("/rest/v1/rpc/set_primary_trusted_contact", "POST",
-                 {"p_contact_id": id2}, token=tok_a)
+    st, _ = call("/rest/v1/rpc/set_primary_legacy_guard", "POST",
+                 {"p_guard_id": id2}, token=tok_a)
     check("promoting via the RPC succeeds", st in (200, 204), f"got {st}")
 
-    st, cs = call("/rest/v1/trusted_contacts?select=name,is_primary", token=tok_a)
+    st, cs = call("/rest/v1/legacy_guards?select=name,is_primary", token=tok_a)
     primaries = [c["name"] for c in cs if c["is_primary"]]
     check("exactly one primary, and it is the promoted one",
           primaries == ["Sister"], f"{primaries}")
 
     print("\nThe RPC must not cross accounts")
-    st, r = call("/rest/v1/rpc/set_primary_trusted_contact", "POST",
-                 {"p_contact_id": id1}, token=tok_b)
+    st, r = call("/rest/v1/rpc/set_primary_legacy_guard", "POST",
+                 {"p_guard_id": id1}, token=tok_b)
     # RLS hides A's rows from B, so the function's own lookup finds nothing and raises.
-    check("customer B CANNOT promote customer A's contact", st >= 400, f"got {st} {r}")
+    check("customer B CANNOT promote customer A's Legacy Guard", st >= 400, f"got {st} {r}")
 
-    st, cs = call("/rest/v1/trusted_contacts?select=name,is_primary", token=tok_a)
+    st, cs = call("/rest/v1/legacy_guards?select=name,is_primary", token=tok_a)
     primaries = [c["name"] for c in cs if c["is_primary"]]
     check("A's primary is untouched after B's attempt", primaries == ["Sister"], f"{primaries}")
 
-    st, b_sees = call("/rest/v1/trusted_contacts?select=id", token=tok_b)
-    check("B sees ZERO of A's trusted contacts", st == 200 and len(b_sees) == 0, f"{st} {b_sees}")
+    st, b_sees = call("/rest/v1/legacy_guards?select=id", token=tok_b)
+    check("B sees ZERO of A's Legacy Guards", st == 200 and len(b_sees) == 0, f"{st} {b_sees}")
 
 finally:
     print("\nCleanup")
