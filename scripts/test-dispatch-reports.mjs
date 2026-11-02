@@ -147,8 +147,14 @@ try {
     check('the time Postmark gives is kept', evs[0]?.detail?.delivered_at === '2026-11-01T12:00:00Z');
     check('the same delivery sent again is recorded once', again.result === 'duplicate' && evs.length === 1, JSON.stringify(again));
 
-    const forged = await recordPostmarkReport(db, report, { token: 't', fetch: postmark({ [`/messages/outbound/${PM_ID}/details`]: [200, { MessageEvents: [{ Type: 'Opened' }] }] }) });
-    check('a delivery Postmark has no record of is not recorded', forged.result === 'unverified');
+    const notYet = postmark({ [`/messages/outbound/${PM_ID}/details`]: [200, { MessageEvents: [{ Type: 'Opened' }] }] });
+    let early = false, waited = 0;
+    try { await recordPostmarkReport(db, report, { token: 't', fetch: notYet, wait: async (ms) => { waited = ms; } }); } catch { early = true; }
+    check('a delivery Postmark has not recorded yet is asked about again, then sent back to be reported later', early && notYet.calls.length === 2 && waited > 0, JSON.stringify(notYet.calls));
+    const answers = [[200, { MessageEvents: [{ Type: 'Opened' }] }], [200, { MessageEvents: [{ Type: 'Delivered', ReceivedAt: '2026-11-01T12:00:00Z' }] }]];
+    const lagging = async () => { const [status, body] = answers.shift(); return new Response(JSON.stringify(body), { status }); };
+    const caughtUp = await recordPostmarkReport(db, report, { token: 't', fetch: lagging, wait: async () => {} });
+    check('one Postmark records by the second ask goes through (here a duplicate, so still one event)', caughtUp.result === 'duplicate' && (await events(emailMsg.id, 'delivered')).length === 1, JSON.stringify(caughtUp));
     const notFound = await recordPostmarkReport(db, report, { token: 't', fetch: postmark({}) });
     check('nor one Postmark answers "not found" for', notFound.result === 'unverified');
     let threw = false;
