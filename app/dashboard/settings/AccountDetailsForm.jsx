@@ -49,7 +49,8 @@ export function AccountDetailsForm({ legalName, name, email, phone }) {
         <p className={label}>Email</p>
         <p className="px-4 py-3 rounded-lg border border-gray-800 text-gray-300">{email}</p>
         <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-          You sign in with this address, and every message from Posterity goes to it.
+          You sign in with this address, and every message from Posterity goes to it.{' '}
+          <a href="/forgot-password" className="text-gray-400 underline hover:text-white">Change your password</a> by a link sent to it.
         </p>
       </div>
 
