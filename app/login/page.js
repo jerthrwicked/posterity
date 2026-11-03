@@ -67,6 +67,9 @@ function LoginForm() {
             className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
           />
         </div>
+        <p className="text-right text-xs -mt-2">
+          <a href="/forgot-password" className="text-gray-500 hover:text-gray-300">Forgot your password?</a>
+        </p>
         {message && <p className="text-sm text-center text-red-400">{message}</p>}
         <button
           onClick={handleLogin}

@@ -43,7 +43,10 @@ export default function Signup() {
 
     // If email confirmation is on, there is no session yet — the account row is
     // created by a database trigger the moment the auth user exists, so nothing
-    // is lost by waiting for them to confirm.
+    // is lost by waiting for them to confirm. The confirmation email leaves
+    // through the Communication Dispatch System once the Send Email hook is on
+    // (lib/auth/send-email.js), with a link to /auth/confirm; until then
+    // Supabase's own mailer sends it, with a link to /auth/callback.
     if (data.session) {
       window.location.href = '/dashboard'
     } else {
