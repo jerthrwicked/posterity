@@ -1,6 +1,7 @@
 ﻿"use client";
 import PlanCards from "../components/PlanCards";
 import { GRACE_STORAGE } from "../../lib/posterity/plans";
+import { Logomark } from "../components/brand/Logomark";
 
 
 export default function Pricing() {
@@ -64,12 +65,7 @@ export default function Pricing() {
       {/* Footer */}
       <footer className="text-gray-600 py-10 text-sm border-t border-gray-900 px-8 flex flex-row justify-between items-center">
         <div style={{ display: "inline-flex", alignItems: "center", gap: "0.6em", color: "#ffffff" }}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="36" height="36" aria-hidden="true">
-            <circle cx="100" cy="100" r="90" fill="none" stroke="#ffffff" strokeWidth="6" />
-            <g transform="translate(100,100) scale(0.62) translate(-60,-58)">
-              <path d="M60 36 C72 26 92 20 110 22 C96 34 80 46 66 54 C65 58 64 62 63 66 L69 94 L60 77 L51 94 L57 66 C56 62 55 58 54 54 C40 46 24 34 10 22 C28 20 48 26 60 36 Z" fill="#ffffff" />
-            </g>
-          </svg>
+          <Logomark size={36} />
           <span style={{ fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", lineHeight: 1, fontSize: 16 }}>Posterity</span>
         </div>
         <p className="hidden sm:block">© 2026 Posterity. All rights reserved.</p>
