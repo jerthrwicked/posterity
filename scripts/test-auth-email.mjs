@@ -142,14 +142,14 @@ try {
   let queued = 0;
   if (haveCopy) {
   const tokenA = randomBytes(20).toString('hex');
-  let m = await queueAuthEmail(db, payload(user, 'signup', tokenA), opts);
+  let [m] = await queueAuthEmail(db, payload(user, 'signup', tokenA), opts);
   check('a signup confirmation queues one email', m?.channel === 'email' && m.copy_key === 'email.confirm_signup', JSON.stringify(m).slice(0, 200));
   check('…to the user\'s address, for their account, sent at once', m?.destination === email && m.account_id === account.id && m.self_initiated === true);
   check('…with the confirm link and the account\'s name as its params', m?.params?.link === confirmLink({ tokenHash: tokenA, action: 'signup' }) && m.params.name === account.name, JSON.stringify(m?.params));
   check('…flagged is_test, caller test-auth-email', m?.is_test === true && m.caller === CALLER);
-  const again = await queueAuthEmail(db, payload(user, 'signup', tokenA), opts);
+  const [again] = await queueAuthEmail(db, payload(user, 'signup', tokenA), opts);
   check('the same token again is the same message, not a second one', again?.id === m?.id, `${m?.id} vs ${again?.id}`);
-  const r = await queueAuthEmail(db, payload(user, 'recovery', randomBytes(20).toString('hex')), opts);
+  const [r] = await queueAuthEmail(db, payload(user, 'recovery', randomBytes(20).toString('hex')), opts);
   check('a password reset queues one email from email.reset_password', r?.copy_key === 'email.reset_password' && r.destination === email);
   const rl = new URL(r?.params?.link ?? 'http://x').searchParams;
   check('…whose link carries type recovery and next /reset-password', rl.get('type') === 'recovery' && rl.get('next') === '/reset-password');
