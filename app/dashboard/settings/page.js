@@ -4,6 +4,7 @@ import { displayPhone } from '../../../lib/posterity/phone'
 import { Wordmark } from '../../components/brand/Wordmark'
 import { LogoutButton } from '../LogoutButton'
 import { AccountDetailsForm } from './AccountDetailsForm'
+import { EmailChangeForm } from './EmailChangeForm'
 
 // Settings is its own page (Master Specification, Settings). The global
 // navigation dropdown built within Stage 4.3 will carry its link; until then
@@ -33,12 +34,14 @@ export default async function Settings() {
 
         <h2 className="text-xl font-bold mb-4">Account details</h2>
         {details ? (
-          <AccountDetailsForm
-            legalName={details.legal_name}
-            name={details.name === details.legal_name ? '' : details.name}
-            email={user.email}
-            phone={displayPhone(details.phone)}
-          />
+          <>
+            <AccountDetailsForm
+              legalName={details.legal_name}
+              name={details.name === details.legal_name ? '' : details.name}
+              phone={displayPhone(details.phone)}
+            />
+            <EmailChangeForm email={user.email} pendingEmail={user.new_email || null} />
+          </>
         ) : (
           <div className="rounded-2xl p-6 border border-yellow-900 bg-yellow-950/30">
             <p className="text-yellow-200 text-sm">

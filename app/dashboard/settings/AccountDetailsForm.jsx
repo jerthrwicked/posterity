@@ -25,7 +25,9 @@ function Submit() {
 // A form action resets the fields to their defaults once it returns, so a
 // refused save hands back what the customer typed, and a saved one reads the
 // account afresh.
-export function AccountDetailsForm({ legalName, name, email, phone }) {
+// The email address sits in its own form beside this one (EmailChangeForm),
+// since changing it takes double verification rather than a save.
+export function AccountDetailsForm({ legalName, name, phone }) {
   const [state, action] = useActionState(saveAccountDetails, {})
   const v = state?.values
 
@@ -43,15 +45,6 @@ export function AccountDetailsForm({ legalName, name, email, phone }) {
         </label>
         <input id="name" name="name" autoComplete="nickname" className={input}
           defaultValue={v ? v.name : name} placeholder="Same as your legal name" />
-      </div>
-
-      <div>
-        <p className={label}>Email</p>
-        <p className="px-4 py-3 rounded-lg border border-gray-800 text-gray-300">{email}</p>
-        <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-          You sign in with this address, and every message from Posterity goes to it.{' '}
-          <a href="/forgot-password" className="text-gray-400 underline hover:text-white">Change your password</a> by a link sent to it.
-        </p>
       </div>
 
       <div>

@@ -30,8 +30,8 @@ export async function POST(req) {
     { auth: { persistSession: false } },
   );
   try {
-    const message = await queueAuthEmail(db, payload);
-    console.log(`auth email: ${payload.email_data.email_action_type} queued as message ${message.id}`);
+    const messages = await queueAuthEmail(db, payload);
+    console.log(`auth email: ${payload.email_data.email_action_type} queued as message ${messages.map((m) => m.id).join(', ')}`);
     return Response.json({});
   } catch (err) {
     const status = err instanceof Refused ? err.status : 500;

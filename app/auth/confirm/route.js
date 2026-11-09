@@ -2,25 +2,26 @@ import { NextResponse } from 'next/server'
 import { createClient } from '../../../lib/supabase/server'
 
 // Where every link in an authentication email lands:
-//   GET /auth/confirm?token_hash=…&type=email|recovery&next=/path
+//   GET /auth/confirm?token_hash=…&type=email|recovery|email_change&next=/path
 //
 // The link is built by lib/auth/send-email.js. The token goes back to
 // Supabase for a session, written to cookies here, and the person continues
 // to `next`: the dashboard after a signup confirmation, the new-password page
-// after a reset request. A token already used or past its hour goes to the
-// page that can issue another. `next` is kept on this site: a full address
-// from outside is ignored.
+// after a reset request, Settings after an email change. A token already used
+// or past its hour goes to the page that can issue another. `next` is kept on
+// this site: a full address from outside is ignored.
 //
 // /auth/callback beside this handles the links Supabase's own mailer sends
 // while the Send Email hook is off.
 
-const TYPES = new Set(['email', 'recovery'])
+const TYPES = new Set(['email', 'recovery', 'email_change'])
+const LANDING = { email: '/dashboard', recovery: '/reset-password', email_change: '/dashboard/settings' }
 
 export async function GET(request) {
   const url = request.nextUrl
   const tokenHash = url.searchParams.get('token_hash')
   const type = url.searchParams.get('type')
-  const next = safeNext(url.searchParams.get('next')) ?? (type === 'recovery' ? '/reset-password' : '/dashboard')
+  const next = safeNext(url.searchParams.get('next')) ?? LANDING[type] ?? '/dashboard'
 
   if (tokenHash && TYPES.has(type)) {
     const supabase = await createClient()
