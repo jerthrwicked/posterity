@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
 import Link from 'next/link'
 import { Wordmark } from '../components/brand/Wordmark'
+import { requestRecoveryReset } from './actions'
 
 // Password reset, from the sign-in page (Master Specification, Settings:
 // "Password change and reset"). The person gives the address they sign in
@@ -13,6 +14,11 @@ import { Wordmark } from '../components/brand/Wordmark'
 // until then Supabase's own mailer sends it. Either way the link lands on
 // /auth/confirm (hook) or /auth/callback (mailer) and continues to
 // /reset-password, where the new password is set.
+//
+// The same box takes a recovery email address (Master Specification, Settings:
+// "A customer who has lost that address resets through a link sent to their
+// recovery email address"). Beside Supabase's reset, requestRecoveryReset sends
+// a reset link to the address where it is a confirmed recovery address.
 //
 // The page says the same thing whether or not the address has an account, so
 // it tells no one which addresses are Posterity's.
@@ -33,9 +39,12 @@ function ForgotPasswordForm() {
     setLoading(true)
     setMessage('')
     const supabase = createClient()
-    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
-    })
+    const [{ error }] = await Promise.all([
+      supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+      }),
+      requestRecoveryReset(email.trim()),
+    ])
     setLoading(false)
     if (error) return setMessage(error.message)
     setSent(true)
@@ -83,7 +92,8 @@ function ForgotPasswordForm() {
             className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
           />
           <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-            The address you sign in with. We&rsquo;ll send it a link to choose a new password.
+            The address you sign in with. We&rsquo;ll send it a link to choose a new password.{' '}
+            [Placeholder: Product surface copy — forgot password: a confirmed recovery email address works here too]
           </p>
         </div>
         {message && <p className="text-sm text-center text-red-400">{message}</p>}
