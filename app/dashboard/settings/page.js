@@ -5,18 +5,32 @@ import { Wordmark } from '../../components/brand/Wordmark'
 import { LogoutButton } from '../LogoutButton'
 import { AccountDetailsForm } from './AccountDetailsForm'
 import { EmailChangeForm } from './EmailChangeForm'
+import { RecoveryEmailForm } from './RecoveryEmailForm'
+import { createClient } from '@supabase/supabase-js'
+import { readRecoveryEmail } from '../../../lib/auth/recovery-email'
 
 // Settings is its own page (Master Specification, Settings). The global
 // navigation dropdown built within Stage 4.3 will carry its link; until then
 // the dashboard does.
-export default async function Settings() {
+export default async function Settings({ searchParams }) {
   const { supabase, user, account } = await requireAccount()
+  const notice = (await searchParams)?.recovery_email ?? null
 
   const { data: details } = await supabase
     .from('accounts')
     .select('legal_name, name, phone')
     .eq('id', account?.id)
     .maybeSingle()
+
+  // recovery_emails is server-only, so it is read with the service role, for
+  // this account alone.
+  let recovery = null
+  if (account?.id) {
+    const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+      auth: { persistSession: false },
+    })
+    recovery = await readRecoveryEmail(db, account.id).catch(() => null)
+  }
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -41,6 +55,7 @@ export default async function Settings() {
               phone={displayPhone(details.phone)}
             />
             <EmailChangeForm email={user.email} pendingEmail={user.new_email || null} />
+            <RecoveryEmailForm held={recovery} notice={notice} />
           </>
         ) : (
           <div className="rounded-2xl p-6 border border-yellow-900 bg-yellow-950/30">
