@@ -70,6 +70,12 @@ function LoginForm() {
         <p className="text-right text-xs -mt-2">
           <a href="/forgot-password" className="text-gray-500 hover:text-gray-300">Forgot your password?</a>
         </p>
+        <p className="text-right text-xs -mt-2">
+          <a href="/account-recovery" className="text-gray-500 hover:text-gray-300">
+            [Placeholder: Product surface copy — sign-in page: the link to account recovery, for someone who can no
+            longer reach their email]
+          </a>
+        </p>
         {message && <p className="text-sm text-center text-red-400">{message}</p>}
         <button
           onClick={handleLogin}
