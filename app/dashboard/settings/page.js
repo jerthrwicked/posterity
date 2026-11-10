@@ -7,11 +7,14 @@ import { AccountDetailsForm } from './AccountDetailsForm'
 import { EmailChangeForm } from './EmailChangeForm'
 import { RecoveryEmailForm } from './RecoveryEmailForm'
 import { TextSwitchForm } from './TextSwitchForm'
+import { AutomaticPaymentsForm } from './AutomaticPaymentsForm'
 import { createClient } from '@supabase/supabase-js'
 import { readRecoveryEmail } from '../../../lib/auth/recovery-email'
 import { readAccountTextSwitch, TEXT_DISCLOSURE, CODE_MINUTES } from '../../../lib/dispatch/text-switch'
 import { SMS_FROM } from '../../../lib/dispatch/senders'
 import { TEXTING_OPEN } from '../../../lib/dispatch/policy'
+import { getStripe } from '../../../lib/posterity/stripe'
+import { readAutomaticPayments } from '../../../lib/posterity/automatic-payments'
 
 // Settings is its own page (Master Specification, Settings). The global
 // navigation dropdown built within Stage 4.3 will carry its link; until then
@@ -37,6 +40,18 @@ export default async function Settings({ searchParams }) {
     })
     recovery = await readRecoveryEmail(db, account.id).catch(() => null)
     texts = await readAccountTextSwitch(db, { accountId: account.id }).catch(() => ({ on: false, waiting: null }))
+  }
+
+  // Automatic payments are a setting on the account's storage subscription
+  // within Stripe. Which subscriptions are the account's is read with the
+  // customer's own session. Where it cannot be read, the page says so rather
+  // than showing a switch that might be wrong.
+  let payments = { held: false }
+  if (account?.id) {
+    payments = await readAutomaticPayments(supabase, getStripe(), { accountId: account.id }).catch((err) => {
+      console.log(`automatic payments: read failed: ${String(err?.message ?? err).slice(0, 200)}`)
+      return { unread: true }
+    })
   }
 
   return (
@@ -66,6 +81,7 @@ export default async function Settings({ searchParams }) {
             <TextSwitchForm on={texts.on} phone={displayPhone(details.phone)} disclosure={TEXT_DISCLOSURE}
               sending={TEXTING_OPEN} waiting={texts.waiting ? { code: texts.waiting.code } : null}
               textTo={{ e164: SMS_FROM, display: displayPhone(SMS_FROM) }} minutes={CODE_MINUTES} />
+            <AutomaticPaymentsForm held={!!payments.held} on={!!payments.on} unread={!!payments.unread} />
           </>
         ) : (
           <div className="rounded-2xl p-6 border border-yellow-900 bg-yellow-950/30">
