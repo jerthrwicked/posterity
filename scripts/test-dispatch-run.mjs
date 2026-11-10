@@ -126,7 +126,7 @@ try {
     await refused(() => runPass(db, { caller: CALLER, channels: { email: channels.email } })));
 
   console.log('\nA pass sends what is due');
-  let tally = await runPass(db, { caller: CALLER, channels, now: DAYTIME });
+  let tally = await runPass(db, { caller: CALLER, channels, textingOpen: true, now: DAYTIME });
   check('the pass claimed and sent both', tally.claimed === 2 && tally.sent === 2, JSON.stringify(tally));
   for (const m of both) {
     const r = await row(m.id), evs = await events(m.id);
@@ -140,7 +140,7 @@ try {
   check('the email went out rendered, in the frame, with its plain text',
     email.subject === 'A note for Ana' && email.html.includes('Hello Ana.') && email.html.includes('[Placeholder:') && email.text.startsWith('Hello Ana.'));
   check('the text went out rendered', sends.find((s) => s.id === both[1].id).rendered.body === 'Hello Ana, this is a test.');
-  tally = await runPass(db, { caller: CALLER, channels, now: DAYTIME });
+  tally = await runPass(db, { caller: CALLER, channels, textingOpen: true, now: DAYTIME });
   check('a second pass finds nothing left to send', tally.claimed === 0, JSON.stringify(tally));
 
   console.log('\nFailures no retry can fix');
@@ -149,7 +149,7 @@ try {
   const [broken] = await enqueue(db, { ...base, email: `broken-${run}@example.com`, copy: { email: BROKEN_KEY } });
   const refuseTo = `refuse-${run}@example.com`; behaviour.set(refuseTo, 'refuse');
   const [refusedMsg] = await enqueue(db, { ...base, email: refuseTo, copy: { email: EMAIL_KEY }, params: { name: 'Ana' } });
-  tally = await runPass(db, { caller: CALLER, channels, now: DAYTIME });
+  tally = await runPass(db, { caller: CALLER, channels, textingOpen: true, now: DAYTIME });
   check('all four fail in one pass', tally.failed === 4, JSON.stringify(tally));
   for (const [label, m, outcome, attempts, sent] of [
     ['a number with no agreement', noAgreement, 'no_agreement', 0, 0],
@@ -168,24 +168,39 @@ try {
   const [retry] = await enqueue(db, { ...base, email: flaky, copy: { email: EMAIL_KEY }, params: { name: 'Ana' } });
   must(await db.from('dispatch_messages').update({ max_attempts: 2 }).eq('id', retry.id));
   const t0 = Date.now();
-  tally = await runPass(db, { caller: CALLER, channels, now: DAYTIME });
+  tally = await runPass(db, { caller: CALLER, channels, textingOpen: true, now: DAYTIME });
   let r = await row(retry.id);
   const wait = new Date(r.next_attempt_at).getTime() - t0;
   check('the first failure puts it back in the queue, one attempt spent',
     tally.retrying === 1 && r.status === 'queued' && r.attempts === 1 && r.last_error === 'provider timed out', JSON.stringify({ tally, status: r.status }));
   check('it waits about a minute before the next try', wait > 55e3 && wait < 70e3, `${wait} ms`);
-  tally = await runPass(db, { caller: CALLER, channels, now: DAYTIME });
+  tally = await runPass(db, { caller: CALLER, channels, textingOpen: true, now: DAYTIME });
   check('a pass before the wait is over leaves it alone', tally.claimed === 0, JSON.stringify(tally));
   must(await db.from('dispatch_messages').update({ next_attempt_at: new Date().toISOString() }).eq('id', retry.id));
-  tally = await runPass(db, { caller: CALLER, channels, now: DAYTIME });
+  tally = await runPass(db, { caller: CALLER, channels, textingOpen: true, now: DAYTIME });
   r = await row(retry.id);
   check('out of attempts, it is failed for good', tally.exhausted === 1 && r.status === 'failed' && r.attempts === 2, JSON.stringify({ tally, status: r.status }));
   check('its log reads queued, attempt, failed (retrying), attempt, exhausted',
     (await events(retry.id)).map((e) => `${e.event_type}:${e.outcome}`).join() === 'queued:queued,attempt:attempt,failed:retrying,attempt:attempt,exhausted:exhausted');
 
+  console.log('\nTexting closed, as the live scheduler runs');
+  const pair = await enqueue(db, { ...base, email: `closed-${run}@example.com`, phone: AGREED,
+    copy: { email: EMAIL_KEY, sms: SMS_KEY }, params: { name: 'Ana' } });
+  tally = await runPass(db, { caller: CALLER, channels, now: DAYTIME });
+  r = await row(pair[1].id);
+  check('a text to an agreed number, in the window, is failed and never handed to the sender',
+    tally.failed === 1 && r.status === 'failed' && r.last_error === 'texting_closed' && r.attempts === 0 && sentCount(pair[1].id) === 0,
+    JSON.stringify({ tally, status: r.status, last_error: r.last_error }));
+  check('its log reads queued, failed (texting_closed)',
+    (await events(pair[1].id)).map((e) => `${e.event_type}:${e.outcome}`).join() === 'queued:queued,failed:texting_closed');
+  check('the email beside it still goes', tally.sent === 1 && (await row(pair[0].id)).status === 'sent' && sentCount(pair[0].id) === 1, JSON.stringify(tally));
+  check('only a test caller may open texting for its own pass',
+    await refused(() => runPass(db, { channels, textingOpen: true })) &&
+    await refused(() => runPass(db, { caller: 'scheduler', channels, textingOpen: true })));
+
   console.log('\nThe sending window');
   const [night] = await enqueue(db, { ...base, phone: AGREED, copy: { sms: SMS_KEY }, params: { name: 'Ana' } });
-  tally = await runPass(db, { caller: CALLER, channels, now: NIGHT });
+  tally = await runPass(db, { caller: CALLER, channels, textingOpen: true, now: NIGHT });
   r = await row(night.id);
   const held = (await events(night.id)).at(-1);
   check('a text due at 3 AM Eastern waits, and is not an attempt',
@@ -202,16 +217,16 @@ try {
   const batch = [];
   for (const a of slow) batch.push(...await enqueue(db, { ...base, email: a, copy: { email: EMAIL_KEY }, params: { name: 'Ana' } }));
   const [p1, p2] = await Promise.all([
-    runPass(db, { caller: CALLER, channels, now: DAYTIME, limit: 6 }),
-    runPass(db, { caller: CALLER, channels, now: DAYTIME, limit: 6 }),
+    runPass(db, { caller: CALLER, channels, textingOpen: true, now: DAYTIME, limit: 6 }),
+    runPass(db, { caller: CALLER, channels, textingOpen: true, now: DAYTIME, limit: 6 }),
   ]);
-  const left = await runPass(db, { caller: CALLER, channels, now: DAYTIME });
+  const left = await runPass(db, { caller: CALLER, channels, textingOpen: true, now: DAYTIME });
   check('between them every message was sent', p1.sent + p2.sent + left.sent === 10, JSON.stringify({ p1, p2, left }));
   check('no message was sent twice', batch.every((m) => sentCount(m.id) === 1), batch.map((m) => sentCount(m.id)).join());
 
   console.log('\nA pass out of time');
   const [late] = await enqueue(db, { ...base, email: `late-${run}@example.com`, copy: { email: EMAIL_KEY }, params: { name: 'Ana' } });
-  tally = await runPass(db, { caller: CALLER, channels, now: DAYTIME, budgetMs: -1 });
+  tally = await runPass(db, { caller: CALLER, channels, textingOpen: true, now: DAYTIME, budgetMs: -1 });
   r = await row(late.id);
   check('hands back what it claimed, unsent and with no attempt spent',
     tally.released === 1 && r.status === 'queued' && r.attempts === 0 && r.locked_at === null && sentCount(late.id) === 0, JSON.stringify({ tally, status: r.status }));
