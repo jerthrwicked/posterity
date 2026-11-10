@@ -464,6 +464,11 @@ try {
   await refused('an outcome it does not know', { closed_at: at, outcome: 'approved' });
   await refused('a new address not in lower case', { new_email: addr('X').toUpperCase(), confirm_token_hash: 'h', link_sent_at: at });
   await refused('a second open request for an account', { account_id: s.account.id, confirm_token_hash: sha(`second-${stamp}`), link_sent_at: at }, '23505');
+  // No default stands in for a missing caller (20261110000001): the scheduled
+  // pass would take an unlabelled test row for a real request.
+  const unnamed = await db.from('account_recoveries').insert({ account_id: b.account.id, new_email: addr('x'), confirm_token_hash: sha(`unnamed-${stamp}`), link_sent_at: at }).select('id');
+  check('the table refuses a request that names no caller', unnamed.error?.code === '23502', unnamed.error ? `${unnamed.error.code} ${unnamed.error.message}` : 'inserted');
+  if (!unnamed.error) await db.from('account_recoveries').delete().eq('id', unnamed.data[0].id);
 
   if (SERVER) {
     console.log(`\nThe pages on ${SERVER}`);
