@@ -2,7 +2,7 @@
 // answers worked out by hand. Pure: no network, no database, no keys.
 //
 // Run: node scripts/test-dispatch-policy.mjs
-import { decide, zonesFor } from '../lib/dispatch/policy.js';
+import { decide, zonesFor, TEXTING_OPEN } from '../lib/dispatch/policy.js';
 import { renderEmail, renderSms, fill, SEAL_SRC } from '../lib/dispatch/render.js';
 
 let passed = 0, failed = 0;
@@ -16,22 +16,37 @@ const at = (iso) => new Date(iso);
 const agreed = (confirmedIso) => ({ status: 'agreed', last_confirmed_at: confirmedIso });
 const sms = (destination, extra = {}) => ({ channel: 'sms', destination, self_initiated: false, ...extra });
 const FRESH = agreed('2026-09-01T00:00:00Z');
+// Every rule below the first section is what applies once texting opens.
+const OPEN = { textingOpen: true };
 
 function expectSend(name, msg, agreement, now) {
-  const d = decide(msg, agreement, at(now));
+  const d = decide(msg, agreement, at(now), OPEN);
   check(name, d.action === 'send', JSON.stringify(d));
 }
 function expectHold(name, msg, agreement, now, untilIso) {
-  const d = decide(msg, agreement, at(now));
+  const d = decide(msg, agreement, at(now), OPEN);
   check(name, d.action === 'hold' && d.until.toISOString() === new Date(untilIso).toISOString(), JSON.stringify(d));
 }
 function expectFail(name, msg, agreement, now, reason) {
-  const d = decide(msg, agreement, at(now));
+  const d = decide(msg, agreement, at(now), OPEN);
   check(name, d.action === 'fail' && d.reason === reason, JSON.stringify(d));
 }
 
 console.log('Email');
 expectSend('email always sends, even at 3 AM', { channel: 'email', destination: 'a@b.co' }, null, '2026-10-07T08:00:00Z');
+
+console.log('Texting closed until carrier registration clears');
+{
+  const noon = at('2026-10-07T17:00:00Z');
+  const closed = (msg, agreement, opts) => { const d = decide(msg, agreement, noon, opts); return d.action === 'fail' && d.reason === 'texting_closed'; };
+  check('texting is closed as shipped', TEXTING_OPEN === false);
+  check('an agreed number in the window is not texted', closed(sms('+15045551234'), FRESH));
+  check('nor is a text the person set off themselves, the agreement confirmation among them', closed(sms('+15045551234', { self_initiated: true }), FRESH));
+  check('a number with no agreement reads as closed too, not as a hold', closed(sms('+15045551234'), null));
+  check('anything but true keeps it closed', closed(sms('+15045551234'), FRESH, { textingOpen: 'yes' }) && closed(sms('+15045551234'), FRESH, { textingOpen: null }));
+  check('email is untouched', decide({ channel: 'email', destination: 'a@b.co' }, null, noon).action === 'send');
+  check('opened, the same text sends', decide(sms('+15045551234'), FRESH, noon, OPEN).action === 'send');
+}
 
 console.log('Agreement and Reassigned Numbers');
 expectFail('no agreement on file: not texted', sms('+15045551234'), null, '2026-10-07T15:00:00Z', 'no_agreement');

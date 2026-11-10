@@ -13,6 +13,10 @@ What matters most:
   - the confirmation carries the copy stored for it, read at send
   - a number that sent STOP and agrees again is texted again, with a fresh
     confirmation
+  - while texting is closed (policy's TEXTING_OPEN), the agreement is recorded
+    and its confirmation is failed without reaching the sender
+
+The passes that send run with textingOpen, which only a test caller may set.
 
 Its confirmations carry the caller 'test-dispatch-agreement', and each pass
 claims only those, so a real message queued meanwhile is left to the live
@@ -115,7 +119,7 @@ try {
     JSON.stringify(confirmation));
 
   console.log('\nThe confirmation goes at once, even at 3 AM');
-  let tally = await runPass(db, { caller: CALLER, channels, now: NIGHT });
+  let tally = await runPass(db, { caller: CALLER, channels, textingOpen: true, now: NIGHT });
   const sent = must(await db.from('dispatch_messages').select().eq('id', confirmation.id).single());
   const mineSent = sends.filter((s) => s.id === confirmation.id);
   check('the pass sent it, once, without waiting for the window',
@@ -129,9 +133,19 @@ try {
   check('is agreed again, with the stop cleared',
     again.agreement.status === 'agreed' && !again.agreement.stopped_at && !again.agreement.stopped_via, JSON.stringify(again.agreement));
   check('and gets a fresh confirmation of its own', again.confirmation.id !== confirmation.id && again.confirmation.status === 'queued');
-  tally = await runPass(db, { caller: CALLER, channels, now: NIGHT });
+  tally = await runPass(db, { caller: CALLER, channels, textingOpen: true, now: NIGHT });
   check('which goes at once as well',
     must(await db.from('dispatch_messages').select('status').eq('id', again.confirmation.id).single()).status === 'sent', JSON.stringify(tally));
+
+  console.log('\nWhile texting is closed, as the live scheduler runs');
+  const before = sends.length;
+  const closed = await recordAgreement(db, base);
+  tally = await runPass(db, { caller: CALLER, channels, now: NIGHT });
+  const unsent = must(await db.from('dispatch_messages').select().eq('id', closed.confirmation.id).single());
+  check('the agreement is recorded all the same', closed.agreement.status === 'agreed');
+  check('its confirmation is failed as texting_closed and never handed to the sender',
+    unsent.status === 'failed' && unsent.last_error === 'texting_closed' && unsent.attempts === 0 && sends.length === before,
+    JSON.stringify({ tally, status: unsent.status, last_error: unsent.last_error }));
 } catch (err) {
   fails++;
   console.log(`  ✗ test stopped: ${err.message}`);

@@ -6,8 +6,12 @@ import { LogoutButton } from '../LogoutButton'
 import { AccountDetailsForm } from './AccountDetailsForm'
 import { EmailChangeForm } from './EmailChangeForm'
 import { RecoveryEmailForm } from './RecoveryEmailForm'
+import { TextSwitchForm } from './TextSwitchForm'
 import { createClient } from '@supabase/supabase-js'
 import { readRecoveryEmail } from '../../../lib/auth/recovery-email'
+import { readAccountTextSwitch, TEXT_DISCLOSURE, CODE_MINUTES } from '../../../lib/dispatch/text-switch'
+import { SMS_FROM } from '../../../lib/dispatch/senders'
+import { TEXTING_OPEN } from '../../../lib/dispatch/policy'
 
 // Settings is its own page (Master Specification, Settings). The global
 // navigation dropdown built within Stage 4.3 will carry its link; until then
@@ -22,14 +26,17 @@ export default async function Settings({ searchParams }) {
     .eq('id', account?.id)
     .maybeSingle()
 
-  // recovery_emails is server-only, so it is read with the service role, for
-  // this account alone.
+  // recovery_emails, text_agreements and text_switch_requests are server-only,
+  // so they are read with the service role, for this account alone. A switch
+  // that cannot be read shows as off.
   let recovery = null
+  let texts = { on: false, waiting: null }
   if (account?.id) {
     const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
       auth: { persistSession: false },
     })
     recovery = await readRecoveryEmail(db, account.id).catch(() => null)
+    texts = await readAccountTextSwitch(db, { accountId: account.id }).catch(() => ({ on: false, waiting: null }))
   }
 
   return (
@@ -56,6 +63,9 @@ export default async function Settings({ searchParams }) {
             />
             <EmailChangeForm email={user.email} pendingEmail={user.new_email || null} />
             <RecoveryEmailForm held={recovery} notice={notice} />
+            <TextSwitchForm on={texts.on} phone={displayPhone(details.phone)} disclosure={TEXT_DISCLOSURE}
+              sending={TEXTING_OPEN} waiting={texts.waiting ? { code: texts.waiting.code } : null}
+              textTo={{ e164: SMS_FROM, display: displayPhone(SMS_FROM) }} minutes={CODE_MINUTES} />
           </>
         ) : (
           <div className="rounded-2xl p-6 border border-yellow-900 bg-yellow-950/30">
