@@ -414,14 +414,14 @@ try {
       const p = await signedInUser('p');
       const page = await browser.newPage();
       const text = () => page.evaluate(() => document.body.innerText);
-      const swAt = () => page.$eval('button[role="switch"]', (el) => ({ on: el.getAttribute('aria-checked') === 'true', disabled: el.disabled }));
+      const swAt = () => page.$eval('#text_switch', (el) => ({ on: el.getAttribute('aria-checked') === 'true', disabled: el.disabled }));
       const codeShown = () => page.$eval('#text_code', (el) => el.textContent.trim()).catch(() => null);
       const until = (fn, arg, timeout = 20000) => page.waitForFunction(fn, { timeout }, arg).then(() => true).catch(() => false);
       const untilSwitch = (want) => until((w) => {
-        const el = document.querySelector('button[role="switch"]');
+        const el = document.querySelector('#text_switch');
         return el?.getAttribute('aria-checked') === String(w) && !el.disabled;
       }, want);
-      const press = () => page.click('button[role="switch"]');
+      const press = () => page.click('#text_switch');
       const settings = () => page.goto(`${SERVER}/dashboard/settings`, { waitUntil: 'networkidle0' });
       const saveNumber = async (phone) => {
         await page.$eval('#phone', (el) => { el.value = ''; });
@@ -441,10 +441,11 @@ try {
       check('with no phone number the switch is off and cannot be moved', s.on === false && s.disabled === true, JSON.stringify(s));
       check('the disclosure sits beside it, as the library holds it', shown === TEXT_DISCLOSURE, shown);
       check('the page says texts are not being sent yet', TEXTING_OPEN || t.includes('Posterity is not sending texts yet'));
-      check('email has no switch', (await page.$$('button[role="switch"]')).length === 1);
+      const switches = await page.$$eval('[role=switch]', (els) => els.map((el) => el.id));
+      check('email has no switch', switches.join() === 'text_switch,automatic_payments_switch', switches.join());
 
       await saveNumber(PAGE);
-      await until(() => !document.querySelector('button[role="switch"]')?.disabled);
+      await until(() => !document.querySelector('#text_switch')?.disabled);
       s = await swAt();
       check('with a number saved the switch can be moved, and is still off', s.on === false && s.disabled === false && (await agreementOf(PAGE)) === null, JSON.stringify(s));
 
@@ -518,7 +519,7 @@ try {
       check('after START it turns on', (await swAt()).on === true && (await agreementOf(PAGE)).status === 'agreed');
 
       await saveNumber(TWO);
-      await until(() => document.querySelector('button[role="switch"]')?.getAttribute('aria-checked') === 'false');
+      await until(() => document.querySelector('#text_switch')?.getAttribute('aria-checked') === 'false');
       check('a number changed in the form above turns the switch off',
         (await swAt()).on === false && (await accountRow(p)).phone === TWO && (await accountRow(p)).phone_confirmed_at === null);
       n = await agreements(TWO);

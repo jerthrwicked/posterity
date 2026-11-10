@@ -5,26 +5,12 @@ import { useActionState, useEffect } from 'react'
 import { useFormStatus } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { textSwitchAction } from './text-switch'
+import { Switch } from './Switch'
 
 const label = 'text-sm text-gray-400 mb-1 block'
 const note = 'text-xs text-gray-600 mt-3 leading-relaxed'
 // How often the page looks for the customer's text while a code is showing.
 const LOOK_EVERY_MS = 5000
-
-function Switch({ on, disabled }) {
-  const { pending } = useFormStatus()
-  return (
-    <button type="submit" role="switch" aria-checked={on} aria-labelledby="text_switch_label"
-      disabled={disabled || pending}
-      className={`relative shrink-0 w-12 h-7 rounded-full border transition disabled:opacity-50 ${
-        disabled ? 'cursor-not-allowed' : 'cursor-pointer'
-      } ${on ? 'bg-white border-white' : 'bg-black border-gray-700 hover:border-white'}`}>
-      <span className={`absolute top-1 left-1 w-[18px] h-[18px] rounded-full transition-transform ${
-        on ? 'translate-x-5 bg-black' : 'bg-gray-500'
-      }`} />
-    </button>
-  )
-}
 
 function Cancel() {
   const { pending } = useFormStatus()
@@ -76,7 +62,7 @@ export function TextSwitchForm({ on, phone, disclosure, sending, waiting = null,
           )}
         </div>
         {/* While a code shows the switch holds still, and the form's one button is Cancel. */}
-        <Switch on={on} disabled={!phone || !!code} />
+        <Switch id="text_switch" labelledBy="text_switch_label" on={on} disabled={!phone || !!code} />
       </div>
 
       <p id="text_disclosure" className="text-sm text-gray-400 mt-4 leading-relaxed">{disclosure}</p>
