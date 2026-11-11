@@ -3,11 +3,13 @@
 import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
+import { safeNext } from '../../lib/auth/next-address'
 import { Wordmark } from '../components/brand/Wordmark'
 
 function LoginForm() {
   const searchParams = useSearchParams()
-  const next = searchParams.get('next') || '/dashboard'
+  // Where to continue once signed in: a page on this site, else the dashboard.
+  const next = safeNext(searchParams.get('next')) ?? '/dashboard'
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

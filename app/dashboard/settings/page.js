@@ -7,6 +7,7 @@ import { AccountDetailsForm } from './AccountDetailsForm'
 import { EmailChangeForm } from './EmailChangeForm'
 import { RecoveryEmailForm } from './RecoveryEmailForm'
 import { TextSwitchForm } from './TextSwitchForm'
+import { PaymentSetupForm } from './PaymentSetupForm'
 import { AutomaticPaymentsForm } from './AutomaticPaymentsForm'
 import { createClient } from '@supabase/supabase-js'
 import { readRecoveryEmail } from '../../../lib/auth/recovery-email'
@@ -14,14 +15,16 @@ import { readAccountTextSwitch, TEXT_DISCLOSURE, CODE_MINUTES } from '../../../l
 import { SMS_FROM } from '../../../lib/dispatch/senders'
 import { TEXTING_OPEN } from '../../../lib/dispatch/policy'
 import { getStripe } from '../../../lib/posterity/stripe'
-import { readAutomaticPayments } from '../../../lib/posterity/automatic-payments'
+import { readPaymentSettings } from '../../../lib/posterity/payment-setup'
 
 // Settings is its own page (Master Specification, Settings). The global
 // navigation dropdown built within Stage 4.3 will carry its link; until then
 // the dashboard does.
 export default async function Settings({ searchParams }) {
   const { supabase, user, account } = await requireAccount()
-  const notice = (await searchParams)?.recovery_email ?? null
+  const query = await searchParams
+  const notice = query?.recovery_email ?? null
+  const paymentNotice = query?.payment ?? null
 
   const { data: details } = await supabase
     .from('accounts')
@@ -42,15 +45,16 @@ export default async function Settings({ searchParams }) {
     texts = await readAccountTextSwitch(db, { accountId: account.id }).catch(() => ({ on: false, waiting: null }))
   }
 
-  // Automatic payments are a setting on the account's storage subscription
-  // within Stripe. Which subscriptions are the account's is read with the
+  // The saved payment method and automatic payments both belong to the
+  // account's storage subscription within Stripe, and one reading of Stripe
+  // serves both. Which subscriptions are the account's is read with the
   // customer's own session. Where it cannot be read, the page says so rather
-  // than showing a switch that might be wrong.
-  let payments = { held: false }
+  // than showing a payment method or a switch that might be wrong.
+  let payments = { setup: { held: false }, automatic: { held: false }, unread: false }
   if (account?.id) {
-    payments = await readAutomaticPayments(supabase, getStripe(), { accountId: account.id }).catch((err) => {
-      console.log(`automatic payments: read failed: ${String(err?.message ?? err).slice(0, 200)}`)
-      return { unread: true }
+    payments = await readPaymentSettings(supabase, getStripe(), { accountId: account.id }).catch((err) => {
+      console.log(`payment settings: read failed: ${String(err?.message ?? err).slice(0, 200)}`)
+      return { setup: { held: false }, automatic: { held: false }, unread: true }
     })
   }
 
@@ -81,7 +85,10 @@ export default async function Settings({ searchParams }) {
             <TextSwitchForm on={texts.on} phone={displayPhone(details.phone)} disclosure={TEXT_DISCLOSURE}
               sending={TEXTING_OPEN} waiting={texts.waiting ? { code: texts.waiting.code } : null}
               textTo={{ e164: SMS_FROM, display: displayPhone(SMS_FROM) }} minutes={CODE_MINUTES} />
-            <AutomaticPaymentsForm held={!!payments.held} on={!!payments.on} unread={!!payments.unread} />
+            <PaymentSetupForm held={!!payments.setup.held} method={payments.setup.method ?? null}
+              unread={!!payments.unread} notice={paymentNotice} />
+            <AutomaticPaymentsForm held={!!payments.automatic.held} on={!!payments.automatic.on}
+              unread={!!payments.unread} />
           </>
         ) : (
           <div className="rounded-2xl p-6 border border-yellow-900 bg-yellow-950/30">

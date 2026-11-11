@@ -9,6 +9,7 @@ Runs every tier's checkout in a real browser, the way a customer would.
   - the browser must come back to /dashboard?success=true
   - each session is then read back from Stripe: paid, the right amount, the right
     mode (Horizon a subscription, the plans one-time), and carrying the account
+  - all four belong to the account's one Stripe customer
   - a checkout that fails to open leaves a message on its card
   - Custom and Posterity Grace route to Contact Us, Grace shows Grace Storage at its
     catalog price, and the public checkout refuses Custom, Grace, and Grace Storage
@@ -184,6 +185,10 @@ try {
         sub.status === 'active' && sub.items.data[0].price.recurring?.interval === 'year' && sub.metadata.account_id === account);
     }
   }
+  // The account is one customer within Stripe (lib/posterity/stripe-customer.js).
+  const [{ stripe_customer_id: held } = {}] = await (await admin(`/rest/v1/accounts?id=eq.${account}&select=stripe_customer_id`)).json();
+  check("every checkout belongs to the account's one Stripe customer",
+    !!held && sessions.length >= ORDER.length && sessions.every((s) => s.customer === held), [...new Set(sessions.map((s) => s.customer))].join(' '));
 
   if (!WEBHOOK_SECRET) {
     console.log('\nRecorded within Supabase: skipped, STRIPE_WEBHOOK_SECRET is not set');

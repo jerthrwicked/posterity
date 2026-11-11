@@ -4,19 +4,21 @@
 // lib/auth/send-email.js and lands on /auth/confirm instead.
 import { NextResponse } from 'next/server'
 import { createClient } from '../../../lib/supabase/server'
+import { safeNext } from '../../../lib/auth/next-address'
 
 // Where the email confirmation link lands. Exchanges the one-time code for a
-// session and sets the cookies, then sends them on to the dashboard.
+// session and sets the cookies, then sends them on to `next`, kept on this
+// site (lib/auth/next-address.js), or to the dashboard.
 export async function GET(request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/dashboard'
+  const next = safeNext(searchParams.get('next')) ?? '/dashboard'
 
   if (code) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`)
+      return NextResponse.redirect(new URL(next, origin))
     }
   }
 

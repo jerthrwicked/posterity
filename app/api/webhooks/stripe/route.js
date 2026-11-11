@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import { getStripe } from '../../../../lib/posterity/stripe';
 import { createClient } from '@supabase/supabase-js';
+import { applyPaymentSetupAsOpened, PaymentSetupRefused, PAYMENT_SETUP } from '../../../../lib/posterity/payment-setup';
 
 // Workers have no synchronous HMAC; Web Crypto is async-only. The async verifier
 // works on Node as well, so this is safe on Vercel and on Cloudflare.
@@ -95,7 +96,33 @@ async function extendStorage(db, accountId, sub) {
   must(await db.from('accounts').update({ storage_paid_through: through }).eq('id', accountId));
 }
 
+// The payment form opened from Settings to save a payment method
+// (lib/posterity/payment-setup.js). The customer's browser returning to
+// /api/payment-setup/return applies it too; whichever arrives second changes
+// nothing. Applying it also charges any storage fee the account owes to the
+// payment method saved. A form that is refused, such as one an account has
+// since replaced with a newer one, will be refused on every retry as well, so
+// it is logged and acknowledged. Anything else fails the event, and Stripe
+// sends it again.
+async function onPaymentSetup(db, session) {
+  if (session.metadata?.purpose !== PAYMENT_SETUP || !session.metadata?.account_id) return;
+  try {
+    await applyPaymentSetupAsOpened(db, getStripe(), { sessionId: session.id });
+  } catch (err) {
+    if (!(err instanceof PaymentSetupRefused)) throw err;
+    console.log(`[stripe-webhook] payment setup ${session.id} not applied: ${err.reason}`);
+  }
+}
+
 async function onCheckoutCompleted(db, session) {
+  // A session that saves a payment method takes no payment. It is handled
+  // first and on its own, so it can never be recorded as a plan payment below
+  // or initiate the account.
+  if (session.mode === 'setup') {
+    await onPaymentSetup(db, session);
+    return;
+  }
+
   const accountId = session.client_reference_id || session.metadata?.account_id;
   if (!accountId) return;
   const tier = session.metadata?.tier || null;
