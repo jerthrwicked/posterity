@@ -47,7 +47,7 @@ import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { PLANS } from '../lib/posterity/plans.js';
 import {
-  planPayments, inRefundWindow, refundOwed, issueRefund, money, REFUND_WINDOW_DAYS, REFUND_COPY,
+  planPayments, inRefundWindow, refundOwed, issueRefund, recordRefund, money, REFUND_WINDOW_DAYS, REFUND_COPY,
 } from '../lib/posterity/refunds.js';
 import {
   deleteAccount, deletionClosed, refundsOwedOnDeletion, accountFiles, accountHistory,
@@ -533,6 +533,20 @@ try {
       check('its notice is queued to whoever paid, with the amount and the plan', queued?.copy_key === REFUND_COPY && queued.destination === i.user.email && queued.params.amount === '$80.00' && queued.params.plan === 'Premium' && queued.status === 'queued', JSON.stringify(queued));
       const [now] = await planPayments(stripe, { accountId: i.account.id, customerIds: [i1.id] });
       check('what is left on the payment is what a later deletion would refund', refundOwed(now) === PRICE.premium - 8000, `${refundOwed(now)}`);
+
+      // The database's rule, asked of it directly: the same record a second
+      // time is refused, whoever writes it.
+      const refundObject = await stripe.refunds.retrieve(first.value.refund);
+      const again = await Promise.all([1, 2, 3, 4].map(() => outcome(() => recordRefund(db, { accountId: i.account.id, payment, refund: refundObject, cause: 'test_downgrade', payer, caller: CALLER, isTest: true }))));
+      check('recorded four times at the same instant, the refund is still in the log once',
+        again.every((a) => !a.err) && (await events(i.account.id, 'refund')).length === 1 && (await count('dispatch_messages', i.account.id)) === 1,
+        again.map((a) => String(a.err?.message ?? 'ok')).join(' | '));
+      const dupe = await db.from('dispatch_events').insert({ account_id: i.account.id, event_type: 'refund', destination: i.user.email, outcome: 'issued', detail: { refund: first.value.refund, cause: 'test_duplicate' }, is_test: true });
+      check('…and a second refund record for the same refund is refused by the database', dupe.error?.code === '23505', JSON.stringify(dupe.error));
+      const r2 = await outcome(() => remove(i, { channels: senders() }));
+      const dupe2 = await db.from('dispatch_events').insert({ account_id: i.account.id, event_type: 'account_deleted', destination: i.user.email, outcome: 'deleted', detail: { requested_by: 'test_duplicate' }, is_test: true });
+      check('a second deletion record for the same account is refused by the database',
+        !r2.err && (await events(i.account.id, 'account_deleted')).length === 1 && dupe2.error?.code === '23505', `${String(r2.err?.message ?? 'deleted')} ${JSON.stringify(dupe2.error)}`);
     }
 
     if (SERVER) {
