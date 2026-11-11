@@ -421,7 +421,13 @@ try {
         const el = document.querySelector('#text_switch');
         return el?.getAttribute('aria-checked') === String(w) && !el.disabled;
       }, want);
-      const press = () => page.click('#text_switch');
+      // The switch is brought to the middle of the window first: where the page
+      // has scrolled, it can sit beneath the site header, which stays at the
+      // top, and a click there lands on the header.
+      const press = async () => {
+        await page.$eval('#text_switch', (el) => el.scrollIntoView({ block: 'center' }));
+        await page.click('#text_switch');
+      };
       const settings = () => page.goto(`${SERVER}/dashboard/settings`, { waitUntil: 'networkidle0' });
       const saveNumber = async (phone) => {
         await page.$eval('#phone', (el) => { el.value = ''; });

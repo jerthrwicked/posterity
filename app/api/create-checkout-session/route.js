@@ -1,6 +1,8 @@
 import { getStripe } from '../../../lib/posterity/stripe';
 import { createClient } from '../../../lib/supabase/server';
+import { createClient as createAdmin } from '@supabase/supabase-js';
 import { getPlan } from '../../../lib/posterity/plans';
+import { stripeCustomerFor } from '../../../lib/posterity/stripe-customer';
 
 
 // Create a Stripe Checkout session for the signed-in customer.
@@ -46,12 +48,20 @@ export async function POST(req) {
     price_id: plan.priceId,
   };
 
+  // 4) The account is one customer within Stripe. Sending Stripe an email
+  //    address instead opened a new customer at every checkout, each holding
+  //    its own payment method. Only Posterity sets the account's customer, so
+  //    it is read and written with the service role.
+  const stripe = getStripe();
+  const admin = createAdmin(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
+  const customer = await stripeCustomerFor(admin, stripe, { accountId: account.id, userId: user.id, email: user.email });
+
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  const session = await getStripe().checkout.sessions.create({
+  const session = await stripe.checkout.sessions.create({
     mode: plan.mode, // 'subscription' for the recurring Horizon fee, 'payment' for one-time plans
     line_items: [{ price: plan.priceId, quantity: 1 }],
     client_reference_id: account.id,
-    customer_email: user.email,
+    customer,
     metadata,
     ...(plan.mode === 'subscription'
       ? { subscription_data: { metadata } }
