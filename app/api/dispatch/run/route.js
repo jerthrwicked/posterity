@@ -1,8 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { timingSafeEqual } from 'node:crypto';
 import { runPass } from '../../../../lib/dispatch/run';
-import { postmarkSender, twilioSender } from '../../../../lib/dispatch/senders';
-import { SITE, STATUS_CALLBACK_PATH } from '../../../../lib/dispatch/reports';
+import { deployChannels } from '../../../../lib/dispatch/channels';
 
 // Runs one pass of the Communication Dispatch System's scheduler. The Worker's
 // cron (worker.js, every minute) calls this with the shared secret:
@@ -12,20 +11,6 @@ import { SITE, STATUS_CALLBACK_PATH } from '../../../../lib/dispatch/reports';
 // exist, so a half-configured deploy never claims a message it cannot send.
 
 export const maxDuration = 300;
-
-// Both senders, built from the deploy's keys, or null while either is missing
-// so that the pass does not run with one channel and no way to send the other.
-// Every text asks Twilio to report its final status to the site.
-function channels() {
-  const token = process.env.POSTMARK_SERVER_TOKEN;
-  const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  const authToken = process.env.TWILIO_AUTH_TOKEN;
-  if (!token || !accountSid || !authToken) return null;
-  return {
-    email: postmarkSender({ token }),
-    sms: twilioSender({ accountSid, authToken, statusCallback: `${SITE}${STATUS_CALLBACK_PATH}` }),
-  };
-}
 
 function authorized(req, secret) {
   const given = Buffer.from(req.headers.get('authorization') ?? '');
@@ -38,7 +23,7 @@ export async function POST(req) {
   if (!secret) return new Response('DISPATCH_RUN_SECRET not configured', { status: 503 });
   if (!authorized(req, secret)) return new Response('unauthorized', { status: 401 });
 
-  const senders = channels();
+  const senders = deployChannels();
   if (!senders) return new Response('senders not configured', { status: 503 });
 
   const db = createClient(
