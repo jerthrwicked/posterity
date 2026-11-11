@@ -300,16 +300,16 @@ try {
   check('the second legacy can be deleted', ok(st) && r.length === 1, `${st} ${JSON.stringify(r)}`);
 
   console.log('\nPlans are read-only to the customer (20261026020000)');
-  [st, r] = await svc('/rest/v1/plans', { method: 'POST', prefer: 'return=representation', body: { account_id: acct, plan_year: 1, tier: 'basic' } });
+  [st, r] = await svc('/rest/v1/plans', { method: 'POST', prefer: 'return=representation', body: { account_id: acct, plan_year: 1, tier: 'basic', delivery_time_zone: 'America/Chicago', standard_deliveries: 4, feature_deliveries: 1, social_posts: 1 } });
   check('the service role writes an unpaid plan, as the webhook will', ok(st) && r.length === 1, `${st} ${JSON.stringify(r)}`);
   const planId = r[0]?.id;
   [st, r] = await call('/rest/v1/plans?select=id', { token: tok });
   check('the customer can read their plan', st === 200 && r.length === 1, `${st} ${JSON.stringify(r)}`);
-  for (const [col, val] of Object.entries({ paid_at: '2026-10-01T00:00:00Z', tier: 'legacy', plan_year: 2, delivery_year: 2030, funds_released_at: '2026-10-01T00:00:00Z' })) {
+  for (const [col, val] of Object.entries({ paid_at: '2026-10-01T00:00:00Z', tier: 'legacy', plan_year: 2, delivery_year: 2030, funds_released_at: '2026-10-01T00:00:00Z', delivery_time_zone: 'Europe/Paris', standard_deliveries: 52, feature_deliveries: 12, social_posts: 12, additional_recipient_slots: 4 })) {
     [st, r] = await call(`/rest/v1/plans?id=eq.${planId}`, { method: 'PATCH', token: tok, prefer: 'return=representation', body: { [col]: val } });
     check(`setting their plan's ${col} is REFUSED by the guard`, st >= 400 && /set by payment/.test(JSON.stringify(r)), `got ${st} ${JSON.stringify(r)}`);
   }
-  [st, r] = await call('/rest/v1/plans', { method: 'POST', token: tok, prefer: 'return=representation', body: { account_id: acct, plan_year: 2, tier: 'legacy', paid_at: '2026-10-01T00:00:00Z' } });
+  [st, r] = await call('/rest/v1/plans', { method: 'POST', token: tok, prefer: 'return=representation', body: { account_id: acct, plan_year: 2, tier: 'legacy', paid_at: '2026-10-01T00:00:00Z', delivery_time_zone: 'America/Chicago', standard_deliveries: 52, feature_deliveries: 12, social_posts: 12 } });
   check('inserting a paid plan is REFUSED', st >= 400 && /set by payment/.test(JSON.stringify(r)), `got ${st} ${JSON.stringify(r)}`);
   [st, r] = await call(`/rest/v1/plans?id=eq.${planId}`, { method: 'DELETE', token: tok, prefer: 'return=representation' });
   check('deleting their plan is REFUSED (no row deleted)', st >= 400 || (Array.isArray(r) && r.length === 0), `got ${st} ${JSON.stringify(r)}`);

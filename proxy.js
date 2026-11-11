@@ -91,7 +91,10 @@ export async function proxy(request) {
   if (!user && PRIVATE_PREFIXES.some((p) => path.startsWith(p))) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
-    url.searchParams.set('next', path)
+    // The page's own query goes back with it (a plan year, ?year=3), and
+    // stays off the login page's address.
+    url.search = ''
+    url.searchParams.set('next', path + request.nextUrl.search)
     return NextResponse.redirect(url)
   }
 

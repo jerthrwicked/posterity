@@ -163,7 +163,7 @@ async function fill(who, { phase = 'horizon' } = {}) {
   const legacy = must(await db.from('legacies').select('id').eq('account_id', id).eq('is_primary', true).single());
   const recipient = must(await db.from('recipients').insert({ account_id: id, name: NAMES.recipient, email: `recipient-${stamp}@yourposterity.com` }).select('id').single());
   must(await db.from('legacy_guards').insert({ account_id: id, name: NAMES.guard, email: `guard-${stamp}@yourposterity.com`, phone: '+15045550123', is_primary: true }).select('id'));
-  const plan = must(await db.from('plans').insert({ account_id: id, plan_year: 1, tier: 'basic', paid_at: new Date().toISOString() }).select('id').single());
+  const plan = must(await db.from('plans').insert({ account_id: id, plan_year: 1, tier: 'basic', paid_at: new Date().toISOString(), delivery_time_zone: 'America/Chicago', standard_deliveries: 4, feature_deliveries: 1, social_posts: 1 }).select('id').single());
   const paths = [`${id}/${legacy.id}/${randomUUID()}.png`, `${id}/${legacy.id}/${randomUUID()}.png`];
   for (const path of paths) must(await db.storage.from(BUCKET).upload(path, PNG, { contentType: 'image/png' }));
   const item = { legacy_id: legacy.id, account_id: id, title: NAMES.title, body: NAMES.body, recipient_id: recipient.id };

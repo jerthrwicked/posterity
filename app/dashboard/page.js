@@ -1,47 +1,134 @@
 // Posterity — User Profiles: the Plans tab, the logged-in home · Walker Brown
 import { requireAccount } from '../../lib/posterity/account'
+import { yearCalendar, skipsBefore, atPlanLimit, CUSTOMER_TIERS, MAX_PLAN_YEAR } from '../../lib/posterity/plan-calendar'
 import { ProfileShell, Card } from './_profile/ProfileShell'
+import { YearCalendar, PlanFacts, StatusPill, StorageFeeNotice, TIER_NAMES } from './_plans/YearCalendar'
+import { PlanOptions, TimeZoneForm, DeletePlanForm } from './_plans/PlanOptions'
 
-export default async function PlansTab() {
+const PILL = 'inline-block rounded-full border border-gray-600 px-5 py-3 text-sm font-semibold text-white hover:bg-white hover:text-black hover:border-white transition-colors duration-200 ' +
+  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#93ab99]'
+
+// The plan year in the address, where it is one a plan can sit on.
+function yearFrom(value) {
+  const n = Number(Array.isArray(value) ? value[0] : value)
+  return Number.isInteger(n) && n >= 1 && n <= MAX_PLAN_YEAR ? n : null
+}
+
+export default async function PlansTab({ searchParams }) {
   // proxy.js already redirected signed-out visitors. This is the real check —
   // proxy is an optimistic gate, not an authorization boundary.
   const profile = await requireAccount({ next: '/dashboard' })
-  const { supabase, account } = profile
+  const { supabase, account, status, canBuild } = profile
+  const query = await searchParams
 
-  // Every count below runs under RLS as this user — they cannot read anyone else's.
-  const counts = { plans: 0, content: 0 }
+  // Everything below is read under RLS as this user — they cannot read anyone
+  // else's.
+  let plans = []
+  let content = 0
   if (account) {
-    const [plans, content] = await Promise.all([
-      supabase.from('plans').select('id', { count: 'exact', head: true }).eq('account_id', account.id),
+    const [planRows, contentRows] = await Promise.all([
+      supabase
+        .from('plans')
+        .select('id, plan_year, tier, paid_at, delivery_time_zone, standard_deliveries, feature_deliveries, social_posts, additional_recipient_slots')
+        .eq('account_id', account.id)
+        .order('plan_year'),
       supabase.from('content_items').select('id', { count: 'exact', head: true }).eq('account_id', account.id),
     ])
-    counts.plans = plans.count ?? 0
-    counts.content = content.count ?? 0
+    plans = planRows.data ?? []
+    content = contentRows.count ?? 0
   }
+
+  // Plan Selection opens on the year in the address. Without one it opens on
+  // the first plan still to be paid for, then on the last plan, then on Year 1.
+  const years = yearCalendar(plans)
+  const selected = yearFrom(query?.year)
+    ?? plans.find((p) => !p.paid_at)?.plan_year
+    ?? plans.at(-1)?.plan_year
+    ?? 1
+  const entry = years.find((y) => y.year === selected) ?? { year: selected, plan: null, status: null }
+  const plan = entry.plan
+
+  // What the customer may do on this year. The server decides each again when
+  // it is asked (lib/posterity/plan-records.js).
+  const phase = status?.phase ?? account?.phase
+  const building = phase === 'horizon' || phase === 'planning'
+  const limited = atPlanLimit(phase, plans)
+  const theirs = plan ? CUSTOMER_TIERS.includes(plan.tier) : false
+  const unpaid = plan ? !plan.paid_at : false
 
   return (
     <ProfileShell tab="plans" profile={profile}>
-      {/* Stage 4.3, Plans and Cart: Plan Selection on the year calendar, Add a
-          plan, and the plan options land here, with the live cart at the top
-          right. */}
+      {/* Stage 4.3, Plans and Cart: the live cart lands at the top right. */}
       {/* Stage 4.7: the Begin button lands here, showing only on an initiated
           account. */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card
-          title="Your Plans"
-          blurb="Each plan covers one year of delivery. Build as many as you like before you initiate."
-          value={counts.plans}
-          hint={counts.plans === 1 ? 'plan started' : 'plans started'}
-        />
-        {/* Stage 4.5: Plan Content and the button that opens the Content
-            Builder land here. Until then the content built so far opens from
-            this card. */}
+      {account && <YearCalendar years={years} selected={selected} />}
+
+      {account && (
+        <section id="plan-year-panel" data-year={selected} aria-labelledby="plan-year-title"
+          className="mt-6 bg-gray-900 rounded-2xl p-6 sm:p-8 border border-gray-800">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 id="plan-year-title" className="text-xl font-bold">
+              Year {selected}{plan ? ` · ${TIER_NAMES[plan.tier]}` : ''}
+            </h2>
+            {entry.status && <StatusPill status={entry.status} />}
+          </div>
+
+          {plan ? (
+            <>
+              <PlanFacts plan={plan} />
+              {canBuild && unpaid && theirs && <PlanOptions plan={plan} skips={skipsBefore(plans, plan)} />}
+              {/* The time zone alone stays open on a paid plan, and on one
+                  placed by staff, until Interlude (Calendar System). */}
+              {canBuild && !(unpaid && theirs) && (
+                <div id="plan-options" className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <TimeZoneForm key={`zone-${plan.id}-${plan.delivery_time_zone}`} plan={plan} />
+                </div>
+              )}
+              {/* Deleting stays open while building is locked for a storage
+                  lapse, and closes with the Planning Phase. A change to a paid
+                  plan arrives with the cart. */}
+              {building && unpaid && theirs && (
+                <div className="mt-8 pt-6 border-t border-gray-800">
+                  <DeletePlanForm key={`delete-${plan.id}`} plan={plan} />
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="mt-4">
+              {entry.status === 'skipped' ? (
+                <StorageFeeNotice year={selected} />
+              ) : (
+                <p id="plan-year-empty" className="text-sm text-gray-400">
+                  [Placeholder: Product surface copy — Plan Selection: this plan year holds no plan]
+                </p>
+              )}
+              {canBuild && limited && (
+                <p id="plan-limit" className="text-sm text-gray-300 mt-4 leading-relaxed">
+                  [Placeholder: Product surface copy — Plan Selection: an account builds one plan until that plan is
+                  paid for; paying for it opens further plans]
+                </p>
+              )}
+              {canBuild && !limited && (
+                <a id="add-plan-here" href={`/dashboard/add-plan?year=${selected}`} className={`${PILL} mt-5`}
+                  style={{ textDecoration: 'none' }}>
+                  Add a plan
+                </a>
+              )}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Stage 4.5: Plan Content and the button that opens the Content
+          Builder land here. Until then the content built so far opens from
+          this card. */}
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card
           href="/dashboard/legacy"
           title="My Legacy"
           blurb="The messages you're leaving behind."
-          value={counts.content}
-          hint={counts.content === 1 ? 'piece created' : 'pieces created'}
+          value={content}
+          hint={content === 1 ? 'piece created' : 'pieces created'}
         />
       </div>
     </ProfileShell>

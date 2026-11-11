@@ -15,8 +15,8 @@ What matters most:
     banner above everything
   - the phase display reads the account status check: each of the six phases
     shows its own name and its own colour, on the next load, on every tab
-  - the global menu carries Account, Settings and Log Out when signed in, and
-    Login when signed out; the signed-in pages carry no second bar
+  - the global menu carries Account, Add a plan, Settings and Log Out when
+    signed in, and Login when signed out; the signed-in pages carry no second bar
   - at a phone's width (375px) nothing runs off the side
 
 It makes one test user, signs in as them, moves their account through the six
@@ -218,11 +218,16 @@ try {
   }));
   await go('/dashboard');
   let c = await cards();
-  check('Plans: the plans count, and My Legacy opening its own page',
-    JSON.stringify(c) === JSON.stringify([
-      { title: 'Your Plans', href: null, value: '0', hint: 'plans started' },
+  // Plan Selection is scripts/test-plan-records.mjs's to check; here, that it
+  // is on the tab above the one card.
+  const selection = await page.evaluate(() => ({
+    year: document.querySelector('#tab-plans #plan-selection #plan-selection-year')?.getAttribute('data-year') ?? null,
+    panel: document.querySelector('#tab-plans #plan-year-panel')?.getAttribute('data-year') ?? null,
+  }));
+  check('Plans: Plan Selection on Year 1, and My Legacy opening its own page',
+    selection.year === '1' && selection.panel === '1' && JSON.stringify(c.filter((card) => card.href)) === JSON.stringify([
       { title: 'My Legacy', href: '/dashboard/legacy', value: '0', hint: 'pieces created' },
-    ]), JSON.stringify(c));
+    ]), JSON.stringify([selection, c]));
   await go('/dashboard/people');
   c = await cards();
   check('People: Recipients and Legacy Guards, each opening its own page',
@@ -275,9 +280,9 @@ try {
   console.log('\nThe global menu, signed in');
   await go('/dashboard/people');
   let items = await menu('Log Out');
-  check('it carries Account, Settings and Log Out beneath the public links',
+  check('it carries Account, Add a plan, Settings and Log Out beneath the public links',
     JSON.stringify(items.map((it) => [it.label, it.href])) === JSON.stringify([
-      ['How it works', '/'], ['Plans', '/pricing'], ['Account', '/dashboard'], ['Settings', '/dashboard/settings'], ['Log Out', null],
+      ['How it works', '/'], ['Plans', '/pricing'], ['Account', '/dashboard'], ['Add a plan', '/dashboard/add-plan'], ['Settings', '/dashboard/settings'], ['Log Out', null],
     ]), JSON.stringify(items));
   check('Account is marked current on a tab, and nothing else is', items.filter((it) => it.current).map((it) => it.label).join() === 'Account', JSON.stringify(items));
   check('no Login and no Get Started while signed in', !items.some((it) => it.label === 'Login' || it.label === 'Get Started'), JSON.stringify(items));
@@ -307,7 +312,7 @@ try {
   await go('/dashboard');
   items = await menu('Log Out');
   const panel = await page.evaluate(() => { const r = document.querySelector('.navmenu__panel').getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; });
-  check('the open menu is within the screen', panel[0] >= 0 && panel[1] <= 375 && items.length === 5, JSON.stringify([panel, items.length]));
+  check('the open menu is within the screen', panel[0] >= 0 && panel[1] <= 375 && items.length === 6, JSON.stringify([panel, items.length]));
   await page.setViewport({ width: 1280, height: 900 });
 
   console.log('\nLogging out from the menu');
