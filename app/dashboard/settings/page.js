@@ -9,6 +9,7 @@ import { RecoveryEmailForm } from './RecoveryEmailForm'
 import { TextSwitchForm } from './TextSwitchForm'
 import { PaymentSetupForm } from './PaymentSetupForm'
 import { AutomaticPaymentsForm } from './AutomaticPaymentsForm'
+import { DeleteAccountForm } from './DeleteAccountForm'
 import { createClient } from '@supabase/supabase-js'
 import { readRecoveryEmail } from '../../../lib/auth/recovery-email'
 import { readAccountTextSwitch, TEXT_DISCLOSURE, CODE_MINUTES } from '../../../lib/dispatch/text-switch'
@@ -16,12 +17,13 @@ import { SMS_FROM } from '../../../lib/dispatch/senders'
 import { TEXTING_OPEN } from '../../../lib/dispatch/policy'
 import { getStripe } from '../../../lib/posterity/stripe'
 import { readPaymentSettings } from '../../../lib/posterity/payment-setup'
+import { deletionClosed } from '../../../lib/posterity/account-deletion'
 
 // Settings is its own page (Master Specification, Settings). The global
 // navigation dropdown built within Stage 4.3 will carry its link; until then
 // the dashboard does.
 export default async function Settings({ searchParams }) {
-  const { supabase, user, account } = await requireAccount()
+  const { supabase, user, account, status } = await requireAccount()
   const query = await searchParams
   const notice = query?.recovery_email ?? null
   const paymentNotice = query?.payment ?? null
@@ -58,6 +60,13 @@ export default async function Settings({ searchParams }) {
     })
   }
 
+  // Account deletion is open in Horizon and Planning, and closed for thirty
+  // days after an account recovery. The card says which, and the action asks
+  // again before it does anything.
+  const lockedUntil = status?.recovery_lock_until
+    ? new Date(status.recovery_lock_until).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
+    : null
+
   return (
     <main className="min-h-screen bg-black text-white">
       <nav className="flex justify-between items-center px-8 py-6 border-b border-gray-800">
@@ -89,6 +98,7 @@ export default async function Settings({ searchParams }) {
               unread={!!payments.unread} notice={paymentNotice} />
             <AutomaticPaymentsForm held={!!payments.automatic.held} on={!!payments.automatic.on}
               unread={!!payments.unread} />
+            <DeleteAccountForm email={user.email} closed={deletionClosed(status)} until={lockedUntil} />
           </>
         ) : (
           <div className="rounded-2xl p-6 border border-yellow-900 bg-yellow-950/30">
