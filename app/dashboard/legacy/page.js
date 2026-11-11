@@ -1,7 +1,5 @@
 // Posterity — my legacy · Walker Brown
 import { requireAccount } from '../../../lib/posterity/account'
-import { Wordmark } from '../../components/brand/Wordmark'
-import { LogoutButton } from '../LogoutButton'
 import { Composer } from './Composer'
 import { StorageNotice } from '../../components/StorageNotice'
 import { deleteMessage } from './actions'
@@ -48,15 +46,9 @@ export default async function Legacy() {
 
   return (
     <main className="min-h-screen bg-black text-white">
-      <nav className="flex justify-between items-center px-8 py-6 border-b border-gray-800">
-        <a href="/dashboard" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <Wordmark size="sm" withMark />
-        </a>
-        <LogoutButton />
-      </nav>
 
       <div className="max-w-3xl mx-auto px-8 py-16">
-        <a href="/dashboard" className="text-gray-500 hover:text-gray-300 text-sm">&larr; Dashboard</a>
+        <a href="/dashboard" className="text-gray-400 hover:text-white text-sm">&larr; Plans</a>
 
         <h1 className="text-4xl font-bold mt-4 mb-2">My Legacy</h1>
         <p className="text-gray-400 mb-10">

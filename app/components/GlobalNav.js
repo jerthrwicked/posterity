@@ -14,6 +14,16 @@ const NAV_MENU = [
   },
 ];
 
+// The signed-in menu (Master Specification, User Profiles). Account opens the
+// logged-in home, whose four tabs are the addresses listed here. Add a plan
+// and Purchases join as Stage 4.3 builds each, and Stage 5.1 adds the Legacy
+// Guard portal link.
+const PROFILE_TABS = ["/dashboard", "/dashboard/people", "/dashboard/social-media", "/dashboard/account"];
+const ACCOUNT_MENU = [
+  { label: "Account", href: "/dashboard", current: (path) => PROFILE_TABS.includes(path) },
+  { label: "Settings", href: "/dashboard/settings", current: (path) => path === "/dashboard/settings" },
+];
+
 export default function GlobalNav() {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
@@ -28,6 +38,13 @@ export default function GlobalNav() {
     });
     return () => listener.subscription.unsubscribe();
   }, []);
+
+  async function logOut() {
+    setOpen(false);
+    await createClient().auth.signOut();
+    // Full navigation so the proxy sees the cleared cookies.
+    window.location.href = "/";
+  }
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -91,15 +108,34 @@ export default function GlobalNav() {
               </div>
             ))}
 
-            <div className="navmenu__group">
-              <a
-                href={user ? "/dashboard" : "/login"}
-                onClick={() => setOpen(false)}
-                className="navmenu__item"
-              >
-                {user ? "Account" : "Login"}
-              </a>
-            </div>
+            {user ? (
+              <>
+                <div className="navmenu__group">
+                  {ACCOUNT_MENU.map((item) => (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                      aria-current={item.current(pathname) ? "page" : undefined}
+                      className={`navmenu__item${item.current(pathname) ? " is-current" : ""}`}
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+                <div className="navmenu__group">
+                  <button type="button" onClick={logOut} className="navmenu__item">
+                    Log Out
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="navmenu__group">
+                <a href="/login" onClick={() => setOpen(false)} className="navmenu__item">
+                  Login
+                </a>
+              </div>
+            )}
 
             {!user && (
               <div className="navmenu__cta">

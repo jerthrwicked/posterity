@@ -1,8 +1,6 @@
 // Posterity — recipients · Walker Brown
 import { requireAccount } from '../../../lib/posterity/account'
 import { displayPhone } from '../../../lib/posterity/phone'
-import { Wordmark } from '../../components/brand/Wordmark'
-import { LogoutButton } from '../LogoutButton'
 import { RecipientForm } from './RecipientForm'
 import { StorageNotice } from '../../components/StorageNotice'
 import { deleteRecipient } from './actions'
@@ -18,15 +16,9 @@ export default async function Recipients() {
 
   return (
     <main className="min-h-screen bg-black text-white">
-      <nav className="flex justify-between items-center px-8 py-6 border-b border-gray-800">
-        <a href="/dashboard" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <Wordmark size="sm" withMark />
-        </a>
-        <LogoutButton />
-      </nav>
 
       <div className="max-w-3xl mx-auto px-8 py-16">
-        <a href="/dashboard" className="text-gray-500 hover:text-gray-300 text-sm">&larr; Dashboard</a>
+        <a href="/dashboard/people" className="text-gray-400 hover:text-white text-sm">&larr; People</a>
 
         <h1 className="text-4xl font-bold mt-4 mb-2">Recipients</h1>
         <p className="text-gray-400 mb-12">

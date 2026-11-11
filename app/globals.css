@@ -85,6 +85,7 @@ body {
 .navmenu__group { display: flex; flex-direction: column; padding: 0.4rem 0; border-top: 1px solid var(--border-subtle, #262626); }
 .navmenu__group:first-child { border-top: none; }
 .navmenu__item { padding: 0.7rem 1.25rem; font-size: 0.875rem; color: var(--text-muted, #a3a3a3); cursor: pointer; transition: color 0.15s ease, background 0.15s ease; text-decoration: none; display: block; }
+button.navmenu__item { width: 100%; text-align: left; background: none; border: none; font-family: inherit; }
 .navmenu__item:hover { color: var(--brand-ice, #93ab99); background: rgba(147,171,153,0.08); }
 .navmenu__item.is-current { color: #fff; }
 .navmenu__cta { padding: 0.65rem 0.9rem 0.9rem; border-top: 1px solid var(--border-subtle, #262626); }
