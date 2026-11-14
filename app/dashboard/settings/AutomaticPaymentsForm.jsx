@@ -4,9 +4,10 @@
 import { useActionState } from 'react'
 import { automaticPaymentsAction } from './automatic-payments'
 import { Switch } from './Switch'
+import { WarningMark } from '../../components/StatusMarks'
 
 const label = 'text-sm text-gray-400 mb-1 block'
-const note = 'text-xs text-gray-600 mt-3 leading-relaxed'
+const note = 'text-xs text-[color:var(--text-quiet)] mt-3 leading-relaxed'
 
 // held: whether the account holds a storage subscription, which is what the
 // switch moves. on: whether its renewals are charged automatically, as Stripe
@@ -20,13 +21,13 @@ export function AutomaticPaymentsForm({ held, on, unread = false }) {
   const shown = held ? on : true
 
   return (
-    <form id="automatic_payments" action={action} className="bg-gray-900 rounded-2xl p-8 border border-gray-800 mt-6">
+    <form id="automatic_payments" action={action} className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)]">
       <input type="hidden" name="turn" value={shown ? 'off' : 'on'} />
       <div className="flex items-center justify-between gap-6">
         <div>
           <p id="automatic_payments_label" className={label}>Automatic payments</p>
           {!unread && (
-            <p id="automatic_payments_state" className={held ? 'text-gray-300' : 'text-gray-600'}>
+            <p id="automatic_payments_state" className={held ? 'text-gray-300' : 'text-[color:var(--text-quiet)]'}>
               {shown ? 'On' : 'Off'}
             </p>
           )}
@@ -37,7 +38,8 @@ export function AutomaticPaymentsForm({ held, on, unread = false }) {
       </div>
 
       {unread && (
-        <p className="text-xs text-yellow-200 mt-3 leading-relaxed">
+        <p className="text-xs text-white mt-3 leading-relaxed flex items-start gap-2">
+          <WarningMark className="mt-0.5" />
           [Placeholder: Product surface copy — error messages: the automatic payments setting cannot be shown right now]
         </p>
       )}
@@ -59,7 +61,7 @@ export function AutomaticPaymentsForm({ held, on, unread = false }) {
           before each renewal is due and a payment request on the due date]
         </p>
       )}
-      {state.error && <p className="text-sm text-red-400 mt-3">{state.error}</p>}
+      {state.error && <p className="text-sm text-[color:var(--brand-rose)] mt-3 inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{state.error}</p>}
     </form>
   )
 }

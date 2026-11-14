@@ -19,7 +19,7 @@ export default async function PeopleTab() {
 
   return (
     <ProfileShell tab="people" profile={profile}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
         {/* Stage 4.5: the Saved Recipients section and the Master Recipient
             land here. Until then recipients open from this card. */}
         <Card

@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { createClient } from '../../lib/supabase/client'
 import { Wordmark } from '../components/brand/Wordmark'
 import { toE164 } from '../../lib/posterity/phone'
+import { WarningMark } from '../components/StatusMarks'
+import { AccountGlow } from '../components/Glow'
 
 export default function Signup() {
   const [legalName, setLegalName] = useState('')
@@ -56,32 +58,33 @@ export default function Signup() {
 
   if (sent) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center px-6">
-        <div className="w-full max-w-md text-center">
+      <main className="relative min-h-screen bg-black text-white flex items-center justify-center px-6">
+        <div className="relative z-[1] w-full max-w-md text-center">
           <a href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
             <Wordmark size="lg" withMark />
           </a>
-          <div className="bg-gray-900 rounded-2xl p-8 mt-10 border border-gray-800">
+          <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 mt-10 border border-[color:var(--card-edge)]">
             <h1 className="text-2xl font-bold mb-3">Check your email</h1>
             <p className="text-gray-400 leading-relaxed">
               We sent a confirmation link to <span className="text-white">{email}</span>. Open it and
               your account will be waiting.
             </p>
           </div>
-          <p className="text-gray-600 text-sm mt-6">
+          <p className="text-[color:var(--text-quiet)] text-sm mt-6">
             Wrong address?{' '}
             <button onClick={() => setSent(false)} className="text-gray-300 underline hover:text-white cursor-pointer">
               Go back
             </button>
           </p>
         </div>
+        <AccountGlow />
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center px-6 py-16">
-      <div className="w-full max-w-md">
+    <main className="relative min-h-screen bg-black text-white flex items-center justify-center px-6 py-16">
+      <div className="relative z-[1] w-full max-w-md">
         <div className="text-center mb-10">
           <a href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
             <Wordmark size="lg" withMark />
@@ -89,7 +92,7 @@ export default function Signup() {
           <p className="text-gray-400 mt-2">Your legacy starts here</p>
         </div>
 
-        <div className="bg-gray-900 rounded-2xl p-8 flex flex-col gap-4">
+        <div className="bg-[color:var(--card-ground)] posterity-frame border border-[color:var(--card-edge)] rounded-2xl p-8 flex flex-col gap-4">
           <div>
             <label htmlFor="name" className="text-sm text-gray-400 mb-1 block">Legal name</label>
             <input
@@ -99,13 +102,13 @@ export default function Signup() {
               placeholder="Your full legal name"
               value={legalName}
               onChange={(e) => setLegalName(e.target.value)}
-              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
+              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
             />
           </div>
 
           <div>
             <label htmlFor="display-name" className="text-sm text-gray-400 mb-1 block">
-              Name your recipients see <span className="text-gray-600">· optional</span>
+              Name your recipients see <span className="text-[color:var(--text-quiet)]">· optional</span>
             </label>
             <input
               id="display-name"
@@ -114,7 +117,7 @@ export default function Signup() {
               placeholder="Same as your legal name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
+              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
             />
           </div>
 
@@ -127,13 +130,13 @@ export default function Signup() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
+              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
             />
           </div>
 
           <div>
             <label htmlFor="phone" className="text-sm text-gray-400 mb-1 block">
-              Phone number <span className="text-gray-600">· optional, recommended</span>
+              Phone number <span className="text-[color:var(--text-quiet)]">· optional, recommended</span>
             </label>
             <input
               id="phone"
@@ -142,9 +145,9 @@ export default function Signup() {
               placeholder="(504) 555-1234"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
+              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
             />
-            <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+            <p className="text-xs text-[color:var(--text-quiet)] mt-1 leading-relaxed">
               A second way to reach you. Nothing is texted to you unless you turn texts on.
             </p>
           </div>
@@ -159,11 +162,11 @@ export default function Signup() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !loading && handleSignup()}
-              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
+              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
             />
           </div>
 
-          {error && <p className="text-sm text-center text-red-400">{error}</p>}
+          {error && <p className="text-sm text-center text-[color:var(--brand-rose)] inline-flex items-start justify-center gap-2"><WarningMark className="mt-0.5" />{error}</p>}
 
           <button
             onClick={handleSignup}
@@ -173,7 +176,7 @@ export default function Signup() {
             {loading ? 'Creating your account...' : 'Create account'}
           </button>
 
-          <p className="text-xs text-gray-600 text-center leading-relaxed mt-1">
+          <p className="text-xs text-[color:var(--text-quiet)] text-center leading-relaxed mt-1">
             Building is free while you decide. You choose a plan when you&rsquo;re ready.
           </p>
         </div>
@@ -183,6 +186,7 @@ export default function Signup() {
           <a href="/login" className="text-white underline hover:text-gray-200">Log in</a>
         </p>
       </div>
+      <AccountGlow />
     </main>
   )
 }

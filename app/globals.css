@@ -7,16 +7,28 @@
   /* ── Semantic text tokens ── */
   --text-primary:       #ffffff;
   --text-accent-serif:  #cccccc;
+  --text-quiet:         #808080;
 
   /* ── Brand color tokens ── */
   --brand-ice:        #93ab99;
   --brand-ice-bright: #adc2b2;
-  --brand-ice-deep:   #6f8a76;
+  --brand-ice-deep:   #7c9482;
   --brand-midnight:   #0f1512;
-  --brand-navy:       #18241e;
   --brand-navy-line:  #2c3f35;
+  --brand-rose:       #c06a68;
+  --band-charcoal:    #111111;
+  --card-ground:      #121212;
+  --card-edge:        #262626;
+  --edge-quiet:       #2e2e2e;
+  --paper:            #ffffff;
+  --paper-ink:        #111111;
+  --paper-ink-2:      #3d3d3d;
+  --paper-ink-3:      #555555;
+  --paper-quiet:      #6b6b6b;
+  --paper-sage:       #4f6b57;
+  --paper-sage-edge:  #7c9482;
+  --paper-rose:       #9c4b49;
   --brand-mist:       #cccccc;
-  --brand-dusk:       #586494;
   --black:            #000000;
 
   /* ── Effects tokens ── */
@@ -55,7 +67,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #000000;
     --foreground: #ededed;
   }
 }
@@ -80,7 +92,7 @@ body {
 .navmenu__toggle.is-open .navmenu__bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
 .navmenu__toggle.is-open .navmenu__bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .navmenu__toggle.is-open .navmenu__bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-.navmenu__panel { position: absolute; right: 0; top: calc(100% + 0.75rem); min-width: 200px; background: var(--surface-overlay, #0a0a0a); border: 1px solid var(--border-subtle, #262626); border-radius: 12px; overflow: hidden; z-index: 50; box-shadow: 0 24px 60px -20px rgba(0,0,0,0.85); animation: navmenu-in 0.16s ease both; }
+.navmenu__panel { position: absolute; right: 0; top: calc(100% + 0.75rem); min-width: 200px; background: var(--surface-overlay, #000000); border: 1px solid var(--border-subtle, #262626); border-radius: 12px; overflow: hidden; z-index: 50; box-shadow: 0 24px 60px -20px rgba(0,0,0,0.85); animation: navmenu-in 0.16s ease both; }
 @keyframes navmenu-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 .navmenu__group { display: flex; flex-direction: column; padding: 0.4rem 0; border-top: 1px solid var(--border-subtle, #262626); }
 .navmenu__group:first-child { border-top: none; }
@@ -111,3 +123,25 @@ button.navmenu__item { width: 100%; text-align: left; background: none; border: 
     z-index: 0;
   }
 }
+
+/* ── The phase glow: the six phase colours, jade at the top down to gold ── */
+.posterity-glow-wrap { position: absolute; inset: 0 0 auto 0; height: 330px; overflow: hidden; pointer-events: none; z-index: 0; }
+.posterity-glow, .posterity-pulse {
+  background: linear-gradient(180deg, rgba(147,171,153,0.30) 0%, rgba(161,176,149,0.26) 15%, rgba(161,167,135,0.22) 30%, rgba(177,172,133,0.19) 45%, rgba(182,163,122,0.16) 60%, rgba(192,161,118,0.13) 75%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, #000 35%, transparent 100%);
+}
+.posterity-glow { position: absolute; inset: 0; }
+.posterity-pulse { position: absolute; left: 0; right: 0; top: 0; height: 60%; pointer-events: none; z-index: 0; }
+.posterity-glow--breathe { animation: posterity-glow-in 10s cubic-bezier(0.4,0,0.2,1) both, posterity-breathe 9s ease-in-out 10s infinite; }
+.posterity-glow--settle { animation: posterity-glow-in 10s cubic-bezier(0.4,0,0.2,1) both; }
+.posterity-pulse--waiting { opacity: 0; }
+@keyframes posterity-glow-in { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: none; } }
+@keyframes posterity-breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+@media (prefers-reduced-motion: reduce) {
+  .posterity-glow--breathe, .posterity-glow--settle { animation: none; }
+  .posterity-pulse--waiting { opacity: 1; }
+}
+
+/* ── The frame: a white hairline set four pixels outside every card that isn't a plan card ── */
+.posterity-frame { outline: 1px solid var(--paper); outline-offset: 4px; }

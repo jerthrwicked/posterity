@@ -595,6 +595,11 @@ try {
     };
     const go = (pg, path) => pg.goto(`${SERVER}${path}`, { waitUntil: 'networkidle0', timeout: 120000 });
     const where = (pg) => { const u = new URL(pg.url()); return u.pathname + u.search; };
+    // The cart sits folded in the top bar. Opens it, where it is closed, before
+    // anything within it is pressed.
+    const openCart = async (pg) => {
+      if (!(await pg.$eval('#cart', (el) => el.open))) await pg.click('#cart summary');
+    };
     // The cart as the page shows it.
     const shown = (pg) => pg.evaluate(() => {
       const text = (sel) => document.querySelector(sel)?.textContent.trim() ?? null;
@@ -630,7 +635,7 @@ try {
     await signIn(pg, p);
     await go(pg, '/dashboard');
     let s = await shown(pg);
-    check('a new account sees an empty cart, unfolded on the Plans tab', s?.open === true && s.plans === '0' && s.empty && s.total === '0' && s.pay === null, JSON.stringify(s));
+    check('a new account sees an empty cart, folded on the Plans tab', s?.open === false && s.plans === '0' && s.empty && s.total === '0' && s.pay === null, JSON.stringify(s));
     check('with the storage fee as its own line, within the free trial', s?.storage === 'joins' && s.added === 'false' && s.storageText?.includes('Storage fee') && s.storageText.includes('Free trial')
       && s.next?.startsWith('Next payment '), JSON.stringify(s));
 
@@ -641,26 +646,33 @@ try {
       s.plans === '1' && s.lines === 'plan1' && s.storage === 'joins' && s.added === 'true' && s.total === String(BASIC + STORAGE) && s.hidden === s.total
       && s.summary === `1 plan · ${dollars(BASIC + STORAGE)}` && s.pay === `Pay ${dollars(BASIC + STORAGE)}`, JSON.stringify(s));
     check('the refund policy is shown before paying', Boolean(s.policy) && (await pg.$('#cart-accept')) !== null);
-    for (const tab of ['/dashboard/people', '/dashboard/social-media', '/dashboard/account']) {
+    for (const tab of ['/dashboard/people', '/dashboard/social-media', '/dashboard/account', '/dashboard/settings']) {
       await go(pg, tab);
       const t = await shown(pg);
       check(`the cart is on ${tab}, folded, with the same total`, t?.open === false && t.plans === '1' && t.total === String(BASIC + STORAGE), JSON.stringify(t));
     }
+    await go(pg, '/');
+    check('the homepage shows no cart', (await shown(pg)) === null);
 
     await go(pg, '/dashboard');
+    await openCart(pg);
     await pg.click('#cart-plans input[name="plan"]');
     s = await shown(pg);
     check('unticking the plan takes it and the storage fee out of the total, and there is nothing to pay', s.total === '0' && s.added === 'false' && s.pay === null, JSON.stringify(s));
+    await openCart(pg);
     await pg.click('#cart-plans input[name="plan"]');
     s = await shown(pg);
     check('ticking it again brings both back', s.total === String(BASIC + STORAGE) && s.added === 'true' && s.pay === `Pay ${dollars(BASIC + STORAGE)}`, JSON.stringify(s));
+    await openCart(pg);
     await pg.click('#cart-pay');
     await pause(2500);
     check('Pay does nothing until the refund policy is accepted', new URL(pg.url()).origin === new URL(SERVER).origin && (await rowsOf(p)).length === 0, pg.url());
 
     console.log('\nPaying from the cart');
     const before = Date.now();
+    await openCart(pg);
     await pg.click('#cart-accept');
+    await openCart(pg);
     await pg.click('#cart-pay');
     await pg.waitForFunction(() => location.host === 'checkout.stripe.com', { timeout: 180000 });
     rows = await rowsOf(p);
@@ -691,7 +703,9 @@ try {
     await pg2.close();
 
     await go(pg, '/dashboard');
+    await openCart(pg);
     await pg.click('#cart-accept');
+    await openCart(pg);
     await pg.click('#cart-pay');
     await fillStripeForm(pg);
     await pg.waitForFunction((base) => location.href.startsWith(base) && location.pathname === '/dashboard', { timeout: 180000 }, SERVER);

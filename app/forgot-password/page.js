@@ -6,6 +6,8 @@ import { createClient } from '../../lib/supabase/client'
 import Link from 'next/link'
 import { Wordmark } from '../components/brand/Wordmark'
 import { requestRecoveryReset } from './actions'
+import { WarningMark } from '../components/StatusMarks'
+import { AccountGlow } from '../components/Glow'
 
 // Password reset, from the sign-in page (Master Specification, Settings:
 // "Password change and reset"). The person gives the address they sign in
@@ -52,18 +54,18 @@ function ForgotPasswordForm() {
 
   if (sent) {
     return (
-      <div className="w-full max-w-md text-center">
+      <div className="relative z-[1] w-full max-w-md text-center">
         <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
           <Wordmark size="lg" withMark />
         </Link>
-        <div className="bg-gray-900 rounded-2xl p-8 mt-10 border border-gray-800">
+        <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 mt-10 border border-[color:var(--card-edge)]">
           <h1 className="text-2xl font-bold mb-3">Check your email</h1>
           <p className="text-gray-400 leading-relaxed">
             If <span className="text-white">{email}</span> has a Posterity account, a reset link is on
             its way. It works for an hour.
           </p>
         </div>
-        <p className="text-gray-600 text-sm mt-6">
+        <p className="text-[color:var(--text-quiet)] text-sm mt-6">
           <a href="/login" className="text-gray-300 underline hover:text-white">Back to log in</a>
         </p>
       </div>
@@ -71,14 +73,14 @@ function ForgotPasswordForm() {
   }
 
   return (
-    <div className="w-full max-w-md">
+    <div className="relative z-[1] w-full max-w-md">
       <div className="text-center mb-10">
         <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
           <Wordmark size="lg" withMark />
         </Link>
         <p className="text-gray-400 mt-2">Reset your password</p>
       </div>
-      <div className="bg-gray-900 rounded-2xl p-8 flex flex-col gap-4">
+      <div className="bg-[color:var(--card-ground)] posterity-frame border border-[color:var(--card-edge)] rounded-2xl p-8 flex flex-col gap-4">
         <div>
           <label htmlFor="email" className="text-sm text-gray-400 mb-1 block">Email</label>
           <input
@@ -89,14 +91,14 @@ function ForgotPasswordForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !loading && handleRequest()}
-            className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
+            className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
           />
-          <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+          <p className="text-xs text-[color:var(--text-quiet)] mt-1 leading-relaxed">
             The address you sign in with. We&rsquo;ll send it a link to choose a new password.{' '}
             [Placeholder: Product surface copy — forgot password: a confirmed recovery email address works here too]
           </p>
         </div>
-        {message && <p className="text-sm text-center text-red-400">{message}</p>}
+        {message && <p className="text-sm text-center text-[color:var(--brand-rose)] inline-flex items-start justify-center gap-2"><WarningMark className="mt-0.5" />{message}</p>}
         <button
           onClick={handleRequest}
           disabled={loading}
@@ -115,10 +117,11 @@ function ForgotPasswordForm() {
 
 export default function ForgotPassword() {
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center px-6">
+    <main className="relative min-h-screen bg-black text-white flex items-center justify-center px-6">
       <Suspense fallback={null}>
         <ForgotPasswordForm />
       </Suspense>
+      <AccountGlow />
     </main>
   )
 }

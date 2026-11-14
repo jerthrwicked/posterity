@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '../../lib/supabase/client'
+import { WarningMark } from '../components/StatusMarks'
 
 // Sets the password on the session the reset link opened. The same rule as
 // signup: at least 8 characters. Once it is set, a full navigation to the
@@ -29,7 +30,7 @@ export function NewPasswordForm({ email }) {
   }
 
   return (
-    <div className="bg-gray-900 rounded-2xl p-8 flex flex-col gap-4">
+    <div className="bg-[color:var(--card-ground)] posterity-frame border border-[color:var(--card-edge)] rounded-2xl p-8 flex flex-col gap-4">
       <p className="text-sm text-gray-400">
         Signed in as <span className="text-white">{email}</span>
       </p>
@@ -42,7 +43,7 @@ export function NewPasswordForm({ email }) {
           placeholder="At least 8 characters"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
+          className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
         />
       </div>
       <div>
@@ -55,10 +56,10 @@ export function NewPasswordForm({ email }) {
           value={again}
           onChange={(e) => setAgain(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && !loading && handleSave()}
-          className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
+          className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
         />
       </div>
-      {error && <p className="text-sm text-center text-red-400">{error}</p>}
+      {error && <p className="text-sm text-center text-[color:var(--brand-rose)] inline-flex items-start justify-center gap-2"><WarningMark className="mt-0.5" />{error}</p>}
       <button
         onClick={handleSave}
         disabled={loading}

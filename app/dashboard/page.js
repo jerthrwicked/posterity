@@ -5,6 +5,7 @@ import { ProfileShell, Card } from './_profile/ProfileShell'
 import { YearCalendar, PlanFacts, StatusPill, StorageFeeNotice, TIER_NAMES } from './_plans/YearCalendar'
 import { PlanOptions, TimeZoneForm, DeletePlanForm } from './_plans/PlanOptions'
 import { settleCart, plansHeld } from './_cart/read'
+import { CheckMark, WarningMark } from '../components/StatusMarks'
 
 // What the Plans tab says once the cart's payment form comes back
 // (app/api/cart/return/route.js). No approved text exists yet, so each is a
@@ -82,7 +83,10 @@ export default async function PlansTab({ searchParams }) {
     <ProfileShell tab="plans" profile={profile}>
       {payment && (
         <p id="payment-result" role="status" data-payment={came}
-          className="mb-6 rounded-2xl border border-gray-700 px-5 py-4 text-sm text-gray-200">
+          className={came === 'paid'
+            ? 'mb-6 text-sm text-[#93ab99] flex items-start gap-2'
+            : 'mb-6 rounded-2xl border border-white px-5 py-4 text-sm text-white flex items-start gap-2'}>
+          {came === 'paid' ? <CheckMark className="mt-0.5" /> : <WarningMark className="mt-0.5" />}
           {payment}
         </p>
       )}
@@ -92,7 +96,7 @@ export default async function PlansTab({ searchParams }) {
 
       {account && (
         <section id="plan-year-panel" data-year={selected} aria-labelledby="plan-year-title"
-          className="mt-6 bg-gray-900 rounded-2xl p-6 sm:p-8 border border-gray-800">
+          className="mt-6 bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-6 sm:p-8 border border-[color:var(--card-edge)]">
           <div className="flex flex-wrap items-center gap-3">
             <h2 id="plan-year-title" className="text-xl font-bold">
               Year {selected}{plan ? ` · ${TIER_NAMES[plan.tier]}` : ''}
@@ -107,7 +111,7 @@ export default async function PlansTab({ searchParams }) {
               {/* The time zone alone stays open on a paid plan, and on one
                   placed by staff, until Interlude (Calendar System). */}
               {canBuild && !(unpaid && theirs) && (
-                <div id="plan-options" className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div id="plan-options" className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-7">
                   <TimeZoneForm key={`zone-${plan.id}-${plan.delivery_time_zone}`} plan={plan} />
                 </div>
               )}
@@ -149,7 +153,7 @@ export default async function PlansTab({ searchParams }) {
       {/* Stage 4.5: Plan Content and the button that opens the Content
           Builder land here. Until then the content built so far opens from
           this card. */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-7">
         <Card
           href="/dashboard/legacy"
           title="My Legacy"

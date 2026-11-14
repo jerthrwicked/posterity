@@ -16,12 +16,16 @@ import { TEXTING_OPEN } from '../../../lib/dispatch/policy'
 import { getStripe } from '../../../lib/posterity/stripe'
 import { readPaymentSettings } from '../../../lib/posterity/payment-setup'
 import { deletionClosed } from '../../../lib/posterity/account-deletion'
+import { WarningMark } from '../../components/StatusMarks'
+import { AccountGlow } from '../../components/Glow'
+import { NavCart } from '../_cart/NavCart'
 
 // Settings is its own page (Master Specification, Settings). The global
 // navigation dropdown built within Stage 4.3 will carry its link; until then
 // the dashboard does.
 export default async function Settings({ searchParams }) {
-  const { supabase, user, account, status } = await requireAccount()
+  const profile = await requireAccount()
+  const { supabase, user, account, status } = profile
   const query = await searchParams
   const notice = query?.recovery_email ?? null
   const paymentNotice = query?.payment ?? null
@@ -66,40 +70,45 @@ export default async function Settings({ searchParams }) {
     : null
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="relative min-h-screen bg-black text-white">
+      <NavCart profile={profile} />
 
-      <div className="max-w-3xl mx-auto px-8 py-16">
+      <div className="relative z-[1] max-w-4xl mx-auto px-4 sm:px-8 py-10 sm:py-16">
         <a href="/dashboard" className="text-gray-400 hover:text-white text-sm">&larr; Account</a>
 
         <h1 className="text-4xl font-bold mt-4 mb-12">Settings</h1>
 
         <h2 className="text-xl font-bold mb-4">Account details</h2>
         {details ? (
-          <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
             <AccountDetailsForm
               legalName={details.legal_name}
               name={details.name === details.legal_name ? '' : details.name}
               phone={displayPhone(details.phone)}
             />
-            <EmailChangeForm email={user.email} pendingEmail={user.new_email || null} />
-            <RecoveryEmailForm held={recovery} notice={notice} />
             <TextSwitchForm on={texts.on} phone={displayPhone(details.phone)} disclosure={TEXT_DISCLOSURE}
               sending={TEXTING_OPEN} waiting={texts.waiting ? { code: texts.waiting.code } : null}
               textTo={{ e164: SMS_FROM, display: displayPhone(SMS_FROM) }} minutes={CODE_MINUTES} />
+            <EmailChangeForm email={user.email} pendingEmail={user.new_email || null} />
+            <RecoveryEmailForm held={recovery} notice={notice} />
             <PaymentSetupForm held={!!payments.setup.held} method={payments.setup.method ?? null}
               unread={!!payments.unread} notice={paymentNotice} />
             <AutomaticPaymentsForm held={!!payments.automatic.held} on={!!payments.automatic.on}
               unread={!!payments.unread} />
-            <DeleteAccountForm email={user.email} closed={deletionClosed(status)} until={lockedUntil} />
-          </>
+            <div className="md:col-span-2">
+              <DeleteAccountForm email={user.email} closed={deletionClosed(status)} until={lockedUntil} />
+            </div>
+          </div>
         ) : (
-          <div className="rounded-2xl p-6 border border-yellow-900 bg-yellow-950/30">
-            <p className="text-yellow-200 text-sm">
+          <div className="rounded-2xl p-6 border border-white">
+            <p className="text-white text-sm flex items-start gap-2">
+              <WarningMark className="mt-0.5" />
               [Placeholder: Product surface copy — error messages: the account record cannot be found]
             </p>
           </div>
         )}
       </div>
+      <AccountGlow />
     </main>
   )
 }

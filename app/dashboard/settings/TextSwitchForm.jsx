@@ -6,9 +6,10 @@ import { useFormStatus } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { textSwitchAction } from './text-switch'
 import { Switch } from './Switch'
+import { CheckMark, WarningMark } from '../../components/StatusMarks'
 
 const label = 'text-sm text-gray-400 mb-1 block'
-const note = 'text-xs text-gray-600 mt-3 leading-relaxed'
+const note = 'text-xs text-[color:var(--text-quiet)] mt-3 leading-relaxed'
 // How often the page looks for the customer's text while a code is showing.
 const LOOK_EVERY_MS = 5000
 
@@ -16,7 +17,7 @@ function Cancel() {
   const { pending } = useFormStatus()
   return (
     <button type="submit" disabled={pending}
-      className="text-sm text-gray-500 hover:text-white underline underline-offset-4 disabled:opacity-50">
+      className="text-sm text-gray-400 hover:text-white underline underline-offset-4 disabled:opacity-50">
       Cancel
     </button>
   )
@@ -50,15 +51,15 @@ export function TextSwitchForm({ on, phone, disclosure, sending, waiting = null,
   }, [code, router])
 
   return (
-    <form action={action} className="bg-gray-900 rounded-2xl p-8 border border-gray-800 mt-6">
+    <form action={action} className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)]">
       <input type="hidden" name="turn" value={code ? 'cancel' : on ? 'off' : 'on'} />
       <div className="flex items-center justify-between gap-6">
         <div>
           <p id="text_switch_label" className={label}>Text messages</p>
           {phone ? (
-            <p className="text-gray-300">{on ? 'On' : 'Off'} <span className="text-gray-600">· {phone}</span></p>
+            <p className="text-gray-300">{on ? 'On' : 'Off'} <span className="text-gray-400">· {phone}</span></p>
           ) : (
-            <p className="text-gray-600">Off</p>
+            <p className="text-[color:var(--text-quiet)]">Off</p>
           )}
         </div>
         {/* While a code shows the switch holds still, and the form's one button is Cancel. */}
@@ -97,17 +98,19 @@ export function TextSwitchForm({ on, phone, disclosure, sending, waiting = null,
         </p>
       )}
       {!sending && (
-        <p className="text-xs text-yellow-200 mt-3 leading-relaxed">
+        <p className="text-xs text-white mt-3 leading-relaxed flex items-start gap-2">
+          <WarningMark className="mt-0.5" />
           [Placeholder: Product surface copy — Settings: Posterity is not sending texts yet; everything goes by email
           until it is]
         </p>
       )}
       {(state.done === 'on' || state.done === 'waiting') && on && sending && (
-        <p className="text-xs text-green-300 mt-3">
+        <p className="text-xs text-[#93ab99] mt-3 inline-flex items-start gap-2">
+          <CheckMark />
           [Placeholder: Product surface copy — Settings: texts are on, and a confirmation text is on its way to {phone}]
         </p>
       )}
-      {state.error && <p className="text-sm text-red-400 mt-3">{state.error}</p>}
+      {state.error && <p className="text-sm text-[color:var(--brand-rose)] mt-3 inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{state.error}</p>}
     </form>
   )
 }

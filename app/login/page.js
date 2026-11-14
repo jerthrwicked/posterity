@@ -5,6 +5,8 @@ import { useSearchParams } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
 import { safeNext } from '../../lib/auth/next-address'
 import { Wordmark } from '../components/brand/Wordmark'
+import { WarningMark } from '../components/StatusMarks'
+import { AccountGlow } from '../components/Glow'
 
 function LoginForm() {
   const searchParams = useSearchParams()
@@ -36,14 +38,14 @@ function LoginForm() {
   }
 
   return (
-    <div className="w-full max-w-md">
+    <div className="relative z-[1] w-full max-w-md">
       <div className="text-center mb-10">
         <a href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
           <Wordmark size="lg" withMark />
         </a>
         <p className="text-gray-400 mt-2">Welcome back</p>
       </div>
-      <div className="bg-gray-900 rounded-2xl p-8 flex flex-col gap-4">
+      <div className="bg-[color:var(--card-ground)] posterity-frame border border-[color:var(--card-edge)] rounded-2xl p-8 flex flex-col gap-4">
         <div>
           <label htmlFor="email" className="text-sm text-gray-400 mb-1 block">Email</label>
           <input
@@ -53,7 +55,7 @@ function LoginForm() {
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
+            className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
           />
         </div>
         <div>
@@ -66,19 +68,19 @@ function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !loading && handleLogin()}
-            className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition"
+            className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
           />
         </div>
         <p className="text-right text-xs -mt-2">
-          <a href="/forgot-password" className="text-gray-500 hover:text-gray-300">Forgot your password?</a>
+          <a href="/forgot-password" className="text-[color:var(--text-quiet)] hover:text-gray-300">Forgot your password?</a>
         </p>
         <p className="text-right text-xs -mt-2">
-          <a href="/account-recovery" className="text-gray-500 hover:text-gray-300">
+          <a href="/account-recovery" className="text-[color:var(--text-quiet)] hover:text-gray-300">
             [Placeholder: Product surface copy — sign-in page: the link to account recovery, for someone who can no
             longer reach their email]
           </a>
         </p>
-        {message && <p className="text-sm text-center text-red-400">{message}</p>}
+        {message && <p className="text-sm text-center text-[color:var(--brand-rose)] inline-flex items-start justify-center gap-2"><WarningMark className="mt-0.5" />{message}</p>}
         <button
           onClick={handleLogin}
           disabled={loading}
@@ -97,10 +99,11 @@ function LoginForm() {
 
 export default function Login() {
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center px-6">
+    <main className="relative min-h-screen bg-black text-white flex items-center justify-center px-6">
       <Suspense fallback={null}>
         <LoginForm />
       </Suspense>
+      <AccountGlow />
     </main>
   )
 }

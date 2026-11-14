@@ -6,6 +6,7 @@ import { useFormStatus } from 'react-dom'
 import { PLANS } from '../../../lib/posterity/plans'
 import { CUSTOMER_TIERS } from '../../../lib/posterity/plan-calendar'
 import { addPlanAction } from '../_plans/actions'
+import { WarningMark } from '../../components/StatusMarks'
 
 const FOCUS = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#93ab99]'
 const PILL = `w-full rounded-full border border-white px-5 py-3 text-sm font-semibold text-white hover:bg-white hover:text-black transition-colors duration-200 cursor-pointer disabled:opacity-50 ${FOCUS}`
@@ -37,7 +38,7 @@ export function AddPlanForm({ year, chosen }) {
           const plan = PLANS[tier]
           return (
             <form key={tier} action={action} data-tier={tier}
-              className="bg-gray-900 rounded-2xl p-6 sm:p-8 border border-gray-800 flex flex-col">
+              className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-6 sm:p-8 border border-[color:var(--card-edge)] flex flex-col">
               <input type="hidden" name="tier" value={tier} />
               <input type="hidden" name="time_zone" value={zone} />
               {chosen && <input type="hidden" name="year" value={year} />}
@@ -63,7 +64,7 @@ export function AddPlanForm({ year, chosen }) {
           )
         })}
       </div>
-      {state.error && <p role="alert" className="text-sm text-red-400 mt-4">{state.error}</p>}
+      {state.error && <p role="alert" className="text-sm text-[color:var(--brand-rose)] mt-4 inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{state.error}</p>}
     </div>
   )
 }

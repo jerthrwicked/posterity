@@ -4,9 +4,10 @@
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { saveAccountDetails } from './actions'
+import { CheckMark, WarningMark } from '../../components/StatusMarks'
 
 const input =
-  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition'
+  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition'
 const label = 'text-sm text-gray-400 mb-1 block'
 
 function Submit() {
@@ -32,7 +33,7 @@ export function AccountDetailsForm({ legalName, name, phone }) {
   const v = state?.values
 
   return (
-    <form action={action} className="bg-gray-900 rounded-2xl p-8 border border-gray-800 flex flex-col gap-4">
+    <form action={action} className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)] flex flex-col gap-4">
       <div>
         <label htmlFor="legal_name" className={label}>Legal name</label>
         <input id="legal_name" name="legal_name" autoComplete="name" className={input}
@@ -41,7 +42,7 @@ export function AccountDetailsForm({ legalName, name, phone }) {
 
       <div>
         <label htmlFor="name" className={label}>
-          Name your recipients see <span className="text-gray-600">· optional</span>
+          Name your recipients see <span className="text-[color:var(--text-quiet)]">· optional</span>
         </label>
         <input id="name" name="name" autoComplete="nickname" className={input}
           defaultValue={v ? v.name : name} placeholder="Same as your legal name" />
@@ -49,14 +50,14 @@ export function AccountDetailsForm({ legalName, name, phone }) {
 
       <div>
         <label htmlFor="phone" className={label}>
-          Phone number <span className="text-gray-600">· optional, recommended</span>
+          Phone number <span className="text-[color:var(--text-quiet)]">· optional, recommended</span>
         </label>
         <input id="phone" name="phone" type="tel" autoComplete="tel" className={input}
           defaultValue={v ? v.phone : phone} placeholder="(504) 555-1234" />
       </div>
 
-      {state?.error && <p className="text-sm text-red-400">{state.error}</p>}
-      {state?.ok && <p className="text-sm text-green-400">{state.ok}</p>}
+      {state?.error && <p className="text-sm text-[color:var(--brand-rose)] inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{state.error}</p>}
+      {state?.ok && <p className="text-sm text-[#93ab99] inline-flex items-start gap-2"><CheckMark className="mt-0.5" />{state.ok}</p>}
 
       <Submit />
     </form>

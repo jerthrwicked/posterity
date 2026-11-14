@@ -76,7 +76,7 @@ function Arrow({ id, to, label, children }) {
 export function YearCalendar({ years, selected }) {
   return (
     <section id="plan-selection" aria-labelledby="plan-selection-year"
-      className="bg-gray-900 rounded-2xl p-6 sm:p-8 border border-gray-800">
+      className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-6 sm:p-8 border border-[color:var(--card-edge)]">
       <p className="font-mono text-xs uppercase tracking-widest text-gray-400">Plan Selection</p>
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-4">

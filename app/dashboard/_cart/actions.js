@@ -54,8 +54,8 @@ export async function payAction(_prev, formData) {
     })
     url = opened.url
   } catch (err) {
-    // The cart is read afresh on every tab, so a refusal shows the customer
-    // the cart as it now stands.
+    // The cart is read afresh on every page behind sign-in, so a refusal
+    // shows the customer the cart as it now stands.
     revalidatePath('/dashboard', 'layout')
     if (err instanceof CheckoutRefused) return { error: ERRORS[err.reason] ?? ERRORS.notOpened }
     console.log(`cart: the payment form was not opened: ${String(err?.message ?? err).slice(0, 200)}`)

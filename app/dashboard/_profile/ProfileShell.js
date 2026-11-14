@@ -5,19 +5,21 @@
 // every tab reads the account afresh: the phase here comes from the account
 // status check on each load, as every surface's does.
 //
-// From the top: the place for the Account Restoration banner, the welcome
-// with the live cart at its right, the strip with the phase display and the
-// place for the check-in button, and the tabs. Later sub-stages insert into
-// the places left for them; each is marked where it lands.
+// From the top: the place for the Account Restoration banner, the welcome,
+// the strip with the phase display and the place for the check-in button, and
+// the tabs. Later sub-stages insert into the places left for them; each is
+// marked where it lands.
 //
-// The cart is read here, so every tab shows it and none has to remember to
-// (Master Specification, User Profiles: "Live cart top right of User
-// Profiles").
+// The cart is rendered here, so every tab shows it and none has to remember
+// to. As on every page behind sign-in, it sits in the top bar, just left of
+// the menu (NavCart.js; Master Specification, User Profiles: "Live cart top
+// right of User Profiles").
 import { StorageNotice } from '../../components/StorageNotice'
-import { Cart } from '../_cart/Cart'
-import { readCart } from '../_cart/read'
+import { NavCart } from '../_cart/NavCart'
 import { trialDaysLeft } from '../../../lib/posterity/storage'
 import { PHASES } from './phases'
+import { WarningMark } from '../../components/StatusMarks'
+import { AccountGlow } from '../../components/Glow'
 
 export const TABS = [
   { id: 'plans', label: 'Plans', href: '/dashboard' },
@@ -31,7 +33,6 @@ const TAB = 'rounded-full border px-3 sm:px-4 py-2 text-sm font-semibold whitesp
 
 export async function ProfileShell({ tab, profile, children }) {
   const { account, status } = profile
-  const cart = await readCart(profile)
   const key = PHASES[status?.phase] ? status.phase : 'horizon'
   const phase = PHASES[key]
   const name = account?.name || 'Friend'
@@ -49,22 +50,20 @@ export async function ProfileShell({ tab, profile, children }) {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <div className="max-w-4xl mx-auto px-4 sm:px-8 py-10 sm:py-16">
+    <main className="relative min-h-screen bg-black text-white">
+      <div className="relative z-[1] max-w-4xl mx-auto px-4 sm:px-8 py-10 sm:py-16">
         {/* The place for the Account Restoration banner, at the top of every
             tab. Stage 4.7 inserts the banner; until then it holds nothing. */}
         <div id="restoration-banner-place" />
 
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
-          <h1 className="text-3xl sm:text-4xl font-bold min-w-0 break-words">Welcome, {name}.</h1>
-          {cart && <Cart {...cart} open={tab === 'plans'} />}
-        </div>
+        <h1 className="text-3xl sm:text-4xl font-bold break-words mb-6">Welcome, {name}.</h1>
+        <NavCart profile={profile} />
 
         {/* The strip across the top of every tab. */}
         <section
           id="profile-strip"
           aria-label="Phase"
-          className="rounded-2xl border border-gray-800 px-5 sm:px-6 py-5 flex flex-wrap items-center justify-between gap-4"
+          className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl border border-[color:var(--card-edge)] px-5 sm:px-6 py-5 flex flex-wrap items-center justify-between gap-4"
         >
           <div id="phase-display" data-phase={key}>
             <p className="font-mono text-xs uppercase tracking-widest text-gray-400">Phase</p>
@@ -93,8 +92,9 @@ export async function ProfileShell({ tab, profile, children }) {
           </div>
         )}
         {!account && (
-          <div className="mt-6 rounded-2xl p-6 border border-yellow-900 bg-yellow-950/30">
-            <p className="text-yellow-200 text-sm">
+          <div className="mt-6 rounded-2xl p-6 border border-white">
+            <p className="text-white text-sm flex items-start gap-2">
+              <WarningMark className="mt-0.5" />
               We couldn&rsquo;t find your account record. Nothing is lost — please contact us and
               we&rsquo;ll put it right.
             </p>
@@ -119,6 +119,7 @@ export async function ProfileShell({ tab, profile, children }) {
 
         <div id={`tab-${tab}`}>{children}</div>
       </div>
+      <AccountGlow breathing />
     </main>
   )
 }
@@ -134,14 +135,16 @@ export function Card({ title, blurb, value, hint, href }) {
       <p className="text-gray-400 text-sm">{hint}</p>
     </>
   )
-  const base = 'bg-gray-900 rounded-2xl p-6 sm:p-8 border border-gray-800 block'
+  const base = 'bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-6 sm:p-8 border border-[color:var(--card-edge)] block'
+  // The frame (app/globals.css) sits outside Tailwind's layers, so the focus
+  // outline is marked important: on keyboard focus it takes the frame's place.
 
   if (!href) return <div className={base}>{body}</div>
 
   return (
     <a
       href={href}
-      className={`${base} hover:border-gray-600 transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#93ab99]`}
+      className={`${base} hover:border-[#93ab99] transition-colors duration-200 focus-visible:outline! focus-visible:outline-2! focus-visible:outline-offset-2! focus-visible:outline-[#93ab99]!`}
       style={{ textDecoration: 'none', color: 'inherit' }}
     >
       {body}
@@ -152,7 +155,7 @@ export function Card({ title, blurb, value, hint, href }) {
 // A tab with nothing built within it yet says so in one line.
 export function Empty({ children }) {
   return (
-    <div className="rounded-2xl p-6 sm:p-8 border border-gray-800">
+    <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-6 sm:p-8 border border-[color:var(--card-edge)]">
       <p className="text-gray-400 text-sm">{children}</p>
     </div>
   )

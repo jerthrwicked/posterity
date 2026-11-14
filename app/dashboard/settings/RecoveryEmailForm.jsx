@@ -4,11 +4,12 @@
 import { useActionState, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { recoveryEmailAction } from './recovery-email'
+import { CheckMark, WarningMark } from '../../components/StatusMarks'
 
 const input =
-  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition'
+  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition'
 const label = 'text-sm text-gray-400 mb-1 block'
-const note = 'text-xs text-gray-600 mt-1 leading-relaxed'
+const note = 'text-xs text-[color:var(--text-quiet)] mt-1 leading-relaxed'
 const link = 'text-sm text-gray-300 underline hover:text-white cursor-pointer'
 
 function Submit({ children, busy }) {
@@ -97,7 +98,7 @@ function Open({ mode, held, onClose }) {
         </p>
       )}
       {(mode === 'set' || mode === 'resend') && <Password />}
-      {state.error && <p className="text-sm text-red-400">{state.error}</p>}
+      {state.error && <p className="text-sm text-[color:var(--brand-rose)] inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{state.error}</p>}
       <div className="flex gap-3">
         <Cancel onClick={onClose} />
         {mode === 'remove' && <Submit busy="Removing...">Remove</Submit>}
@@ -118,12 +119,12 @@ export function RecoveryEmailForm({ held, notice }) {
   const open = (m) => { setMode(m); setRound((r) => r + 1) }
 
   return (
-    <div className="bg-gray-900 rounded-2xl p-8 border border-gray-800 mt-6">
+    <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)]">
       <p className={label}>Recovery email address</p>
       {held?.email ? (
         <p className="px-4 py-3 rounded-lg border border-gray-800 text-gray-300">{held.email}</p>
       ) : (
-        <p className="px-4 py-3 rounded-lg border border-gray-800 text-gray-600">
+        <p className="px-4 py-3 rounded-lg border border-gray-800 text-[color:var(--text-quiet)]">
           [Placeholder: Product surface copy — Settings: no recovery email address is held]
         </p>
       )}
@@ -132,18 +133,21 @@ export function RecoveryEmailForm({ held, notice }) {
         in with is lost, a password reset link can go here instead; it receives reset links and nothing else]
       </p>
       {notice === 'confirmed' && held?.email && (
-        <p className="text-xs text-green-300 mt-3">
+        <p className="text-xs text-[#93ab99] mt-3 inline-flex items-start gap-2">
+          <CheckMark />
           [Placeholder: Product surface copy — Settings: the recovery email address is confirmed]
         </p>
       )}
       {notice === 'link_expired' && (
-        <p className="text-xs text-red-400 mt-3">
+        <p className="text-xs text-[color:var(--brand-rose)] mt-3 inline-flex items-start gap-2">
+          <WarningMark />
           [Placeholder: Product surface copy — Settings: that confirmation link has expired, was replaced, or was
           already used; send a new one]
         </p>
       )}
       {held?.pending && (
-        <p className="text-xs text-yellow-200 mt-3 leading-relaxed">
+        <p className="text-xs text-white mt-3 leading-relaxed flex items-start gap-2">
+          <WarningMark className="mt-0.5" />
           {held.pending.expired
             ? `[Placeholder: Product surface copy — Settings: the link sent to ${held.pending.email} has expired; until a new one is used, it receives nothing`
             : `[Placeholder: Product surface copy — Settings: ${held.pending.email} is waiting on the link sent to it, which lasts an hour; until it is used, it receives nothing`}

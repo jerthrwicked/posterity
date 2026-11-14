@@ -80,6 +80,8 @@ export default function GlobalNav() {
         <span style={{ fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", lineHeight: 1, fontSize: 22 }}>Posterity</span>
       </a>
 
+      <div className="flex items-center gap-4">
+        <div id="nav-cart-slot" className="flex items-center" />
       <div className="navmenu" ref={menuRef}>
         <button
           onClick={() => setOpen((v) => !v)}
@@ -151,6 +153,7 @@ export default function GlobalNav() {
             )}
           </div>
         )}
+      </div>
       </div>
     </nav>
   );

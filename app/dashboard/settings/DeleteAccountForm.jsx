@@ -4,11 +4,12 @@
 import { useActionState, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { deleteMyAccount } from './account-deletion'
+import { WarningMark } from '../../components/StatusMarks'
 
 const input =
-  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition'
+  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition'
 const label = 'text-sm text-gray-400 mb-1 block'
-const note = 'text-xs text-gray-600 mt-1 leading-relaxed'
+const note = 'text-xs text-[color:var(--text-quiet)] mt-1 leading-relaxed'
 
 function Submit({ children, busy }) {
   const { pending } = useFormStatus()
@@ -16,7 +17,7 @@ function Submit({ children, busy }) {
     <button
       type="submit"
       disabled={pending}
-      className="flex-1 border border-red-900 text-red-300 py-3 rounded-lg font-semibold hover:border-red-500 hover:text-red-200 transition disabled:opacity-50 cursor-pointer"
+      className="flex-1 border border-[color:var(--brand-rose)] text-[color:var(--brand-rose)] py-3 rounded-lg font-semibold hover:bg-[color:var(--brand-rose)] hover:text-black transition disabled:opacity-50 cursor-pointer"
     >
       {pending ? busy : children}
     </button>
@@ -65,7 +66,7 @@ function Steps({ email, onCancel }) {
             paid within the last thirty days]
           </p>
         )}
-        {state.error && <p className="text-sm text-red-400">{state.error}</p>}
+        {state.error && <p className="text-sm text-[color:var(--brand-rose)] inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{state.error}</p>}
         <div className="flex gap-3">
           {cancel}
           <Submit busy="Deleting...">Delete account</Submit>
@@ -85,7 +86,7 @@ function Steps({ email, onCancel }) {
           sent to {email}, the double verification]
         </p>
       </div>
-      {state.error && <p className="text-sm text-red-400">{state.error}</p>}
+      {state.error && <p className="text-sm text-[color:var(--brand-rose)] inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{state.error}</p>}
       <div className="flex gap-3">
         {cancel}
         <Submit busy="Sending...">Send code</Submit>
@@ -101,19 +102,21 @@ export function DeleteAccountForm({ email, closed, until }) {
   const [round, setRound] = useState(0)
 
   return (
-    <div className="bg-gray-900 rounded-2xl p-8 border border-gray-800 mt-6" data-card="delete-account">
+    <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)]" data-card="delete-account">
       <p className={label}>Delete account</p>
       <p className="text-sm text-gray-300 leading-relaxed">
         [Placeholder: Product surface copy — Settings: deleting the account removes everything it holds, at once and
         for good; a plan paid within the last thirty days is refunded in full, and storage fees are not refunded]
       </p>
       {closed === 'recovery_lock' ? (
-        <p className="text-xs text-yellow-200 mt-3 leading-relaxed" data-closed="recovery_lock">
+        <p className="text-xs text-white mt-3 leading-relaxed flex items-start gap-2" data-closed="recovery_lock">
+          <WarningMark className="mt-0.5" />
           [Placeholder: Product surface copy — Settings: the account was recovered, so it cannot be deleted
           until {until}]
         </p>
       ) : closed ? (
-        <p className="text-xs text-yellow-200 mt-3 leading-relaxed" data-closed={closed}>
+        <p className="text-xs text-white mt-3 leading-relaxed flex items-start gap-2" data-closed={closed}>
+          <WarningMark className="mt-0.5" />
           [Placeholder: Product surface copy — Settings: the account can be deleted only during the Horizon and
           Planning Phases]
         </p>
@@ -121,7 +124,7 @@ export function DeleteAccountForm({ email, closed, until }) {
         <Steps key={round} email={email} onCancel={() => { setOpen(false); setRound((r) => r + 1) }} />
       ) : (
         <button type="button" onClick={() => setOpen(true)}
-          className="mt-4 text-sm text-red-300 underline hover:text-red-200 cursor-pointer">
+          className="mt-4 text-sm text-[color:var(--brand-rose)] underline cursor-pointer">
           Delete account
         </button>
       )}

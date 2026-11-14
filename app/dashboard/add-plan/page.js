@@ -11,6 +11,8 @@
 import { requireAccount } from '../../../lib/posterity/account'
 import { atPlanLimit, MAX_PLAN_YEAR } from '../../../lib/posterity/plan-calendar'
 import { StorageNotice } from '../../components/StorageNotice'
+import { AccountGlow } from '../../components/Glow'
+import { NavCart } from '../_cart/NavCart'
 import { AddPlanForm } from './AddPlanForm'
 
 function yearFrom(value) {
@@ -23,9 +25,10 @@ const LINE = 'text-sm text-gray-300 leading-relaxed'
 export default async function AddPlan({ searchParams }) {
   const query = await searchParams
   const asked = yearFrom(query?.year)
-  const { supabase, account, status, canBuild } = await requireAccount({
+  const profile = await requireAccount({
     next: asked ? `/dashboard/add-plan?year=${asked}` : '/dashboard/add-plan',
   })
+  const { supabase, account, status, canBuild } = profile
 
   let plans = []
   if (account) {
@@ -37,8 +40,9 @@ export default async function AddPlan({ searchParams }) {
   const limited = atPlanLimit(status?.phase ?? account?.phase, plans)
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <div className="max-w-4xl mx-auto px-4 sm:px-8 py-10 sm:py-16">
+    <main className="relative min-h-screen bg-black text-white">
+      <NavCart profile={profile} />
+      <div className="relative z-[1] max-w-4xl mx-auto px-4 sm:px-8 py-10 sm:py-16">
         <a href="/dashboard" className="text-sm text-gray-400 hover:text-white transition-colors duration-200">← Plans</a>
         <h1 className="text-3xl sm:text-4xl font-bold mt-4">Add a plan</h1>
 
@@ -69,6 +73,7 @@ export default async function AddPlan({ searchParams }) {
           )}
         </div>
       </div>
+      <AccountGlow />
     </main>
   )
 }
