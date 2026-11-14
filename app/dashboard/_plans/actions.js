@@ -8,6 +8,8 @@ import { requireAccount } from '../../../lib/posterity/account'
 import {
   placePlan, setSkips, setSlots, setTimeZone, setTier, deletePlan, PlanRefused,
 } from '../../../lib/posterity/plan-records'
+import { closeOpenCheckout, CheckoutRefused } from '../../../lib/posterity/checkout'
+import { getStripe } from '../../../lib/posterity/stripe'
 
 // The server actions behind Plan Selection (Master Specification, User
 // Profiles): Add a plan, and each option on a plan. The customer's session
@@ -33,6 +35,7 @@ const ERRORS = {
   slots_out_of_range: '[Placeholder: Product surface copy — error messages: a plan carries up to four Additional Recipient slots]',
   paid_plan_in_the_way: '[Placeholder: Product surface copy — error messages: a paid plan holds its year, so this plan cannot be moved onto or past it]',
   downgrade_unconfirmed: '[Placeholder: Product surface copy — error messages: a change to a lower tier needs to be confirmed]',
+  checkout_open: '[Placeholder: Product surface copy — error messages: a payment for this account is being completed, so its plans cannot be changed right now]',
 }
 
 function serviceDb() {
@@ -43,14 +46,23 @@ function serviceDb() {
 
 // Runs one change for the signed-in customer's account. Returns
 // { result } or { error }.
-async function change(what, run) {
+//
+// A change that alters what the cart charges (priced) first closes the
+// account's open payment form, so a payment can never land on a cart that has
+// changed under it (lib/posterity/checkout.js). Where that form turns out to
+// have been paid, the payment is applied instead, and the change is then
+// refused for a plan it paid for, as any change to a paid plan is.
+async function change(what, run, { priced = true } = {}) {
   const { account } = await requireAccount()
   if (!account) return { error: ERRORS.noAccount }
   try {
-    return { result: await run(serviceDb(), account.id) }
+    const db = serviceDb()
+    if (priced) await closeOpenCheckout(db, getStripe(), { accountId: account.id })
+    return { result: await run(db, account.id) }
   } catch (err) {
     revalidatePath('/dashboard')
     if (err instanceof PlanRefused) return { error: ERRORS[err.reason] ?? ERRORS.notSaved }
+    if (err instanceof CheckoutRefused) return { error: ERRORS.checkout_open }
     console.log(`plans: ${what} failed: ${String(err?.message ?? err).slice(0, 200)}`)
     return { error: ERRORS.notSaved }
   }
@@ -105,7 +117,7 @@ export async function timeZoneAction(_prev, formData) {
     accountId,
     planId: formData.get('plan_id'),
     timeZone: formData.get('time_zone'),
-  }))
+  }), { priced: false })
   if (error) return { error }
   revalidatePath('/dashboard')
   return { done: true }

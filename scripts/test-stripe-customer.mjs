@@ -207,18 +207,22 @@ try {
     const sessionsOf = async (who) => (await stripe.checkout.sessions.list({ limit: 100, created: { gte: started } })).data
       .filter((s) => s.client_reference_id === who.account.id);
 
-    const both = await Promise.all([checkout('horizon'), checkout('basic')]);
+    // The route sells the storage fee alone. A plan is paid for from the cart
+    // (scripts/test-cart.mjs), which opens its form for the same customer.
+    const both = await Promise.all([checkout('horizon'), checkout('horizon')]);
     check('two checkouts opened at once both open', both.every((r) => r.status === 200 && r.url?.startsWith('https://checkout.stripe.com/')),
       JSON.stringify(both.map((r) => r.status)));
-    const later = await checkout('premium');
+    const later = await checkout('horizon');
     check('and so does a later one', later.status === 200 && later.url?.startsWith('https://checkout.stripe.com/'), String(later.status));
+    const plan = await checkout('basic');
+    check('a plan is not sold here, and opens nothing', plan.status === 400 && plan.error === 'unknown_plan' && !plan.url, JSON.stringify(plan));
     const sessions = await sessionsOf(c);
     for (const s of sessions) opened.push(s.id);
     const heldC = await held(c);
     check('the account holds one Stripe customer', /^cus_/.test(heldC ?? ''), String(heldC));
     check('all three checkouts belong to it', sessions.length === 3 && sessions.every((s) => s.customer === heldC),
       sessions.map((s) => s.customer).join(' '));
-    check('each still carries the account and its plan', ['horizon', 'basic', 'premium'].every((plan) => sessions.some((s) => s.metadata?.plan === plan && s.metadata?.account_id === c.account.id)));
+    check('each still carries the account and its plan', sessions.every((s) => s.metadata?.plan === 'horizon' && s.metadata?.account_id === c.account.id));
     check('Stripe holds one customer for the account', (await underAddress(c.user.email)).length === 1, String((await underAddress(c.user.email)).length));
 
     const out = await (await browser.createBrowserContext()).newPage();

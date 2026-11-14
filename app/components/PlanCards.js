@@ -2,7 +2,13 @@
 import { useState } from "react";
 import { PLANS as PLAN_CATALOG } from "../../lib/posterity/plans";
 
-// Shown beneath a plan's button when its checkout fails to open. Awaits approved copy.
+// Horizon is the storage fee, bought here on its own through Stripe's payment
+// form. Basic, Premium and Legacy are plans: each button opens Add a plan,
+// where the plan is placed on its year, and the plan is paid for from the cart
+// within User Profiles. A visitor who is signed out signs in on the way.
+const ADD_A_PLAN = "/dashboard/add-plan";
+
+// Shown beneath Horizon's button when its checkout fails to open. Awaits approved copy.
 const CHECKOUT_FAILED = "[Placeholder: Product surface copy — error messages: a checkout that fails to open]";
 
 // A tier's delivery counts read from the catalog, in the specification's terms.
@@ -160,17 +166,29 @@ export default function PlanCards() {
               {/* Fixed ~1.5rem gap between last bullet and button */}
               <div style={{ height: "1.5rem" }} />
 
-              <button
-                onClick={() => handleCheckout(plan.id, i)}
-                disabled={loading === i}
-                className={
-                  plan.featured
-                    ? "text-center bg-white text-black px-6 py-3 rounded-full text-base font-semibold hover:bg-gray-200 transition cursor-pointer disabled:opacity-50"
-                    : "text-center border border-white text-white px-6 py-3 rounded-full text-base font-semibold hover:bg-white hover:text-black transition cursor-pointer disabled:opacity-50"
-                }
-              >
-                {loading === i ? "Loading..." : "Get Started"}
-              </button>
+              {plan.id === "horizon" ? (
+                <button
+                  onClick={() => handleCheckout(plan.id, i)}
+                  disabled={loading === i}
+                  data-plan={plan.id}
+                  className="text-center border border-white text-white px-6 py-3 rounded-full text-base font-semibold hover:bg-white hover:text-black transition cursor-pointer disabled:opacity-50"
+                >
+                  {loading === i ? "Loading..." : "Get Started"}
+                </button>
+              ) : (
+                <a
+                  href={ADD_A_PLAN}
+                  data-plan={plan.id}
+                  className={
+                    plan.featured
+                      ? "text-center bg-white text-black px-6 py-3 rounded-full text-base font-semibold hover:bg-gray-200 transition cursor-pointer"
+                      : "text-center border border-white text-white px-6 py-3 rounded-full text-base font-semibold hover:bg-white hover:text-black transition cursor-pointer"
+                  }
+                  style={{ textDecoration: "none" }}
+                >
+                  Get Started
+                </a>
+              )}
               {failed === i && (
                 <p role="alert" className="text-sm text-gray-400 mt-3 text-center">{CHECKOUT_FAILED}</p>
               )}

@@ -5,11 +5,17 @@
 // every tab reads the account afresh: the phase here comes from the account
 // status check on each load, as every surface's does.
 //
-// From the top: the place for the Account Restoration banner, the strip with
-// the phase display and the place for the check-in button, and the tabs.
-// Later sub-stages insert into the places left for them; each is marked where
-// it lands.
+// From the top: the place for the Account Restoration banner, the welcome
+// with the live cart at its right, the strip with the phase display and the
+// place for the check-in button, and the tabs. Later sub-stages insert into
+// the places left for them; each is marked where it lands.
+//
+// The cart is read here, so every tab shows it and none has to remember to
+// (Master Specification, User Profiles: "Live cart top right of User
+// Profiles").
 import { StorageNotice } from '../../components/StorageNotice'
+import { Cart } from '../_cart/Cart'
+import { readCart } from '../_cart/read'
 import { trialDaysLeft } from '../../../lib/posterity/storage'
 import { PHASES } from './phases'
 
@@ -23,8 +29,9 @@ export const TABS = [
 const TAB = 'rounded-full border px-3 sm:px-4 py-2 text-sm font-semibold whitespace-nowrap transition-colors duration-200 ' +
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#93ab99]'
 
-export function ProfileShell({ tab, profile, children }) {
+export async function ProfileShell({ tab, profile, children }) {
   const { account, status } = profile
+  const cart = await readCart(profile)
   const key = PHASES[status?.phase] ? status.phase : 'horizon'
   const phase = PHASES[key]
   const name = account?.name || 'Friend'
@@ -48,7 +55,10 @@ export function ProfileShell({ tab, profile, children }) {
             tab. Stage 4.7 inserts the banner; until then it holds nothing. */}
         <div id="restoration-banner-place" />
 
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6">Welcome, {name}.</h1>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+          <h1 className="text-3xl sm:text-4xl font-bold min-w-0 break-words">Welcome, {name}.</h1>
+          {cart && <Cart {...cart} open={tab === 'plans'} />}
+        </div>
 
         {/* The strip across the top of every tab. */}
         <section

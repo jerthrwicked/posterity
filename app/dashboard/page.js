@@ -4,6 +4,16 @@ import { yearCalendar, skipsBefore, atPlanLimit, CUSTOMER_TIERS, MAX_PLAN_YEAR }
 import { ProfileShell, Card } from './_profile/ProfileShell'
 import { YearCalendar, PlanFacts, StatusPill, StorageFeeNotice, TIER_NAMES } from './_plans/YearCalendar'
 import { PlanOptions, TimeZoneForm, DeletePlanForm } from './_plans/PlanOptions'
+import { settleCart, plansHeld } from './_cart/read'
+
+// What the Plans tab says once the cart's payment form comes back
+// (app/api/cart/return/route.js). No approved text exists yet, so each is a
+// placeholder naming the Writing Requirements item that will supply it.
+const PAYMENT = {
+  paid: '[Placeholder: Product surface copy — payment form: the payment was received, and the plans it paid for are now paid]',
+  not_paid: '[Placeholder: Product surface copy — payment form: the payment was not completed]',
+  unconfirmed: '[Placeholder: Product surface copy — payment form: the payment could not be confirmed just now; a payment that was taken shows on its plans shortly]',
+}
 
 const PILL = 'inline-block rounded-full border border-gray-600 px-5 py-3 text-sm font-semibold text-white hover:bg-white hover:text-black hover:border-white transition-colors duration-200 ' +
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#93ab99]'
@@ -21,26 +31,38 @@ export default async function PlansTab({ searchParams }) {
   const { supabase, account, status, canBuild } = profile
   const query = await searchParams
 
+  // A payment form paid on Stripe's page is applied before the plans are
+  // read, so they show as paid whichever way the customer came back.
+  await settleCart(supabase, account?.id)
+
   // Everything below is read under RLS as this user — they cannot read anyone
   // else's.
   let plans = []
   let content = 0
+  let held = new Set()
   if (account) {
-    const [planRows, contentRows] = await Promise.all([
+    const [planRows, contentRows, heldPlans] = await Promise.all([
       supabase
         .from('plans')
         .select('id, plan_year, tier, paid_at, delivery_time_zone, standard_deliveries, feature_deliveries, social_posts, additional_recipient_slots')
         .eq('account_id', account.id)
         .order('plan_year'),
       supabase.from('content_items').select('id', { count: 'exact', head: true }).eq('account_id', account.id),
+      plansHeld(supabase, account.id),
     ])
     plans = planRows.data ?? []
     content = contentRows.count ?? 0
+    held = heldPlans
   }
 
   // Plan Selection opens on the year in the address. Without one it opens on
   // the first plan still to be paid for, then on the last plan, then on Year 1.
-  const years = yearCalendar(plans)
+  // A plan a payment form is open for reads In checkout.
+  const years = yearCalendar(plans).map((y) => (
+    y.status === 'configured' && held.has(y.plan.id) ? { ...y, status: 'in_checkout' } : y
+  ))
+  const came = Array.isArray(query?.payment) ? query.payment[0] : query?.payment
+  const payment = Object.hasOwn(PAYMENT, came ?? '') ? PAYMENT[came] : null
   const selected = yearFrom(query?.year)
     ?? plans.find((p) => !p.paid_at)?.plan_year
     ?? plans.at(-1)?.plan_year
@@ -58,7 +80,12 @@ export default async function PlansTab({ searchParams }) {
 
   return (
     <ProfileShell tab="plans" profile={profile}>
-      {/* Stage 4.3, Plans and Cart: the live cart lands at the top right. */}
+      {payment && (
+        <p id="payment-result" role="status" data-payment={came}
+          className="mb-6 rounded-2xl border border-gray-700 px-5 py-4 text-sm text-gray-200">
+          {payment}
+        </p>
+      )}
       {/* Stage 4.7: the Begin button lands here, showing only on an initiated
           account. */}
       {account && <YearCalendar years={years} selected={selected} />}
@@ -86,7 +113,7 @@ export default async function PlansTab({ searchParams }) {
               )}
               {/* Deleting stays open while building is locked for a storage
                   lapse, and closes with the Planning Phase. A change to a paid
-                  plan arrives with the cart. */}
+                  plan arrives with the cart's next part. */}
               {building && unpaid && theirs && (
                 <div className="mt-8 pt-6 border-t border-gray-800">
                   <DeletePlanForm key={`delete-${plan.id}`} plan={plan} />
