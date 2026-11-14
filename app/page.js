@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white">
       {/* Hero */}
-      <section className="flex flex-col items-center justify-center text-center px-6 pt-[58px] pb-6 md:pt-[82px]">
+      <section className="flex flex-col items-center justify-center text-center px-6 pt-[58px] md:pt-[82px]">
         <h1 className="text-[52px] md:text-[88px] font-bold leading-[1.02] tracking-[-0.025em] max-w-3xl">
           Your Voice.<br /><span className="text-[#c0a176]">Forever.</span>
         </h1>
@@ -26,19 +26,13 @@ export default function Home() {
           Messages, memories, and videos — delivered to the ones you love, even after you&rsquo;re gone
         </p>
         <p className="serif-accent mt-[9px] text-[13px] md:text-sm leading-relaxed">
-          Say the things too important to leave unsaid
+          The love and memories you shared in life, reaching forward into tomorrow
         </p>
+        <div className="w-10 h-px mt-[26px] md:mt-[38px]" style={{ background: "#93ab99" }} />
       </section>
 
-      {/* The line under the hero */}
-      <div className="px-6 text-center">
-        <p className="serif-accent mx-auto max-w-[40rem] text-xs leading-relaxed" style={{ color: "#c0a176" }}>
-          The love and memories you shared in life, reaching forward into tomorrow.
-        </p>
-      </div>
-
       {/* Features */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 px-6 md:px-8 py-16 max-w-6xl mx-auto">
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 px-6 md:px-8 pt-[38px] md:pt-[50px] pb-16 max-w-6xl mx-auto">
         <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)]">
           <p className="text-xs font-mono tracking-wider mb-3" style={{ color: "#93ab99" }}>01</p>
           <h3 className="text-lg md:text-xl font-bold mb-3">A Living Legacy</h3>
@@ -173,7 +167,7 @@ export default function Home() {
       <section className="flex flex-col items-center text-center px-6 pt-4 pb-20">
         <h2 className="text-4xl md:text-5xl leading-[1.1] font-bold mb-5">Begin while there&rsquo;s time.</h2>
         <p className="serif-accent mb-8 text-[13px] md:text-sm leading-relaxed">
-          Your legacy, on your terms.
+          Say the things too important to leave unsaid
         </p>
         <a
           href="/pricing"
