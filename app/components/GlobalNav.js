@@ -8,7 +8,7 @@ const NAV_MENU = [
   {
     id: "explore",
     items: [
-      { label: "How it works", href: "/" },
+      { label: "Home", href: "/" },
       { label: "Plans", href: "/pricing" },
     ],
   },
@@ -66,7 +66,7 @@ export default function GlobalNav() {
 
   return (
     <nav
-      className="flex justify-between items-center px-8 py-6"
+      className="flex justify-between items-center px-4 sm:px-8 py-6"
       style={{
         position: "sticky",
         top: 0,
@@ -75,9 +75,11 @@ export default function GlobalNav() {
         borderBottom: "1px solid #262626",
       }}
     >
-      <a href="/" style={{ display: "inline-flex", alignItems: "center", gap: "0.6em", textDecoration: "none", color: "#ffffff" }}>
-        <Logomark size={40} />
-        <span style={{ fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", lineHeight: 1, fontSize: 22 }}>Posterity</span>
+      {/* Below sm the mark, the wordmark and the gap between them shrink, so the
+          bar holds the cart and the menu at 320px. */}
+      <a href="/" className="gap-[0.48em] sm:gap-[0.6em]" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none", color: "#ffffff" }}>
+        <Logomark size={40} className="w-8 h-8 sm:w-10 sm:h-10" />
+        <span className="text-[17px] tracking-[0.24em] sm:text-[22px] sm:tracking-[0.28em]" style={{ fontWeight: 700, textTransform: "uppercase", lineHeight: 1 }}>Posterity</span>
       </a>
 
       <div className="flex items-center gap-4">

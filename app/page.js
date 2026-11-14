@@ -18,57 +18,44 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white">
       {/* Hero */}
-      <section className="flex flex-col items-center justify-center text-center px-6 py-24 md:py-32">
-        <h1 className="text-4xl md:text-6xl font-bold leading-tight max-w-3xl">
-          Your Voice.<br />Forever.
+      <section className="flex flex-col items-center justify-center text-center px-6 pt-[58px] pb-6 md:pt-[82px]">
+        <h1 className="text-[52px] md:text-[88px] font-bold leading-[1.02] tracking-[-0.025em] max-w-3xl">
+          Your Voice.<br /><span className="text-[#c0a176]">Forever.</span>
         </h1>
-        <div className="mt-8 md:mt-10 space-y-3 max-w-2xl">
-          <p className="text-lg md:text-2xl text-gray-300 leading-relaxed">
-            Messages, memories, and videos — delivered to the ones you love, even after you&rsquo;re gone
-          </p>
-          <p className="serif-accent text-base md:text-lg leading-relaxed">
-            Say the things too important to leave unsaid
-          </p>
-        </div>
+        <p className="mt-5 md:mt-[33px] max-w-[34rem] text-sm md:text-[15px] text-gray-300 leading-relaxed">
+          Messages, memories, and videos — delivered to the ones you love, even after you&rsquo;re gone
+        </p>
+        <p className="serif-accent mt-[9px] text-[13px] md:text-sm leading-relaxed">
+          Say the things too important to leave unsaid
+        </p>
       </section>
 
-      {/* Trust strip */}
-      {/* Trust strip — outer div just centers; inner block left-aligns items as a unit */}
-      <div
-        className="flex justify-center px-6 py-8"
-        style={{ borderTop: "1px solid #262626", borderBottom: "1px solid #262626" }}
-      >
-        <div className="flex flex-col items-start gap-3 max-w-xs sm:flex-row sm:items-center sm:max-w-none sm:gap-x-12">
-          <div className="flex items-start sm:items-center gap-3">
-            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[5px] sm:mt-0" style={{ background: "#93ab99" }} />
-            <span className="font-sans font-medium text-gray-400" style={{ fontSize: "0.875rem", letterSpacing: "0.04em" }}>Fully automated delivery</span>
-          </div>
-          <div className="flex items-start sm:items-center gap-3">
-            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[5px] sm:mt-0" style={{ background: "#93ab99" }} />
-            <span className="font-sans font-medium text-gray-400" style={{ fontSize: "0.875rem", letterSpacing: "0.04em" }}>Begins January 1st following account activation</span>
-          </div>
-        </div>
+      {/* The line under the hero */}
+      <div className="px-6 text-center">
+        <p className="serif-accent mx-auto max-w-[40rem] text-xs leading-relaxed" style={{ color: "#c0a176" }}>
+          The love and memories you shared in life, reaching forward into tomorrow.
+        </p>
       </div>
 
       {/* Features */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 px-6 md:px-8 py-16 max-w-6xl mx-auto">
         <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)]">
           <p className="text-xs font-mono tracking-wider mb-3" style={{ color: "#93ab99" }}>01</p>
-          <h3 className="text-xl font-bold mb-3">A Living Legacy</h3>
+          <h3 className="text-lg md:text-xl font-bold mb-3">A Living Legacy</h3>
           <p className="text-gray-400 text-sm leading-relaxed">
             Build a custom delivery calendar of messages, videos, and memories. Your content reaches the people you choose, on the dates you set — long after you&rsquo;re gone.
           </p>
         </div>
         <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)]">
           <p className="text-xs font-mono tracking-wider mb-3" style={{ color: "#93ab99" }}>02</p>
-          <h3 className="text-xl font-bold mb-3">On Your Terms</h3>
+          <h3 className="text-lg md:text-xl font-bold mb-3">On Your Terms</h3>
           <p className="text-gray-400 text-sm leading-relaxed">
             You build it. You preview it. You control it. Nothing moves until you&rsquo;re ready — and when you are, your account begins its journey through six carefully designed phases.
           </p>
         </div>
         <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)]">
           <p className="text-xs font-mono tracking-wider mb-3" style={{ color: "#93ab99" }}>03</p>
-          <h3 className="text-xl font-bold mb-3">Fully Automated. Fully Protected</h3>
+          <h3 className="text-lg md:text-xl font-bold mb-3">Fully Automated. Fully Protected</h3>
           <p className="text-gray-400 text-sm leading-relaxed">
             Your legacy fund is untouched until your account activates. Every delivery, every notification, every transfer — automated with a full audit trail and zero employee access to your funds.
           </p>
@@ -87,8 +74,8 @@ export default function Home() {
       >
       <BandPulse />
       <section className="relative max-w-[60rem] mx-auto px-6 md:px-8 py-16">
-        <h2 className="text-2xl font-bold text-center mb-2">Six Phases. One Journey.</h2>
-        <p className="text-[color:var(--text-quiet)] text-sm text-center mb-12">Every Posterity account moves through six carefully designed phases.</p>
+        <h2 className="text-[28px] md:text-4xl leading-[1.15] font-bold text-center mb-2">Six Phases. One Journey.</h2>
+        <p className="text-[color:var(--text-quiet)] text-[15px] md:text-lg text-center mb-12">Every Posterity account moves through six carefully designed phases.</p>
 
         {/* Layer 1 — Tracker: connected line + pips + uppercase labels (≥880px only) */}
         <div className="hidden min-[880px]:block">
@@ -167,18 +154,25 @@ export default function Home() {
       </div>
 
       {/* Plans preview */}
-      <section className="py-16 bg-[color:var(--band-charcoal)]">
+      <section className="py-16">
         <div className="text-center px-6 mb-10">
-          <h2 className="text-4xl font-bold mb-3">Plans for every legacy</h2>
-          <p className="text-gray-400 text-lg">Start building on Horizon. Pay for your plan — or plans — when you&rsquo;re ready.</p>
+          <h2 className="text-[28px] md:text-4xl leading-[1.15] font-bold mb-3">Plans for every legacy</h2>
+          <p className="text-gray-400 text-[15px] md:text-lg">Start building on Horizon. Pay for your plan — or plans — when you&rsquo;re ready.</p>
         </div>
         <PlanCards />
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 pt-7 md:pt-9">
+          <div className="w-10 h-px mx-auto mb-[22px]" style={{ background: "#93ab99" }} />
+          <p className="serif-accent max-w-[42rem] mx-auto text-center text-[13px] md:text-[17px] leading-[1.7]" style={{ color: "#c0a176" }}>
+            <span className="block text-[15px] md:text-xl leading-snug mb-2">With Posterity, you create a custom tailored legacy that will - on your terms - reach whatever goal or goals you design for it.</span>
+            Do you want your plans to slowly unfold an interconnected story, shared across 52 messages to 52 of your closest friends? Perhaps you want to let them know they all have a piece of your tale in a final Facebook post, and that they will need to work with one another to piece it all together. Maybe-in the multitude of comments that will likely ensue-they will not only reconnect with each other, but also rediscover the legacy you left in all of their lives. The only limit is your creativity, and as you journey back through your life to create your legacy, you are building an account that will journey forward. Your Posterity account can be a secret, a confession, a reminder, a remembrance, a photo album - it can solely be a way for your loved ones to relive the joy you&rsquo;ve shared together. Your legacy is whatever you want it to be, and it starts now.
+          </p>
+        </div>
       </section>
 
       {/* Closing CTA */}
-      <section className="flex flex-col items-center text-center px-6 py-20">
-        <h2 className="text-5xl font-bold mb-5" style={{ lineHeight: "1.1" }}>Begin while there&rsquo;s time.</h2>
-        <p className="serif-accent mb-8" style={{ fontSize: "20px", lineHeight: "1.75" }}>
+      <section className="flex flex-col items-center text-center px-6 pt-4 pb-20">
+        <h2 className="text-4xl md:text-5xl leading-[1.1] font-bold mb-5">Begin while there&rsquo;s time.</h2>
+        <p className="serif-accent mb-8 text-[13px] md:text-sm leading-relaxed">
           Your legacy, on your terms.
         </p>
         <a

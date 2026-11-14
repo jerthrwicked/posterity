@@ -282,7 +282,7 @@ try {
   let items = await menu('Log Out');
   check('it carries Account, Add a plan, Settings and Log Out beneath the public links',
     JSON.stringify(items.map((it) => [it.label, it.href])) === JSON.stringify([
-      ['How it works', '/'], ['Plans', '/pricing'], ['Account', '/dashboard'], ['Add a plan', '/dashboard/add-plan'], ['Settings', '/dashboard/settings'], ['Log Out', null],
+      ['Home', '/'], ['Plans', '/pricing'], ['Account', '/dashboard'], ['Add a plan', '/dashboard/add-plan'], ['Settings', '/dashboard/settings'], ['Log Out', null],
     ]), JSON.stringify(items));
   check('Account is marked current on a tab, and nothing else is', items.filter((it) => it.current).map((it) => it.label).join() === 'Account', JSON.stringify(items));
   check('no Login and no Get Started while signed in', !items.some((it) => it.label === 'Login' || it.label === 'Get Started'), JSON.stringify(items));
@@ -326,7 +326,7 @@ try {
   items = await menu('Login');
   check('signed out, the menu carries Login and Get Started, and nothing of the account',
     JSON.stringify(items.map((it) => [it.label, it.href])) === JSON.stringify([
-      ['How it works', '/'], ['Plans', '/pricing'], ['Login', '/login'], ['Get Started', '/signup'],
+      ['Home', '/'], ['Plans', '/pricing'], ['Login', '/login'], ['Get Started', '/signup'],
     ]), JSON.stringify(items));
 } catch (e) {
   console.log(`  ✗ stopped: ${e.message}`);
