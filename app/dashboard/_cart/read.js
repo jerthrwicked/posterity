@@ -1,10 +1,10 @@
 // Posterity — User Profiles: reading the cart for the page · Walker Brown
 //
-// The cart is read from the account's unpaid plans each time a tab loads
-// (lib/posterity/cart.js), under row-level security as the signed-in
-// customer. Nothing is stored for it, which is how it "persists across
-// sessions" (Master Specification, User Profiles): it is whatever the plans
-// are.
+// The cart is read from the account's unpaid plans each time a page behind
+// sign-in loads (lib/posterity/cart.js), under row-level security as the
+// signed-in customer. Nothing is stored for it, which is how it "persists
+// across sessions" (Master Specification, User Profiles): it is whatever the
+// plans are.
 import { cache } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { getStripe } from '../../../lib/posterity/stripe'

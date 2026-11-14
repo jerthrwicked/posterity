@@ -4,11 +4,12 @@
 import { useActionState, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { changeEmail } from './email-change'
+import { WarningMark } from '../../components/StatusMarks'
 
 const input =
-  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition'
+  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition'
 const label = 'text-sm text-gray-400 mb-1 block'
-const note = 'text-xs text-gray-600 mt-1 leading-relaxed'
+const note = 'text-xs text-[color:var(--text-quiet)] mt-1 leading-relaxed'
 
 function Submit({ children, busy }) {
   const { pending } = useFormStatus()
@@ -59,7 +60,7 @@ function Steps({ email, onCancel }) {
             signs in with; it works once, for ten minutes, and confirms the change to {state.newEmail}]
           </p>
         </div>
-        {state.error && <p className="text-sm text-red-400">{state.error}</p>}
+        {state.error && <p className="text-sm text-[color:var(--brand-rose)] inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{state.error}</p>}
         <div className="flex gap-3">
           {cancel}
           <Submit busy="Confirming...">Confirm</Submit>
@@ -84,7 +85,7 @@ function Steps({ email, onCancel }) {
           code sent to the current address, the double verification]
         </p>
       </div>
-      {state.error && <p className="text-sm text-red-400">{state.error}</p>}
+      {state.error && <p className="text-sm text-[color:var(--brand-rose)] inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{state.error}</p>}
       <div className="flex gap-3">
         {cancel}
         <Submit busy="Sending...">Send code</Submit>
@@ -98,7 +99,7 @@ export function EmailChangeForm({ email, pendingEmail }) {
   const [round, setRound] = useState(0)
 
   return (
-    <div className="bg-gray-900 rounded-2xl p-8 border border-gray-800 mt-6">
+    <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)]">
       <p className={label}>Email</p>
       <p className="px-4 py-3 rounded-lg border border-gray-800 text-gray-300">{email}</p>
       <p className={note}>
@@ -106,7 +107,8 @@ export function EmailChangeForm({ email, pendingEmail }) {
         <a href="/forgot-password" className="text-gray-400 underline hover:text-white">Change your password</a> by a link sent to it.
       </p>
       {pendingEmail && !open && (
-        <p className="text-xs text-yellow-200 mt-3 leading-relaxed">
+        <p className="text-xs text-white mt-3 leading-relaxed flex items-start gap-2">
+          <WarningMark className="mt-0.5" />
           [Placeholder: Product surface copy — Settings: a change to {pendingEmail} is waiting on the link sent to
           it; until it is used, {email} stays the address]
         </p>

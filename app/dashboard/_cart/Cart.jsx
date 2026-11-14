@@ -17,10 +17,17 @@
 // Legal and Compliance: "The refund policy is shown at checkout, and the
 // customer accepts it before paying." It is shown and accepted here, before
 // the payment form opens.
-import { useActionState, useState } from 'react'
-import { useFormStatus } from 'react-dom'
+//
+// The cart sits in the top bar, just left of the menu, on every page behind
+// sign-in. Each of those pages renders it through NavCart.js, and it is
+// carried up into the bar's place for it (GlobalNav.js). It shows as a cart
+// symbol with the number of plans it holds; pressing the symbol opens the
+// whole cart in a panel below it.
+import { useActionState, useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { createPortal, useFormStatus } from 'react-dom'
 import { dollars } from '../../../lib/posterity/cart'
 import { payAction } from './actions'
+import { WarningMark } from '../../components/StatusMarks'
 
 // No approved text exists yet for these, so each is a placeholder naming the
 // Writing Requirements item that will supply it.
@@ -34,9 +41,21 @@ const COPY = {
 }
 
 const FOCUS = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#93ab99]'
-const note = 'text-xs text-gray-500 mt-1 leading-relaxed'
+const note = 'text-xs text-[color:var(--text-quiet)] mt-1 leading-relaxed'
 const PILL = `w-full rounded-full border border-gray-600 px-5 py-3 text-sm font-semibold text-white hover:bg-white hover:text-black hover:border-white transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${FOCUS}`
 const TICK = `mt-1 w-4 h-4 shrink-0 accent-[#93ab99] ${FOCUS}`
+const BUTTON = `relative inline-flex items-center justify-center w-10 h-10 rounded-full border border-transparent hover:border-[#404040] text-white cursor-pointer list-none [&::-webkit-details-marker]:hidden ${FOCUS}`
+// text-white: within the top bar the panel no longer sits inside a page's
+// white main, and the body's own colour is dark in a light colour scheme.
+const PANEL = 'absolute right-0 top-full mt-2 w-[360px] max-h-[calc(100vh-7rem)] overflow-y-auto z-50 bg-[color:var(--card-ground)] border border-[color:var(--card-edge)] rounded-2xl shadow-[0_18px_48px_rgba(0,0,0,0.6)] px-5 pt-4 pb-5 text-white ' +
+  'max-sm:fixed max-sm:left-2.5 max-sm:right-2.5 max-sm:top-[6rem] max-sm:w-auto'
+
+// The top bar's place for the cart (GlobalNav.js). It is found on the client
+// only: the server render and the first client render hold no cart, so the
+// two match.
+const never = () => () => {}
+const findSlot = () => document.getElementById('nav-cart-slot')
+const noSlot = () => null
 
 function Submit({ children, disabled }) {
   const { pending } = useFormStatus()
@@ -48,6 +67,7 @@ function Submit({ children, disabled }) {
 }
 
 const amountOf = (line) => line.quantity * line.unitAmount
+const plansText = (n) => `${n} ${n === 1 ? 'plan' : 'plans'}`
 
 // One line of a plan: what it is on the left, what it costs on the right.
 function Line({ line, lead = false }) {
@@ -65,8 +85,8 @@ function Line({ line, lead = false }) {
 }
 
 // groups, loose, storage, inCheckout, closed: readCart()'s answer (read.js).
-// open: whether the cart starts unfolded. It does on the Plans tab.
-export function Cart({ groups, loose, storage, inCheckout, closed, open = false }) {
+// The cart starts closed on every page.
+export function Cart({ groups, loose, storage, inCheckout, closed }) {
   const [state, action] = useActionState(payAction, {})
   // The plans unticked. A plan added later arrives ticked.
   const [off, setOff] = useState(() => new Set())
@@ -75,6 +95,34 @@ export function Cart({ groups, loose, storage, inCheckout, closed, open = false 
     if (!next.delete(id)) next.add(id)
     return next
   })
+  const slot = useSyncExternalStore(never, findSlot, noSlot)
+
+  // The panel closes on a click or tap outside the cart and on the Escape
+  // key; the symbol opens and closes it as any summary does. Escape hands
+  // focus back to the symbol when it was within the panel.
+  const cartRef = useRef(null)
+  useEffect(() => {
+    function close(e) {
+      const cart = cartRef.current
+      if (!cart?.open) return
+      if (e.type === 'keydown') {
+        if (e.key !== 'Escape') return
+        const within = cart.contains(document.activeElement)
+        cart.open = false
+        if (within) cart.querySelector('summary')?.focus()
+      } else if (!cart.contains(e.target)) {
+        cart.open = false
+      }
+    }
+    document.addEventListener('mousedown', close)
+    document.addEventListener('touchstart', close)
+    document.addEventListener('keydown', close)
+    return () => {
+      document.removeEventListener('mousedown', close)
+      document.removeEventListener('touchstart', close)
+      document.removeEventListener('keydown', close)
+    }
+  }, [])
 
   const held = new Set(inCheckout)
   const chosen = groups.filter((g) => !off.has(g.planId))
@@ -96,25 +144,34 @@ export function Cart({ groups, loose, storage, inCheckout, closed, open = false 
     storageRight = 'Free trial'
   }
 
-  return (
-    <details id="cart" open={open} data-plans={groups.length}
-      className="w-full sm:w-80 shrink-0 bg-gray-900 rounded-2xl border border-gray-800">
-      <summary className={`flex items-center justify-between gap-3 px-5 py-4 cursor-pointer rounded-2xl ${FOCUS}`}>
-        <span className="font-mono text-xs uppercase tracking-widest text-gray-400">Cart</span>
-        <span id="cart-summary" className="text-sm font-semibold tabular-nums">
+  if (!slot) return null
+
+  return createPortal(
+    <details id="cart" ref={cartRef} data-plans={groups.length} className="relative">
+      <summary className={BUTTON}>
+        <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M2 3.5h2.6l2.3 10.6a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.2L21 6.5H5.3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9.4" cy="19.4" r="1.35" fill="currentColor"/><circle cx="16.6" cy="19.4" r="1.35" fill="currentColor"/></svg>
+        {groups.length > 0 && (
+          <span aria-hidden="true" className="absolute -top-0.5 -right-1 min-w-[19px] h-[19px] px-[5px] rounded-full bg-[#93ab99] text-black text-[11px] font-bold leading-[19px] text-center tabular-nums">{groups.length}</span>
+        )}
+        <span className="sr-only">Cart, </span>
+        <span id="cart-summary" className="sr-only">
           {groups.length} {groups.length === 1 ? 'plan' : 'plans'} · {dollars(total)}
         </span>
       </summary>
 
-      <form id="cart-form" action={action} className="px-5 pb-5">
+      <form id="cart-form" action={action} className={PANEL}>
+        <p className="flex items-center justify-between gap-3 pb-3 border-b border-[color:var(--card-edge)]">
+          <span className="font-semibold">Cart</span>
+          <span className="text-sm text-gray-400">{plansText(groups.length)}</span>
+        </p>
         <input type="hidden" name="total" value={total} />
 
         {groups.length === 0 && loose.length === 0 && (
-          <p id="cart-empty" className="text-sm text-gray-400 border-t border-gray-800 pt-4">{COPY.empty}</p>
+          <p id="cart-empty" className="text-sm text-gray-400 pt-4">{COPY.empty}</p>
         )}
 
         {groups.length > 0 && (
-          <ul id="cart-plans" className="border-t border-gray-800">
+          <ul id="cart-plans">
             {groups.map((g) => {
               const [plan, ...rest] = g.lines
               return (
@@ -170,8 +227,9 @@ export function Cart({ groups, loose, storage, inCheckout, closed, open = false 
             <Submit>Pay {dollars(total)}</Submit>
           </>
         )}
-        {state.error && <p id="cart-error" role="alert" className="text-sm text-red-400 mt-3">{state.error}</p>}
+        {state.error && <p id="cart-error" role="alert" className="text-sm text-[color:var(--brand-rose)] mt-3 inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{state.error}</p>}
       </form>
-    </details>
+    </details>,
+    slot,
   )
 }

@@ -4,6 +4,7 @@ import { createClient } from '../../lib/supabase/server'
 import Link from 'next/link'
 import { Wordmark } from '../components/brand/Wordmark'
 import { NewPasswordForm } from './NewPasswordForm'
+import { AccountGlow } from '../components/Glow'
 
 // The page a password reset link opens. The link has already given the person
 // a session (through /auth/confirm or /auth/callback), so this page is reached
@@ -16,8 +17,8 @@ export default async function ResetPassword() {
   if (!user) redirect('/forgot-password?error=link_expired')
 
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center px-6">
-      <div className="w-full max-w-md">
+    <main className="relative min-h-screen bg-black text-white flex items-center justify-center px-6">
+      <div className="relative z-[1] w-full max-w-md">
         <div className="text-center mb-10">
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
             <Wordmark size="lg" withMark />
@@ -26,6 +27,7 @@ export default async function ResetPassword() {
         </div>
         <NewPasswordForm email={user.email} />
       </div>
+      <AccountGlow />
     </main>
   )
 }

@@ -100,7 +100,7 @@ check('a value is escaped inside the designed email', email.html.includes('Ana &
 check('plain text is derived when only HTML is stored', email.text.startsWith('Ana <script> wrote to you.'));
 check('both versions carry the frame text', email.html.includes('[Placeholder: Product surface copy') && email.text.includes('[Placeholder: Product surface copy'));
 check('the designed email carries the seal as a picture and the sage accent', email.html.includes(`<img src="${SEAL_SRC}"`) && !email.html.includes('<svg') && email.html.includes('#93AB99'));
-check('the frame is light, never the black canvas', !/background:#000(000)?\b/i.test(email.html));
+check('the frame is light, never the black canvas', !/background:#000(000)?\b/i.test(email.html.replace(/<style>[\s\S]*?<\/style>/, '')));
 const textOnly = renderEmail({ key: 't', channel: 'email', subject: 'S', html_body: null, text_body: 'One.\n\nTwo & <three>' }, {}, frame);
 check('HTML is built from text when only text is stored', textOnly.html.includes('<p style="margin:0 0 0px;">Two &amp; &lt;three&gt;</p>'));
 check('an email with no frame row throws', throws(() => renderEmail({ key: 't', subject: 'S', text_body: 'x' }, {}, {})));

@@ -4,11 +4,12 @@
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { requestRecoveryAction } from './actions'
+import { WarningMark } from '../components/StatusMarks'
 
 const input =
-  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition'
+  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition'
 const label = 'text-sm text-gray-400 mb-1 block'
-const note = 'text-xs text-gray-600 mt-1 leading-relaxed'
+const note = 'text-xs text-[color:var(--text-quiet)] mt-1 leading-relaxed'
 
 function Submit() {
   const { pending } = useFormStatus()
@@ -56,7 +57,7 @@ export function RequestForm() {
           becomes the address the account signs in with]
         </p>
       </div>
-      {state.error && <p className="text-sm text-center text-red-400">{state.error}</p>}
+      {state.error && <p className="text-sm text-center text-[color:var(--brand-rose)] inline-flex items-start justify-center gap-2"><WarningMark className="mt-0.5" />{state.error}</p>}
       <Submit />
     </form>
   )

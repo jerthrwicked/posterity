@@ -55,11 +55,11 @@ const INNER = [
   { path: '/dashboard/legacy-guards', back: 'People', to: '/dashboard/people' },
   { path: '/dashboard/settings', back: 'Account', to: '/dashboard' },
 ];
-// The Website Design Standards' phase colours, sage to dusk, written here a
-// second time so a wrong colour in the product is caught.
+// The Posterity design system's phase colours, jade to evening gold, written
+// here a second time so a wrong colour in the product is caught.
 const COLOURS = {
-  horizon: '#93ab99', planning: '#879d98', interlude: '#7b8f97',
-  active: '#708096', reprise: '#647295', posterity: '#586494',
+  horizon: '#93ab99', planning: '#a1b095', interlude: '#a1a787',
+  active: '#b1ac85', reprise: '#b6a37a', posterity: '#c0a176',
 };
 const NAMES = { horizon: 'Horizon', planning: 'Planning', interlude: 'Interlude', active: 'Active', reprise: 'Reprise', posterity: 'Posterity' };
 const rgb = (hex) => `rgb(${parseInt(hex.slice(1, 3), 16)}, ${parseInt(hex.slice(3, 5), 16)}, ${parseInt(hex.slice(5, 7), 16)})`;

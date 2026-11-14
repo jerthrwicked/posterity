@@ -2,6 +2,8 @@
 import { requireAccount } from '../../../lib/posterity/account'
 import { Composer } from './Composer'
 import { StorageNotice } from '../../components/StorageNotice'
+import { AccountGlow } from '../../components/Glow'
+import { NavCart } from '../_cart/NavCart'
 import { deleteMessage } from './actions'
 
 function formatDate(d) {
@@ -17,7 +19,8 @@ function formatDate(d) {
 }
 
 export default async function Legacy() {
-  const { supabase, account, legacy, canBuild } = await requireAccount()
+  const profile = await requireAccount()
+  const { supabase, account, legacy, canBuild } = profile
 
   const [{ data: recipients }, { data: items }] = await Promise.all([
     supabase
@@ -45,9 +48,10 @@ export default async function Legacy() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="relative min-h-screen bg-black text-white">
+      <NavCart profile={profile} />
 
-      <div className="max-w-3xl mx-auto px-8 py-16">
+      <div className="relative z-[1] max-w-4xl mx-auto px-4 sm:px-8 py-10 sm:py-16">
         <a href="/dashboard" className="text-gray-400 hover:text-white text-sm">&larr; Plans</a>
 
         <h1 className="text-4xl font-bold mt-4 mb-2">My Legacy</h1>
@@ -63,24 +67,24 @@ export default async function Legacy() {
         )}
 
         <div className="mt-12">
-          <h2 className="text-sm uppercase tracking-widest text-gray-600 mb-5">
+          <h2 className="text-sm uppercase tracking-widest text-[color:var(--text-quiet)] mb-5">
             {items?.length ? `${items.length} ${items.length === 1 ? 'piece' : 'pieces'}` : 'Nothing yet'}
           </h2>
 
           {!items?.length ? (
-            <p className="text-gray-600 text-sm py-4">
+            <p className="text-gray-400 text-sm py-4">
               Your legacy is empty. The first one is the hardest.
             </p>
           ) : (
-            <ul className="flex flex-col gap-4">
+            <ul className="flex flex-col gap-6">
               {items.map((item) => {
                 const url = item.storage_path ? signed.get(item.storage_path) : null
                 return (
-                  <li key={item.id} className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+                  <li key={item.id} className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-6 border border-[color:var(--card-edge)]">
                     <div className="flex justify-between items-start gap-4 mb-3">
                       <div className="min-w-0">
                         <p className="font-semibold truncate">{item.title || 'Untitled'}</p>
-                        <p className="text-gray-500 text-sm">
+                        <p className="text-gray-400 text-sm">
                           For {item.recipients?.name ?? 'someone'} · arrives {formatDate(item.deliver_on)}
                         </p>
                       </div>
@@ -88,7 +92,7 @@ export default async function Legacy() {
                         <input type="hidden" name="id" value={item.id} />
                         <button
                           type="submit"
-                          className="text-gray-600 hover:text-red-400 transition text-sm cursor-pointer shrink-0"
+                          className="text-gray-400 hover:text-[color:var(--brand-rose)] transition text-sm cursor-pointer shrink-0"
                         >
                           Delete
                         </button>
@@ -113,7 +117,7 @@ export default async function Legacy() {
                     )}
 
                     {item.include_in_posterity && (
-                      <p className="text-gray-600 text-xs mt-4">Kept in Posterity</p>
+                      <p className="text-[color:var(--text-quiet)] text-xs mt-4">Kept in Posterity</p>
                     )}
                   </li>
                 )
@@ -122,6 +126,7 @@ export default async function Legacy() {
           )}
         </div>
       </div>
+      <AccountGlow />
     </main>
   )
 }

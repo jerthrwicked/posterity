@@ -13,13 +13,14 @@ import { useFormStatus } from 'react-dom'
 import { PLANS, RECIPIENT_SLOTS } from '../../../lib/posterity/plans'
 import { CUSTOMER_TIERS, MAX_SLOTS, MAX_PLAN_YEAR, isDowngrade } from '../../../lib/posterity/plan-calendar'
 import { skipsAction, slotsAction, timeZoneAction, tierAction, deletePlanAction } from './actions'
+import { WarningMark } from '../../components/StatusMarks'
 
 const FOCUS = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#93ab99]'
 const field = `w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-white transition ${FOCUS}`
 const label = 'text-sm text-gray-400 mb-1 block'
-const note = 'text-xs text-gray-500 mt-2 leading-relaxed'
+const note = 'text-xs text-[color:var(--text-quiet)] mt-2 leading-relaxed'
 const PILL = `rounded-full border border-gray-600 px-5 py-3 text-sm font-semibold text-white hover:bg-white hover:text-black hover:border-white transition-colors duration-200 cursor-pointer disabled:opacity-50 ${FOCUS}`
-const RED = `rounded-full border border-red-900 px-5 py-3 text-sm font-semibold text-red-300 hover:border-red-500 hover:text-red-200 transition-colors duration-200 cursor-pointer disabled:opacity-50 ${FOCUS}`
+const RED = `rounded-full border border-[color:var(--brand-rose)] px-5 py-3 text-sm font-semibold text-[color:var(--brand-rose)] hover:bg-[color:var(--brand-rose)] hover:text-black transition-colors duration-200 cursor-pointer disabled:opacity-50 ${FOCUS}`
 
 function Submit({ children, className = PILL, disabled = false }) {
   const { pending } = useFormStatus()
@@ -35,7 +36,7 @@ function Row({ children }) {
 }
 
 function Problem({ state }) {
-  return state.error ? <p role="alert" className="text-sm text-red-400 mt-2">{state.error}</p> : null
+  return state.error ? <p role="alert" className="text-sm text-[color:var(--brand-rose)] mt-2 inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{state.error}</p> : null
 }
 
 // The time zones this browser knows. Read once, on the client; the server
@@ -130,8 +131,9 @@ function TierForm({ plan }) {
         {!lower && <Submit disabled={choice === plan.tier}>Save</Submit>}
       </Row>
       {lower && (
-        <div id="plan-tier-confirm" className="mt-3 rounded-lg border border-yellow-900 bg-yellow-950/30 p-4">
-          <p className="text-sm text-yellow-200 leading-relaxed">
+        <div id="plan-tier-confirm" className="mt-3 rounded-lg border border-white p-4">
+          <p className="text-sm text-white leading-relaxed flex items-start gap-2">
+            <WarningMark className="mt-0.5" />
             [Placeholder: Product surface copy — Plan Selection: the confirmation on a downgrade,
             from {PLANS[plan.tier].name} to {PLANS[choice].name}, which lowers what the plan carries]
           </p>
@@ -156,17 +158,17 @@ export function DeletePlanForm({ plan }) {
     return (
       <div id="plan-delete">
         <button type="button" onClick={() => setOpen(true)}
-          className={`py-2 text-sm text-red-300 underline hover:text-red-200 cursor-pointer ${FOCUS}`}>
+          className={`py-2 text-sm text-[color:var(--brand-rose)] underline cursor-pointer ${FOCUS}`}>
           Delete plan
         </button>
       </div>
     )
   }
   return (
-    <form id="plan-delete" action={action} className="rounded-lg border border-red-900 p-4">
+    <form id="plan-delete" action={action} className="rounded-lg border border-[color:var(--brand-rose)] p-4">
       <input type="hidden" name="plan_id" value={plan.id} />
       <input type="hidden" name="confirmed" value="yes" />
-      <p id="plan-delete-sentence" className="text-sm text-red-200 leading-relaxed">{DELETE_SENTENCE}</p>
+      <p id="plan-delete-sentence" className="text-sm text-[color:var(--brand-rose)] leading-relaxed inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{DELETE_SENTENCE}</p>
       <div className="mt-3 flex flex-wrap gap-3">
         <button type="button" onClick={() => setOpen(false)} className={PILL}>Cancel</button>
         <Submit className={RED}>Delete plan</Submit>
@@ -181,7 +183,7 @@ export function DeletePlanForm({ plan }) {
 // form afresh on what the record now holds.
 export function PlanOptions({ plan, skips }) {
   return (
-    <div id="plan-options" className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div id="plan-options" className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-7">
       <SkipsForm key={`skips-${plan.id}-${skips}`} plan={plan} skips={skips} />
       <SlotsForm key={`slots-${plan.id}-${plan.additional_recipient_slots}-${plan.tier}`} plan={plan} />
       <TimeZoneForm key={`zone-${plan.id}-${plan.delivery_time_zone}`} plan={plan} />

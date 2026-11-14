@@ -4,9 +4,10 @@
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { addLegacyGuard } from './actions'
+import { CheckMark, WarningMark } from '../../components/StatusMarks'
 
 const input =
-  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition'
+  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition'
 const label = 'text-sm text-gray-400 mb-1 block'
 
 function Submit() {
@@ -26,7 +27,7 @@ export function LegacyGuardForm() {
   const [state, action] = useActionState(addLegacyGuard, {})
 
   return (
-    <form action={action} className="bg-gray-900 rounded-2xl p-8 border border-gray-800 flex flex-col gap-4">
+    <form action={action} className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)] flex flex-col gap-4">
       <div>
         <label htmlFor="name" className={label}>Name</label>
         <input id="name" name="name" className={input} placeholder="Someone you'd trust with this" />
@@ -43,13 +44,13 @@ export function LegacyGuardForm() {
         </div>
       </div>
 
-      <p className="text-xs text-gray-500 leading-relaxed -mt-1">
+      <p className="text-xs text-[color:var(--text-quiet)] leading-relaxed -mt-1">
         [Placeholder: Product surface copy — why a Legacy Guard needs an email address]
       </p>
 
       <div>
         <label htmlFor="personal_note" className={label}>
-          A note for them <span className="text-gray-600">(optional)</span>
+          A note for them <span className="text-[color:var(--text-quiet)]">(optional)</span>
         </label>
         <textarea
           id="personal_note"
@@ -58,13 +59,13 @@ export function LegacyGuardForm() {
           className={input + ' resize-y leading-relaxed'}
           placeholder="What you'd want them to know, and anything you'd want them to do."
         />
-        <p className="text-xs text-gray-500 leading-relaxed mt-2">
+        <p className="text-xs text-[color:var(--text-quiet)] leading-relaxed mt-2">
           They will only ever see this at the moment they&rsquo;re asked to confirm — never before.
         </p>
       </div>
 
-      {state?.error && <p className="text-sm text-red-400">{state.error}</p>}
-      {state?.ok && <p className="text-sm text-green-400">{state.ok}</p>}
+      {state?.error && <p className="text-sm text-[color:var(--brand-rose)] inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{state.error}</p>}
+      {state?.ok && <p className="text-sm text-[#93ab99] inline-flex items-start gap-2"><CheckMark className="mt-0.5" />{state.ok}</p>}
 
       <Submit />
     </form>

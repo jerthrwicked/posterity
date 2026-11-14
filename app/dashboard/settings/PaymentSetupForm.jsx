@@ -4,9 +4,10 @@
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { paymentSetupAction } from './payment-setup'
+import { CheckMark, WarningMark } from '../../components/StatusMarks'
 
 const label = 'text-sm text-gray-400 mb-1 block'
-const note = 'text-xs text-gray-600 mt-3 leading-relaxed'
+const note = 'text-xs text-[color:var(--text-quiet)] mt-3 leading-relaxed'
 const link = 'text-sm text-gray-300 underline hover:text-white cursor-pointer disabled:opacity-50'
 
 // Card brands as Stripe names them, as they are written.
@@ -39,11 +40,12 @@ export function PaymentSetupForm({ held, method, unread = false, notice }) {
   const card = method?.type === 'card'
 
   return (
-    <form id="payment_setup" action={action} className="bg-gray-900 rounded-2xl p-8 border border-gray-800 mt-6">
+    <form id="payment_setup" action={action} className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)]">
       <p id="payment_setup_label" className={label}>Payment setup</p>
 
       {unread && (
-        <p className="text-xs text-yellow-200 mt-3 leading-relaxed">
+        <p className="text-xs text-white mt-3 leading-relaxed flex items-start gap-2">
+          <WarningMark className="mt-0.5" />
           [Placeholder: Product surface copy — error messages: the saved payment method cannot be shown right now]
         </p>
       )}
@@ -58,7 +60,7 @@ export function PaymentSetupForm({ held, method, unread = false, notice }) {
           <p id="payment_setup_method" className="text-gray-300">
             {BRANDS[method.brand] ?? 'Card'} &bull;&bull;&bull;&bull; {method.last4}
           </p>
-          <p id="payment_setup_expiry" className="text-xs text-gray-500 mt-1">
+          <p id="payment_setup_expiry" className="text-xs text-gray-400 mt-1">
             Expires {String(method.expMonth).padStart(2, '0')}/{method.expYear}
           </p>
         </>
@@ -69,30 +71,34 @@ export function PaymentSetupForm({ held, method, unread = false, notice }) {
         </p>
       )}
       {!unread && held && !method && (
-        <p id="payment_setup_method" className="text-gray-600">
+        <p id="payment_setup_method" className="text-[color:var(--text-quiet)]">
           [Placeholder: Product surface copy — Settings: no payment method is saved]
         </p>
       )}
 
       {notice === 'saved' && held && method && (
-        <p id="payment_setup_notice" className="text-xs text-green-300 mt-3">
+        <p id="payment_setup_notice" className="text-xs text-[#93ab99] mt-3 inline-flex items-start gap-2">
+          <CheckMark />
           [Placeholder: Product surface copy — Settings: the payment method is saved]
         </p>
       )}
       {notice === 'saved_paid' && held && method && (
-        <p id="payment_setup_notice" className="text-xs text-green-300 mt-3">
+        <p id="payment_setup_notice" className="text-xs text-[#93ab99] mt-3 inline-flex items-start gap-2">
+          <CheckMark />
           [Placeholder: Product surface copy — Settings: the payment method is saved, and the storage fee owed was
           charged to it]
         </p>
       )}
       {notice === 'saved_unpaid' && held && method && (
-        <p id="payment_setup_notice" className="text-xs text-yellow-200 mt-3">
+        <p id="payment_setup_notice" className="text-xs text-white mt-3 flex items-start gap-2">
+          <WarningMark />
           [Placeholder: Product surface copy — Settings: the payment method is saved, but the storage fee owed could
           not be charged to it and is still owed]
         </p>
       )}
       {notice === 'not_saved' && (
-        <p id="payment_setup_notice" className="text-xs text-red-400 mt-3">
+        <p id="payment_setup_notice" className="text-xs text-[color:var(--brand-rose)] mt-3 inline-flex items-start gap-2">
+          <WarningMark />
           [Placeholder: Product surface copy — Settings: the payment method was not saved; the one held before is
           unchanged]
         </p>
@@ -109,7 +115,7 @@ export function PaymentSetupForm({ held, method, unread = false, notice }) {
           </div>
         </>
       )}
-      {state?.error && <p className="text-sm text-red-400 mt-3">{state.error}</p>}
+      {state?.error && <p className="text-sm text-[color:var(--brand-rose)] mt-3 inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{state.error}</p>}
     </form>
   )
 }

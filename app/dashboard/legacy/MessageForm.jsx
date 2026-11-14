@@ -5,9 +5,10 @@ import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { addMessage } from './actions'
 import { INCLUDE_IN_POSTERITY_HELP } from '../../../lib/posterity/content'
+import { CheckMark, WarningMark } from '../../components/StatusMarks'
 
 const input =
-  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition'
+  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition'
 const label = 'text-sm text-gray-400 mb-1 block'
 
 function Submit() {
@@ -28,7 +29,7 @@ export function MessageForm({ recipients }) {
 
   if (!recipients.length) {
     return (
-      <div className="bg-gray-900 rounded-2xl p-8 border border-gray-800 text-center">
+      <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)] text-center">
         <p className="text-gray-400 mb-6">
           Add someone first. A message has to be <em>for</em> someone.
         </p>
@@ -43,7 +44,7 @@ export function MessageForm({ recipients }) {
   }
 
   return (
-    <form action={action} className="bg-gray-900 rounded-2xl p-8 border border-gray-800 flex flex-col gap-4">
+    <form action={action} className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)] flex flex-col gap-4">
       <div>
         <label htmlFor="body" className={label}>Your message</label>
         <textarea
@@ -57,7 +58,7 @@ export function MessageForm({ recipients }) {
 
       <div>
         <label htmlFor="title" className={label}>
-          Title <span className="text-gray-600">(optional — just for you, to find it later)</span>
+          Title <span className="text-[color:var(--text-quiet)]">(optional — just for you, to find it later)</span>
         </label>
         <input id="title" name="title" className={input} placeholder="Her 30th birthday" />
       </div>
@@ -87,12 +88,12 @@ export function MessageForm({ recipients }) {
         />
         <span>
           Include in Posterity
-          <span className="block text-gray-600">{INCLUDE_IN_POSTERITY_HELP}</span>
+          <span className="block text-gray-400">{INCLUDE_IN_POSTERITY_HELP}</span>
         </span>
       </label>
 
-      {state?.error && <p className="text-sm text-red-400">{state.error}</p>}
-      {state?.ok && <p className="text-sm text-green-400">{state.ok}</p>}
+      {state?.error && <p className="text-sm text-[color:var(--brand-rose)] inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{state.error}</p>}
+      {state?.ok && <p className="text-sm text-[#93ab99] inline-flex items-start gap-2"><CheckMark className="mt-0.5" />{state.ok}</p>}
 
       <Submit />
     </form>

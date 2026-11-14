@@ -4,9 +4,12 @@ import { displayPhone } from '../../../lib/posterity/phone'
 import { LegacyGuardForm } from './LegacyGuardForm'
 import { makePrimary, deleteLegacyGuard } from './actions'
 import { GUARD_SETUP_LOCKED_MESSAGE } from '../../../lib/posterity/legacy-guards'
+import { AccountGlow } from '../../components/Glow'
+import { NavCart } from '../_cart/NavCart'
 
 export default async function LegacyGuards() {
-  const { supabase, account, status } = await requireAccount()
+  const profile = await requireAccount()
+  const { supabase, account, status } = profile
 
   // Setup locks at Interlude. The page reads the account status check, and the
   // trigger that refuses a locked write reads the same field
@@ -20,9 +23,10 @@ export default async function LegacyGuards() {
   const locked = status?.legacy_guard_setup_open !== true
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="relative min-h-screen bg-black text-white">
+      <NavCart profile={profile} />
 
-      <div className="max-w-3xl mx-auto px-8 py-16">
+      <div className="relative z-[1] max-w-4xl mx-auto px-4 sm:px-8 py-10 sm:py-16">
         <a href="/dashboard/people" className="text-gray-400 hover:text-white text-sm">&larr; People</a>
 
         <h1 className="text-4xl font-bold mt-4 mb-2">Legacy Guards</h1>
@@ -30,13 +34,13 @@ export default async function LegacyGuards() {
           The people who can speak for your account. Your primary Legacy Guard is the first person we turn
           to; the others are there if we can&rsquo;t reach them.
         </p>
-        <p className="text-gray-600 text-sm mb-12 leading-relaxed">
+        <p className="text-gray-400 text-sm mb-12 leading-relaxed">
           Tell them you&rsquo;ve chosen them. It matters, and it&rsquo;s a better conversation to have
           now than for someone else to have later.
         </p>
 
         {locked ? (
-          <p className="bg-gray-900 rounded-2xl p-8 border border-gray-800 text-gray-400">
+          <p className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)] text-gray-400">
             {GUARD_SETUP_LOCKED_MESSAGE}
           </p>
         ) : (
@@ -45,13 +49,13 @@ export default async function LegacyGuards() {
 
         <div className="mt-10">
           {!guards?.length ? (
-            <p className="text-gray-600 text-sm text-center py-8">No one yet.</p>
+            <p className="text-gray-400 text-sm text-center py-8">No one yet.</p>
           ) : (
-            <ul className="flex flex-col gap-3">
+            <ul className="flex flex-col gap-6">
               {guards.map((g) => (
                 <li
                   key={g.id}
-                  className="bg-gray-900 rounded-xl px-6 py-4 border border-gray-800 flex justify-between items-center gap-4"
+                  className="bg-[color:var(--card-ground)] posterity-frame rounded-xl px-6 py-4 border border-[color:var(--card-edge)] flex justify-between items-center gap-4"
                 >
                   <div className="min-w-0">
                     <p className="font-semibold truncate flex items-center gap-2">
@@ -69,7 +73,7 @@ export default async function LegacyGuards() {
                         </span>
                       )}
                     </p>
-                    <p className="text-gray-500 text-sm truncate">
+                    <p className="text-gray-400 text-sm truncate">
                       {[g.email, displayPhone(g.phone)].filter(Boolean).join(' · ')}
                     </p>
                   </div>
@@ -79,14 +83,14 @@ export default async function LegacyGuards() {
                       {!g.is_primary && (
                         <form action={makePrimary}>
                           <input type="hidden" name="id" value={g.id} />
-                          <button type="submit" className="text-gray-500 hover:text-white transition text-sm cursor-pointer">
+                          <button type="submit" className="text-gray-400 hover:text-white transition text-sm cursor-pointer">
                             Make primary
                           </button>
                         </form>
                       )}
                       <form action={deleteLegacyGuard}>
                         <input type="hidden" name="id" value={g.id} />
-                        <button type="submit" className="text-gray-600 hover:text-red-400 transition text-sm cursor-pointer">
+                        <button type="submit" className="text-gray-400 hover:text-[color:var(--brand-rose)] transition text-sm cursor-pointer">
                           Remove
                         </button>
                       </form>
@@ -107,12 +111,13 @@ export default async function LegacyGuards() {
           ship. Stage 5.3. Naming the people is safe. Letting them press the
           button is not, yet.
         */}
-        <p className="text-gray-600 text-xs mt-12 leading-relaxed border-t border-gray-900 pt-6">
+        <p className="text-[color:var(--text-quiet)] text-xs mt-12 leading-relaxed border-t border-gray-900 pt-6">
           Your Legacy Guards can&rsquo;t do anything yet — that part of Posterity is still being built, and
           it&rsquo;s the part we&rsquo;re taking the most time over. For now, this is you deciding who
           they are.
         </p>
       </div>
+      <AccountGlow />
     </main>
   )
 }

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { PLANS as PLAN_CATALOG } from "../../lib/posterity/plans";
+import { WarningMark } from "./StatusMarks";
 
 // Horizon is the storage fee, bought here on its own through Stripe's payment
 // form. Basic, Premium and Legacy are plans: each button opens Add a plan,
@@ -26,7 +27,7 @@ const PLANS = [
     name: "Horizon",
     price: "$9.99",
     priceId: "price_1UHEk8BcdnR2VoDg768Poe7B",
-    border: "border-gray-800",
+    border: "border-[color:var(--paper)]",
     description: "Your legacy starts here. Unlimited time to build your account before you commit.",
     bullets: [
       "Legacy builder — build now, initiate later",
@@ -38,7 +39,7 @@ const PLANS = [
     name: "Basic",
     price: "$49",
     priceId: "price_1TcvdEBcdnR2VoDgGEYC3RtA",
-    border: "border-gray-700",
+    border: "border-[color:var(--paper)]",
     description: "A steady cadence — quarterly messages for the people who matter most.",
     bullets: [
       ...deliveryBullets("basic"),
@@ -50,7 +51,7 @@ const PLANS = [
     name: "Premium",
     price: "$129",
     priceId: "price_1TtgZxBcdnR2VoDgc40u5BRt",
-    border: "border-gray-600",
+    border: "border-[color:var(--paper-sage-edge)] shadow-[0_0_0_1px_var(--paper-sage-edge),0_0_80px_rgba(147,171,153,0.22)]",
     badge: "Most popular",
     featured: true,
     description: "Monthly moments across the year — birthdays, anniversaries, ordinary Tuesdays.",
@@ -64,7 +65,7 @@ const PLANS = [
     name: "Legacy",
     price: "$399",
     priceId: "price_1TtgZxBcdnR2VoDgLqiUvC3j",
-    border: "border-gray-700",
+    border: "border-[color:var(--paper)]",
     badge: "Limited availability",
     description: "A message every week — a full, living presence that lasts the whole year through.",
     bullets: [
@@ -103,32 +104,26 @@ export default function PlanCards() {
 
   return (
     <>
-      {/* Card grid — 1-up ≤560px, 2-up ≤1040px, 4-up >1040px */}
-      {/* Outer: max-width + centering only. Inner grid: 2rem padding eats into the 1280px → ~1216px card span */}
-      <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-        <div
-          className="grid grid-cols-1 min-[561px]:grid-cols-2 min-[1041px]:grid-cols-4"
-          style={{ padding: "0 2rem", gap: "1.25rem" }}
-        >
+      {/* Card grid — one column on a phone, two across from 768px, within the page's column */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
           {PLANS.map((plan, i) => (
             <div
               key={plan.id}
-              className={`border ${plan.border} flex flex-col min-[561px]:min-h-[525px]`}
+              className={`border ${plan.border} bg-[color:var(--paper)] flex flex-col`}
               style={{
-                backgroundColor: plan.featured ? "#262626" : "#171717",
                 borderRadius: "16px",
                 padding: "2.5rem",
-                ...(plan.featured ? { boxShadow: "var(--glow-presence)" } : {}),
               }}
             >
               {plan.badge ? (
                 <div className="flex justify-between items-start mb-3">
-                  <h2 className="text-xl font-bold">{plan.name}</h2>
+                  <h2 className="text-xl font-bold text-[color:var(--paper-ink)]">{plan.name}</h2>
                   <span
                     style={{
-                      background: "rgba(147,171,153,0.14)",
-                      color: "#93ab99",
-                      border: "1px solid rgba(147,171,153,0.32)",
+                      background: "rgba(124,148,130,0.14)",
+                      color: "#4f6b57",
+                      border: "1px solid rgba(124,148,130,0.45)",
                       borderRadius: "999px",
                       padding: "0.35rem 0.7rem",
                       fontSize: "12px",
@@ -143,21 +138,21 @@ export default function PlanCards() {
                   </span>
                 </div>
               ) : (
-                <h2 className="text-xl font-bold mb-3">{plan.name}</h2>
+                <h2 className="text-xl font-bold mb-3 text-[color:var(--paper-ink)]">{plan.name}</h2>
               )}
 
               <div className="mb-4">
-                <span className="text-[44px] font-bold leading-none">{PLAN_CATALOG[plan.id]?.price ?? plan.price}</span>
-                <span className="text-gray-500 ml-2 text-base">/year</span>
+                <span className="text-[44px] font-bold leading-none text-[color:var(--paper-ink)]">{PLAN_CATALOG[plan.id]?.price ?? plan.price}</span>
+                <span className="text-[color:var(--paper-quiet)] ml-2 text-base">/year</span>
               </div>
 
-              <p className="text-gray-400 text-sm leading-relaxed mb-5">{plan.description}</p>
+              <p className="text-[color:var(--paper-ink-3)] text-sm leading-relaxed mb-5">{plan.description}</p>
 
               {/* flex-1 on the ul: bullets sit flush under description; slack falls below the last bullet */}
-              <ul className="flex flex-col flex-1 text-sm text-gray-300" style={{ gap: "0.85rem" }}>
+              <ul className="flex flex-col flex-1 text-sm text-[color:var(--paper-ink-2)]" style={{ gap: "0.85rem" }}>
                 {plan.bullets.map((bullet) => (
                   <li key={bullet} className="flex gap-3">
-                    <span className="text-gray-500 mt-0.5">•</span>
+                    <span className="text-[color:var(--paper-quiet)] mt-0.5">•</span>
                     <span>{bullet}</span>
                   </li>
                 ))}
@@ -171,7 +166,7 @@ export default function PlanCards() {
                   onClick={() => handleCheckout(plan.id, i)}
                   disabled={loading === i}
                   data-plan={plan.id}
-                  className="text-center border border-white text-white px-6 py-3 rounded-full text-base font-semibold hover:bg-white hover:text-black transition cursor-pointer disabled:opacity-50"
+                  className="self-start border border-[color:var(--paper-ink)] text-[color:var(--paper-ink)] px-6 py-3 rounded-full text-base font-semibold hover:bg-[color:var(--paper-ink)] hover:text-white transition cursor-pointer disabled:opacity-50"
                 >
                   {loading === i ? "Loading..." : "Get Started"}
                 </button>
@@ -181,8 +176,8 @@ export default function PlanCards() {
                   data-plan={plan.id}
                   className={
                     plan.featured
-                      ? "text-center bg-white text-black px-6 py-3 rounded-full text-base font-semibold hover:bg-gray-200 transition cursor-pointer"
-                      : "text-center border border-white text-white px-6 py-3 rounded-full text-base font-semibold hover:bg-white hover:text-black transition cursor-pointer"
+                      ? "self-start bg-[color:var(--paper-ink)] text-white px-6 py-3 rounded-full text-base font-semibold hover:bg-[#333333] transition cursor-pointer"
+                      : "self-start border border-[color:var(--paper-ink)] text-[color:var(--paper-ink)] px-6 py-3 rounded-full text-base font-semibold hover:bg-[color:var(--paper-ink)] hover:text-white transition cursor-pointer"
                   }
                   style={{ textDecoration: "none" }}
                 >
@@ -190,7 +185,7 @@ export default function PlanCards() {
                 </a>
               )}
               {failed === i && (
-                <p role="alert" className="text-sm text-gray-400 mt-3 text-center">{CHECKOUT_FAILED}</p>
+                <p role="alert" className="text-sm text-center text-[color:var(--paper-rose)] mt-3 inline-flex items-start justify-center gap-2"><WarningMark className="mt-0.5" />{CHECKOUT_FAILED}</p>
               )}
             </div>
           ))}

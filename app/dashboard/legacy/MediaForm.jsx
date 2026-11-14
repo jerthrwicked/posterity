@@ -5,9 +5,10 @@ import { useState } from 'react'
 import { createClient } from '../../../lib/supabase/client'
 import { addMedia } from './actions'
 import { INCLUDE_IN_POSTERITY_HELP } from '../../../lib/posterity/content'
+import { CheckMark, WarningMark } from '../../components/StatusMarks'
 
 const input =
-  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white transition'
+  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition'
 const label = 'text-sm text-gray-400 mb-1 block'
 
 const MAX_BYTES = 25 * 1024 * 1024
@@ -91,7 +92,7 @@ export function MediaForm({ recipients, accountId, legacyId }) {
 
   if (!recipients.length) {
     return (
-      <div className="bg-gray-900 rounded-2xl p-8 border border-gray-800 text-center">
+      <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)] text-center">
         <p className="text-gray-400 mb-6">
           Add someone first. A message has to be <em>for</em> someone.
         </p>
@@ -106,7 +107,7 @@ export function MediaForm({ recipients, accountId, legacyId }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="bg-gray-900 rounded-2xl p-8 border border-gray-800 flex flex-col gap-4">
+    <form onSubmit={onSubmit} className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)] flex flex-col gap-4">
       <div>
         <label htmlFor="file" className={label}>Video or photo</label>
         <input
@@ -116,7 +117,7 @@ export function MediaForm({ recipients, accountId, legacyId }) {
           onChange={(e) => { setFile(e.target.files?.[0] ?? null); setError(''); setOk('') }}
           className="w-full text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-5 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-white file:text-black hover:file:bg-gray-200 file:cursor-pointer cursor-pointer"
         />
-        <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+        <p className="text-xs text-[color:var(--text-quiet)] mt-2 leading-relaxed">
           Up to 25MB. For video, that&rsquo;s roughly three or four minutes — say the thing that
           matters, not everything.
         </p>
@@ -124,7 +125,7 @@ export function MediaForm({ recipients, accountId, legacyId }) {
 
       <div>
         <label htmlFor="media_body" className={label}>
-          Anything to go with it <span className="text-gray-600">(optional)</span>
+          Anything to go with it <span className="text-[color:var(--text-quiet)]">(optional)</span>
         </label>
         <textarea
           id="media_body"
@@ -137,7 +138,7 @@ export function MediaForm({ recipients, accountId, legacyId }) {
 
       <div>
         <label htmlFor="media_title" className={label}>
-          Title <span className="text-gray-600">(optional — just for you)</span>
+          Title <span className="text-[color:var(--text-quiet)]">(optional — just for you)</span>
         </label>
         <input id="media_title" name="title" className={input} placeholder="The kitchen, Christmas morning" />
       </div>
@@ -163,12 +164,12 @@ export function MediaForm({ recipients, accountId, legacyId }) {
         <input type="checkbox" name="include_in_posterity" className="mt-1 accent-white cursor-pointer" />
         <span>
           Include in Posterity
-          <span className="block text-gray-600">{INCLUDE_IN_POSTERITY_HELP}</span>
+          <span className="block text-gray-400">{INCLUDE_IN_POSTERITY_HELP}</span>
         </span>
       </label>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
-      {ok && <p className="text-sm text-green-400">{ok}</p>}
+      {error && <p className="text-sm text-[color:var(--brand-rose)] inline-flex items-start gap-2"><WarningMark className="mt-0.5" />{error}</p>}
+      {ok && <p className="text-sm text-[#93ab99] inline-flex items-start gap-2"><CheckMark className="mt-0.5" />{ok}</p>}
 
       <button
         type="submit"

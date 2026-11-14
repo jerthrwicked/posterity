@@ -1,7 +1,8 @@
 ﻿import PlanCards from "./components/PlanCards";
 import { Logomark } from "./components/brand/Logomark";
+import { BandPulse } from "./components/Glow";
 
-const PHASE_HUES = ["#93ab99", "#879d98", "#7b8f97", "#708096", "#647295", "#586494"];
+const PHASE_HUES = ["#93ab99", "#a1b095", "#a1a787", "#b1ac85", "#b6a37a", "#c0a176"];
 
 const PHASES = [
   { name: "Horizon", copy: "Your legacy starts here. Build your account before committing." },
@@ -51,21 +52,21 @@ export default function Home() {
 
       {/* Features */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 px-6 md:px-8 py-16 max-w-6xl mx-auto">
-        <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700">
+        <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)]">
           <p className="text-xs font-mono tracking-wider mb-3" style={{ color: "#93ab99" }}>01</p>
           <h3 className="text-xl font-bold mb-3">A Living Legacy</h3>
           <p className="text-gray-400 text-sm leading-relaxed">
             Build a custom delivery calendar of messages, videos, and memories. Your content reaches the people you choose, on the dates you set — long after you&rsquo;re gone.
           </p>
         </div>
-        <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700">
+        <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)]">
           <p className="text-xs font-mono tracking-wider mb-3" style={{ color: "#93ab99" }}>02</p>
           <h3 className="text-xl font-bold mb-3">On Your Terms</h3>
           <p className="text-gray-400 text-sm leading-relaxed">
             You build it. You preview it. You control it. Nothing moves until you&rsquo;re ready — and when you are, your account begins its journey through six carefully designed phases.
           </p>
         </div>
-        <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700">
+        <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 border border-[color:var(--card-edge)]">
           <p className="text-xs font-mono tracking-wider mb-3" style={{ color: "#93ab99" }}>03</p>
           <h3 className="text-xl font-bold mb-3">Fully Automated. Fully Protected</h3>
           <p className="text-gray-400 text-sm leading-relaxed">
@@ -77,15 +78,17 @@ export default function Home() {
       {/* Phase lifecycle */}
       <div
         style={{
-          background:
-            "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(147,171,153,0.10), rgba(15,21,18,0) 60%), linear-gradient(180deg, #0f1512 0%, #000000 100%)",
-          borderTop: "1px solid #2c3f35",
+          background: "linear-gradient(180deg, #0f1512 0%, #000000 100%)",
+          borderTop: "1px solid rgba(147,171,153,0.45)",
           borderBottom: "1px solid #2c3f35",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-      <section className="max-w-[60rem] mx-auto px-6 md:px-8 py-16">
+      <BandPulse />
+      <section className="relative max-w-[60rem] mx-auto px-6 md:px-8 py-16">
         <h2 className="text-2xl font-bold text-center mb-2">Six Phases. One Journey.</h2>
-        <p className="text-gray-500 text-sm text-center mb-12">Every Posterity account moves through six carefully designed phases.</p>
+        <p className="text-[color:var(--text-quiet)] text-sm text-center mb-12">Every Posterity account moves through six carefully designed phases.</p>
 
         {/* Layer 1 — Tracker: connected line + pips + uppercase labels (≥880px only) */}
         <div className="hidden min-[880px]:block">
@@ -109,7 +112,7 @@ export default function Home() {
                     className="w-3 h-3 rounded-full"
                     style={{
                       background: PHASE_HUES[i],
-                      ...(i === 2 ? { boxShadow: "0 0 0 4px rgba(123,143,151,0.28)" } : {}),
+                      ...(i === 2 ? { boxShadow: "0 0 0 4px rgba(161,167,135,0.28)" } : {}),
                     }}
                   />
                   <p
@@ -146,10 +149,10 @@ export default function Home() {
                     borderRadius: "50%",
                     background: PHASE_HUES[i],
                     zIndex: 1,
-                    ...(i === 2 ? { boxShadow: "0 0 0 4px rgba(123,143,151,0.28)" } : {}),
+                    ...(i === 2 ? { boxShadow: "0 0 0 4px rgba(161,167,135,0.28)" } : {}),
                   }}
                 />
-                <p className="text-[11px] font-mono text-gray-500 tracking-wider">
+                <p className="text-[11px] font-mono text-[color:var(--text-quiet)] tracking-wider">
                   {String(i + 1).padStart(2, "0")}
                 </p>
                 <p className="font-semibold" style={{ fontSize: "17px", color: PHASE_HUES[i] }}>
@@ -164,7 +167,7 @@ export default function Home() {
       </div>
 
       {/* Plans preview */}
-      <section className="py-16">
+      <section className="py-16 bg-[color:var(--band-charcoal)]">
         <div className="text-center px-6 mb-10">
           <h2 className="text-4xl font-bold mb-3">Plans for every legacy</h2>
           <p className="text-gray-400 text-lg">Start building on Horizon. Pay for your plan — or plans — when you&rsquo;re ready.</p>
@@ -187,7 +190,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="text-gray-600 py-10 text-sm border-t border-gray-900 px-8 flex flex-row justify-between items-center">
+      <footer className="text-[color:var(--text-quiet)] py-10 text-sm border-t border-gray-900 px-8 flex flex-row justify-between items-center">
         <div style={{ display: "inline-flex", alignItems: "center", gap: "0.6em", color: "#ffffff" }}>
           <Logomark size={36} />
           <span style={{ fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", lineHeight: 1, fontSize: 16 }}>Posterity</span>
