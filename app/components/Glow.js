@@ -23,7 +23,7 @@ export function BandPulse() {
     if (!('IntersectionObserver' in window)) { setOn(true); return }
     const io = new IntersectionObserver((entries) => {
       if (entries.some((e) => e.isIntersecting)) { setOn(true); io.disconnect() }
-    }, { threshold: 0.35 })
+    }, { threshold: 0, rootMargin: '0px 0px -33% 0px' })
     io.observe(band)
     return () => io.disconnect()
   }, [])

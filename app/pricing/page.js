@@ -12,12 +12,23 @@ export default function Pricing() {
 
       {/* Header */}
       <section className="max-w-4xl mx-auto px-4 sm:px-8 pt-10 sm:pt-16 pb-8">
-        <h1 className="text-3xl sm:text-4xl font-bold">Plans</h1>
-        <p className="text-gray-400 text-lg mt-3">Start building your legacy today.</p>
+        <h1 className="text-[28px] md:text-4xl leading-[1.15] font-bold">Plans</h1>
+        <p className="mt-4 max-w-[42rem] text-[13px] md:text-[15px] leading-[1.7] text-gray-300">
+          <span className="serif-accent block text-[15px] md:text-lg leading-snug mb-2">Before you move forward on your legacy journey, you must first go back.</span>
+          Back through the memories, friendships, love, and brilliance. Your creations and your accomplishments: All the uniqueness that made you-You. The little and big things that make life feel well-lived. Relive your past, so you can carry it into the future with Posterity. Select a plan and start building your legacy today.
+        </p>
       </section>
 
       {/* Plan Cards (shared component — do not inline here) */}
       <PlanCards />
+
+      {/* Serif cadence note — appears once, beneath the cards */}
+      <div className="max-w-2xl mx-auto text-center px-6 py-10">
+        <div className="w-10 h-px mx-auto mb-5" style={{ background: "#93ab99" }} />
+        <p className="serif-accent text-[13px] md:text-sm leading-relaxed">
+          Quarterly, monthly, weekly — that&rsquo;s just how we count. Every delivery posts on any date you choose, anytime across the plan year.
+        </p>
+      </div>
 
       {/* Custom & Grace — secondary tier, two across, one column below 768px */}
       <section className="max-w-4xl mx-auto px-4 sm:px-8 pb-20">
@@ -26,7 +37,7 @@ export default function Pricing() {
           <div
             className="rounded-2xl p-10 flex flex-col items-start bg-[color:var(--paper)] border border-[color:var(--paper)]"
           >
-            <h2 className="text-2xl font-bold mb-4 text-[color:var(--paper-ink)]">Custom</h2>
+            <h2 className="text-lg md:text-xl font-bold mb-4 text-[color:var(--paper-ink)]">Custom</h2>
             <p className="text-[color:var(--paper-ink-3)] text-base leading-relaxed mb-8">
               Every legacy is different. If your vision doesn&rsquo;t fit a standard plan, we&rsquo;ll build something that does — contact us to get started
             </p>
@@ -41,7 +52,7 @@ export default function Pricing() {
           <div
             className="rounded-2xl p-10 flex flex-col items-start bg-[color:var(--paper)] border border-[color:var(--paper)]"
           >
-            <h2 className="text-2xl font-bold mb-2 text-[color:var(--paper-ink)]">Posterity Grace</h2>
+            <h2 className="text-lg md:text-xl font-bold mb-2 text-[color:var(--paper-ink)]">Posterity Grace</h2>
             <p className="text-[color:var(--paper-ink)] text-base mb-4">
               Free, with Grace Storage at {GRACE_STORAGE.price}<span className="text-[color:var(--paper-quiet)]">/year</span>
             </p>
