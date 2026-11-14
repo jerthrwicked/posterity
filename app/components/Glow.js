@@ -1,14 +1,14 @@
 'use client'
 // Posterity — the phase glow: the six phase colours, from jade at the top down to gold
-// (Posterity design system). The account home breathes; the other pages, apart from the homepage, wash it in, then hold it;
-// the homepage's Six Phases band washes it in the first time the band scrolls into view, then breathes.
+// (Posterity design system). Every page with the glow washes it in, then breathes for as long as the page is open;
+// the homepage's Six Phases band washes it in once the band is in view, then breathes.
 // Anyone who has turned off motion sees it still everywhere (app/globals.css).
 import { useEffect, useRef, useState } from 'react'
 
-export function AccountGlow({ breathing = false }) {
+export function AccountGlow() {
   return (
     <div aria-hidden="true" className="posterity-glow-wrap">
-      <div className={breathing ? 'posterity-glow posterity-glow--breathe' : 'posterity-glow posterity-glow--settle'} />
+      <div className="posterity-glow posterity-glow--breathe" />
     </div>
   )
 }

@@ -119,7 +119,7 @@ export async function ProfileShell({ tab, profile, children }) {
 
         <div id={`tab-${tab}`}>{children}</div>
       </div>
-      <AccountGlow breathing />
+      <AccountGlow />
     </main>
   )
 }
