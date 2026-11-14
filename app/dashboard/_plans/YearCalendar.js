@@ -10,11 +10,14 @@
 // are links, the manual input is a form that needs no script, and a year can
 // be bookmarked or sent back to after a change. Scheduled arrives with the
 // delivery schedule within Stage 4.5.
+//
+// A plan a payment form is open for reads In checkout until the form is paid
+// or closed (lib/posterity/checkout.js).
 import { PLANS, STORAGE_FEE } from '../../../lib/posterity/plans'
 import { MAX_PLAN_YEAR } from '../../../lib/posterity/plan-calendar'
 
 export const TIER_NAMES = { basic: 'Basic', premium: 'Premium', legacy: 'Legacy', custom: 'Custom', grace: 'Grace' }
-export const STATUS_NAMES = { paid: 'Paid', configured: 'Configured', skipped: 'Skipped' }
+export const STATUS_NAMES = { paid: 'Paid', in_checkout: 'In checkout', configured: 'Configured', skipped: 'Skipped' }
 
 const FOCUS = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#93ab99]'
 const ARROW = `inline-flex items-center justify-center w-11 h-11 rounded-full border text-lg transition-colors duration-200 ${FOCUS}`
@@ -22,6 +25,7 @@ const PILL = `rounded-full border border-gray-600 px-4 py-2 text-sm font-semibol
 
 const STATUS_STYLE = {
   paid: 'border-[#93ab99] text-[#93ab99]',
+  in_checkout: 'border-gray-300 text-white',
   configured: 'border-gray-500 text-gray-200',
   skipped: 'border-gray-700 text-gray-400',
 }

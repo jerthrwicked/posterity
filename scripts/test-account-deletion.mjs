@@ -21,7 +21,9 @@ What matters most:
     thirty days after an account recovery
   - a plan paid within thirty days is refunded in full to the payment that
     paid it, once however often the deletion runs; one paid before that is
-    not; a storage payment never is
+    not; a storage payment never is, nor the storage fee a plan's payment
+    carried
+  - a payment form the account left open is closed before anything else
   - the storage subscription ends and the account's Stripe customers go
   - every row and file tied to the account goes, and the sign-in with them
   - the event log stays, and gains the refunds and the deletion with a
@@ -46,6 +48,8 @@ import { randomUUID } from 'node:crypto';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { PLANS } from '../lib/posterity/plans.js';
+import { openCheckout } from '../lib/posterity/checkout.js';
+import { placePlan } from '../lib/posterity/plan-records.js';
 import {
   planPayments, inRefundWindow, refundOwed, issueRefund, recordRefund, money, REFUND_WINDOW_DAYS, REFUND_COPY,
 } from '../lib/posterity/refunds.js';
@@ -83,11 +87,12 @@ const CALLER = `test-ad-${stamp}`;
 const addr = (tag) => `test-ad-${stamp}-${tag}@yourposterity.com`;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const PRICE = { basic: 4900, premium: 12900 };
+const STORAGE = 999;
 // Every table that holds rows by account, other than the event log.
 const TABLES = [
   'account_phase_events', 'account_recoveries', 'checkin_notifications', 'checkins', 'content_items', 'deliveries',
-  'dispatch_messages', 'legacies', 'legacy_guards', 'plans', 'recipients', 'recovery_emails', 'storage_fees',
-  'subscriptions', 'text_switch_requests', 'trigger_confirmations', 'verification_codes',
+  'checkout_lines', 'checkouts', 'dispatch_messages', 'legacies', 'legacy_guards', 'plans', 'recipients',
+  'recovery_emails', 'storage_fees', 'subscriptions', 'text_switch_requests', 'trigger_confirmations', 'verification_codes',
 ];
 // The smallest picture the bucket accepts.
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64');
@@ -135,13 +140,41 @@ async function customerFor(who, { onAccount = true } = {}) {
   if (onAccount) must(await db.from('accounts').update({ stripe_customer_id: cus.id }).eq('id', who.account.id).select('id'));
   return cus;
 }
-// A payment as Checkout leaves one: paid by card, carrying the account and the
-// plan in its details.
-const pay = (cus, { accountId, plan, amount }) => stripe.paymentIntents.create({
+// A card payment within Stripe, on its own.
+const charged = (cus, amount, metadata = {}) => stripe.paymentIntents.create({
   amount, currency: 'usd', customer: cus.id, payment_method: 'pm_card_visa', confirm: true,
-  automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
-  metadata: { account_id: accountId, ...(plan ? { plan, tier: plan } : {}) },
+  automatic_payment_methods: { enabled: true, allow_redirects: 'never' }, metadata,
 });
+const unpaidPlan = (who, tier, planYear) => db.from('plans').insert({
+  account_id: who.account.id, plan_year: planYear, tier, delivery_time_zone: 'America/Chicago',
+  standard_deliveries: PLANS[tier].standard, feature_deliveries: PLANS[tier].feature, social_posts: PLANS[tier].social,
+}).select('id, plan_year, tier').single().then(must);
+// A plan paid for from the cart, as the checkout leaves it: the plan, a
+// checkout with a line for each thing it charged, the card payment within
+// Stripe, and the checkout applied (public.apply_checkout), which marks the
+// plan paid and initiates an account still in Horizon. `planId` pays for a
+// plan already placed; without it one is placed on `planYear`. `storage` adds
+// the storage fee to the same payment, as the checkout does where the fee is
+// not current.
+//
+// Returns { id: the payment within Stripe, checkoutId, planId }.
+async function pay(who, cus, { tier = 'basic', planId = null, planYear = 1, storage = false } = {}) {
+  const id = who.account.id;
+  const plan = planId
+    ? must(await db.from('plans').select('id, plan_year, tier').eq('id', planId).single())
+    : await unpaidPlan(who, tier, planYear);
+  const lines = [{ kind: 'plan', plan_id: plan.id, plan_year: plan.plan_year, tier: plan.tier, unit_amount_cents: PRICE[plan.tier], stripe_price_id: PLANS[plan.tier].priceId }];
+  if (storage) lines.push({ kind: 'storage', plan_id: null, plan_year: null, tier: 'horizon', unit_amount_cents: STORAGE, stripe_price_id: HORIZON });
+  const amount = lines.reduce((sum, line) => sum + line.unit_amount_cents, 0);
+  const checkout = must(await db.from('checkouts').insert({
+    account_id: id, opened_by: who.user.id, refund_policy_accepted_at: new Date().toISOString(),
+    mode: storage ? 'subscription' : 'payment', amount_cents: amount, stripe_customer_id: cus.id,
+  }).select('id').single());
+  must(await db.from('checkout_lines').insert(lines.map((line) => ({ ...line, checkout_id: checkout.id, account_id: id }))).select('id'));
+  const intent = await charged(cus, amount, { purpose: 'cart', account_id: id, checkout_id: checkout.id });
+  must(await db.rpc('apply_checkout', { p_checkout_id: checkout.id, p_payment_intent: intent.id, p_subscription: null, p_paid_at: null }));
+  return { id: intent.id, checkoutId: checkout.id, planId: plan.id };
+}
 // A storage subscription and the row the webhook writes for it.
 async function subscribe(who, cus) {
   const pm = await stripe.paymentMethods.attach('pm_card_visa', { customer: cus.id });
@@ -153,9 +186,9 @@ async function subscribe(who, cus) {
   return sub;
 }
 
-// What an account holds before it is deleted: a recipient, a Legacy Guard, a
-// plan with content, content on no plan, two check-ins, a line of phase
-// history, and two files.
+// What an account holds before it is deleted: a recipient, a Legacy Guard, an
+// unpaid Basic plan on year 1 with content, content on no plan, two
+// check-ins, a line of phase history, and two files.
 const NAMES = { recipient: 'Recipient Namedhere', guard: 'Guard Namedhere', title: 'A title kept private', body: 'A body kept private' };
 async function fill(who, { phase = 'horizon' } = {}) {
   const id = who.account.id;
@@ -163,7 +196,7 @@ async function fill(who, { phase = 'horizon' } = {}) {
   const legacy = must(await db.from('legacies').select('id').eq('account_id', id).eq('is_primary', true).single());
   const recipient = must(await db.from('recipients').insert({ account_id: id, name: NAMES.recipient, email: `recipient-${stamp}@yourposterity.com` }).select('id').single());
   must(await db.from('legacy_guards').insert({ account_id: id, name: NAMES.guard, email: `guard-${stamp}@yourposterity.com`, phone: '+15045550123', is_primary: true }).select('id'));
-  const plan = must(await db.from('plans').insert({ account_id: id, plan_year: 1, tier: 'basic', paid_at: new Date().toISOString(), delivery_time_zone: 'America/Chicago', standard_deliveries: 4, feature_deliveries: 1, social_posts: 1 }).select('id').single());
+  const plan = await unpaidPlan(who, 'basic', 1);
   const paths = [`${id}/${legacy.id}/${randomUUID()}.png`, `${id}/${legacy.id}/${randomUUID()}.png`];
   for (const path of paths) must(await db.storage.from(BUCKET).upload(path, PNG, { contentType: 'image/png' }));
   const item = { legacy_id: legacy.id, account_id: id, title: NAMES.title, body: NAMES.body, recipient_id: recipient.id };
@@ -178,7 +211,7 @@ async function fill(who, { phase = 'horizon' } = {}) {
     { account_id: id, due_on: '2027-01-01', status: 'due', answered_at: null, answered_via: null },
   ]).select('id'));
   must(await db.from('account_phase_events').insert({ account_id: id, from_phase: 'horizon', to_phase: 'planning', note: `test ${stamp}: first plan paid` }).select('id'));
-  return { paths };
+  return { paths, planId: plan.id };
 }
 
 const count = async (table, accountId) => {
@@ -227,6 +260,14 @@ function failing(resource, method, times = Infinity) {
   return broken;
 }
 
+{
+  const { error } = await db.from('checkouts').select('id').limit(1);
+  if (error) {
+    console.log(`Migration 20261116000000_cart_checkouts is not applied (${error.message}). Not running.`);
+    process.exit(1);
+  }
+}
+
 try {
   const copy = must(await db.from('dispatch_copy').select('key').in('key', [REFUND_COPY, DELETED_COPY]));
   const migrated = copy.length === 2;
@@ -261,27 +302,46 @@ try {
   const a1 = await customerFor(a);
   const a2 = await customerFor(a, { onAccount: false });
   const b1 = await customerFor(b);
-  const aBasic = await pay(a1, { accountId: a.account.id, plan: 'basic', amount: PRICE.basic });
+  const aBasic = await pay(a, a1, { planId: aFiles.planId });
   const aSub = await subscribe(a, a1);
-  const aStorage = await pay(a1, { accountId: a.account.id, amount: 999 });
-  const aHorizon = await pay(a1, { accountId: a.account.id, plan: 'horizon', amount: 999 });
-  const aOther = await pay(a1, { accountId: b.account.id, plan: 'basic', amount: PRICE.basic });
-  await stripe.paymentIntents.create({ amount: PRICE.basic, currency: 'usd', customer: a1.id, metadata: { account_id: a.account.id, plan: 'basic' } });
-  // A second customer the account paid through, named only on a row.
-  must(await db.from('subscriptions').insert({ account_id: a.account.id, stripe_customer_id: a2.id, tier: 'premium', status: 'paid' }).select('id'));
-  const aPremium = await pay(a2, { accountId: a.account.id, plan: 'premium', amount: PRICE.premium });
-  const bBasic = await pay(b1, { accountId: b.account.id, plan: 'basic', amount: PRICE.basic });
+  // A storage payment no checkout holds, as a renewal's is.
+  const aStorage = await charged(a1, STORAGE, { account_id: a.account.id });
+  // A second customer the account holds, named only by a storage
+  // subscription opened before the account kept one, and long over.
+  const aOldSub = await subscribe(a, a2);
+  await stripe.subscriptions.cancel(aOldSub.id);
+  must(await db.from('subscriptions').update({ status: 'canceled' }).eq('stripe_subscription_id', aOldSub.id).select('id'));
+  // The second plan's payment carried the storage fee as well.
+  const aPremium = await pay(a, a1, { tier: 'premium', planYear: 2, storage: true });
+  // A payment form closed unpaid.
+  const aClosed = must(await db.from('checkouts').insert({
+    account_id: a.account.id, opened_by: a.user.id, refund_policy_accepted_at: new Date().toISOString(),
+    mode: 'payment', amount_cents: PRICE.basic, stripe_customer_id: a1.id, status: 'expired',
+  }).select('id').single());
+  must(await db.from('checkout_lines').insert({
+    checkout_id: aClosed.id, account_id: a.account.id, kind: 'plan', plan_id: aBasic.planId, plan_year: 1, tier: 'basic',
+    unit_amount_cents: PRICE.basic, stripe_price_id: PLANS.basic.priceId,
+  }).select('id'));
+  const bBasic = await pay(b, b1, { planId: bFiles.planId });
   const bSub = await subscribe(b, b1);
   {
-    const found = await planPayments(stripe, { accountId: a.account.id, customerIds: [a1.id, a2.id] });
-    check('the plan payments are found across both of the account\'s customers, oldest first',
-      found.length === 2 && found[0].paymentIntent === aBasic.id && found[1].paymentIntent === aPremium.id, JSON.stringify(found.map((f) => f.paymentIntent)));
-    check('…each with its plan, its amount and when it was paid',
-      found[0]?.plan === 'basic' && found[0]?.planName === 'Basic' && found[0]?.amount === PRICE.basic && found[1]?.amount === PRICE.premium
-      && Math.abs(Date.now() - found[0]?.paidAt) < 10 * 60 * 1000);
+    const found = await planPayments(db, stripe, { accountId: a.account.id });
+    check('the plan payments are the account\'s paid checkouts, oldest first',
+      found.length === 2 && found[0].paymentIntent === aBasic.id && found[1].paymentIntent === aPremium.id
+      && found[0].checkout === aBasic.checkoutId && found[1].checkout === aPremium.checkoutId, JSON.stringify(found.map((f) => f.paymentIntent)));
+    check('…each with its plan, what it charged, its customer and when it was paid',
+      found[0]?.plan === 'basic' && found[0]?.planName === 'Basic' && found[0]?.paid === PRICE.basic && found[1]?.plan === 'premium'
+      && found[1]?.paid === PRICE.premium + STORAGE && found.every((f) => f.customer === a1.id && f.refunded === 0)
+      && Math.abs(Date.now() - found[0]?.paidAt) < 10 * 60 * 1000, JSON.stringify(found));
+    check('what can be returned is the plan, and never the storage fee its payment carried',
+      found[0]?.amount === PRICE.basic && found[1]?.amount === PRICE.premium, `${found[0]?.amount} ${found[1]?.amount}`);
     const ids = found.map((f) => f.paymentIntent);
-    check('a storage payment is not one, whether it names no plan or names Horizon', !ids.includes(aStorage.id) && !ids.includes(aHorizon.id));
-    check('…nor a payment carrying another account, nor one never completed', !ids.includes(aOther.id) && found.every((f) => f.amount > 0));
+    check('a storage payment is not one, nor a payment form closed unpaid', !ids.includes(aStorage.id) && !found.some((f) => f.checkout === aClosed.id));
+    check('…nor another account\'s payment', !ids.includes(bBasic.id));
+    const paidPlans = must(await db.from('plans').select('plan_year, paid_at').eq('account_id', a.account.id).order('plan_year'));
+    check('each plan paid for is marked paid', paidPlans.length === 2 && paidPlans.every((p) => p.paid_at), JSON.stringify(paidPlans));
+    const bNow = must(await db.from('accounts').select('phase, initiated_at').eq('id', b.account.id).single());
+    check('and the Horizon account whose first plan was paid is in Planning', bNow.phase === 'planning' && !!bNow.initiated_at, JSON.stringify(bNow));
 
     const owed = await refundsOwedOnDeletion(db, stripe, { accountId: a.account.id });
     check('what deletion would refund is read from the account\'s own rows: both plans in full',
@@ -289,12 +349,16 @@ try {
     const late = await refundsOwedOnDeletion(db, stripe, { accountId: a.account.id, now: new Date(Date.now() + 31 * DAY_MS) });
     check('…and nothing once thirty days have passed', late.length === 0, JSON.stringify(late));
 
-    const gone = await stripe.customers.create({ email: addr('gone') });
-    await pay(gone, { accountId: a.account.id, plan: 'basic', amount: PRICE.basic });
-    await stripe.customers.del(gone.id);
-    const r = await outcome(() => planPayments(stripe, { accountId: a.account.id, customerIds: [gone.id, 'cus_test_never_existed', a2.id] }));
-    check('a customer Stripe no longer holds, or never held, stops nothing', !r.err && r.value?.some((f) => f.paymentIntent === aPremium.id), String(r.err?.message ?? r.value?.length));
-    console.log(`    (a deleted customer's payments: ${r.value?.filter((f) => f.customer === gone.id).length ?? '-'} found)`);
+    // A paid checkout whose payment Stripe does not hold.
+    const lost = must(await db.from('checkouts').insert({
+      account_id: a.account.id, opened_by: a.user.id, refund_policy_accepted_at: new Date().toISOString(),
+      mode: 'payment', amount_cents: PRICE.basic, stripe_customer_id: a1.id, status: 'paid', paid_at: new Date().toISOString(),
+      stripe_payment_intent_id: `pi_test_never_existed_${stamp}`,
+    }).select('id').single());
+    const r = await outcome(() => planPayments(db, stripe, { accountId: a.account.id }));
+    check('a payment Stripe does not hold stops nothing, and is not one',
+      !r.err && r.value?.length === 2 && !r.value.some((f) => f.checkout === lost.id), String(r.err?.message ?? r.value?.length));
+    must(await db.from('checkouts').delete().eq('id', lost.id).select('id'));
   }
 
   console.log('\nWhat the account holds');
@@ -303,7 +367,14 @@ try {
     check('its files are found under its own folder', files.length === 2 && aFiles.paths.every((p) => files.includes(p)), JSON.stringify(files));
     const h = await accountHistory(db, a.account.id);
     check('the summary holds the phase history, the check-ins and the plans',
-      h.phase_events.some((e) => e.note === `test ${stamp}: first plan paid`) && h.checkins.length === 2 && h.plans.length === 1 && h.account.phase === 'planning', JSON.stringify(h).slice(0, 300));
+      h.phase_events.some((e) => e.note === `test ${stamp}: first plan paid`) && h.checkins.length === 2 && h.plans.length === 2 && h.account.phase === 'planning', JSON.stringify(h).slice(0, 300));
+    const paid = h.checkouts.filter((c) => c.status === 'paid');
+    check('…each payment form it opened, with what it was opened for and when the refund policy was accepted',
+      h.checkouts.length === 3 && paid.length === 2 && h.checkouts.every((c) => c.refund_policy_accepted_at && c.lines.length >= 1)
+      && paid.some((c) => c.stripe_payment_intent_id === aPremium.id && c.amount_cents === PRICE.premium + STORAGE
+        && c.lines.map((l) => `${l.kind}${l.plan_year ?? ''}:${l.unit_amount_cents}`).sort().join(' ') === `plan2:${PRICE.premium} storage:${STORAGE}`),
+      JSON.stringify(h.checkouts).slice(0, 400));
+    check('…and its storage subscriptions', h.payments_recorded.length === 2 && h.payments_recorded.every((p) => p.tier === 'horizon'), JSON.stringify(h.payments_recorded));
     check('…what each plan stored, by kind', h.plans[0]?.content?.items === 3 && h.plans[0]?.content?.kinds?.message === 2 && h.plans[0]?.content?.kinds?.photo === 1 && h.content_on_no_plan.items === 1, JSON.stringify(h.plans[0]?.content));
     check('…and how many recipients and Legacy Guards', h.recipients === 1 && h.legacy_guards.named === 1 && h.legacy_guards.accepted === 0);
     const text = JSON.stringify(h);
@@ -356,10 +427,10 @@ try {
 
       const [basic, premium] = [await charge(aBasic), await charge(aPremium)];
       check('each plan is refunded in full to the payment that paid it', basic.amount_refunded === PRICE.basic && premium.amount_refunded === PRICE.premium, `${basic.amount_refunded} ${premium.amount_refunded}`);
+      check('…and the storage fee the second payment carried is kept', premium.amount === PRICE.premium + STORAGE && premium.amount - premium.amount_refunded === STORAGE, `${premium.amount} ${premium.amount_refunded}`);
       const made = await refundsOn(aBasic);
       check('…by one refund that names the account and the reason', made.length === 1 && made[0].metadata.account_id === a.account.id && made[0].metadata.cause === 'account_deletion' && made[0].reason === 'requested_by_customer');
-      const kept = [await charge(aStorage), await charge(aHorizon), await charge(aOther)];
-      check('no storage payment is refunded, nor a payment carrying another account', kept.every((c) => c.amount_refunded === 0), kept.map((c) => c.amount_refunded).join(','));
+      check('no storage payment is refunded', (await charge(aStorage)).amount_refunded === 0);
       const subCharges = (await stripe.charges.list({ customer: a1.id, limit: 100 }).catch(() => ({ data: [] }))).data;
       check('the storage subscription is ended, its fee not refunded', (await stripe.subscriptions.retrieve(aSub.id)).status === 'canceled' && subCharges.filter((c) => c.amount === 999).every((c) => c.amount_refunded === 0));
       check('both of the account\'s Stripe customers are deleted', await customerGone(a1.id) && await customerGone(a2.id));
@@ -380,16 +451,19 @@ try {
       const refunds = await events(a.account.id, 'refund');
       check('the event log keeps each refund: the payment, the amount, the plan, when it was paid and why',
         refunds.length === 2 && refunds.every((e) => e.outcome === 'issued' && e.destination === a.user.email && e.is_test && e.detail.cause === 'account_deletion' && e.detail.paid_at && e.detail.stripe_customer)
-        && refunds.some((e) => e.detail.payment_intent === aBasic.id && e.detail.amount === PRICE.basic && e.detail.plan === 'basic' && e.detail.refund === made[0]?.id), JSON.stringify(refunds.map((e) => e.detail)).slice(0, 400));
+        && refunds.some((e) => e.detail.payment_intent === aBasic.id && e.detail.amount === PRICE.basic && e.detail.plan === 'basic' && e.detail.refund === made[0]?.id && e.detail.checkout === aBasic.checkoutId)
+        && refunds.some((e) => e.detail.payment_intent === aPremium.id && e.detail.amount === PRICE.premium && e.detail.paid_amount === PRICE.premium + STORAGE), JSON.stringify(refunds.map((e) => e.detail)).slice(0, 400));
       const [deleted, ...more] = await events(a.account.id, 'account_deleted');
       const d = deleted?.detail ?? {};
       check('…and the deletion, once', !!deleted && more.length === 0 && deleted.outcome === 'deleted' && deleted.destination === a.user.email && d.user_id === a.user.id && d.verification === 'test-verification');
-      check('…with what it did: the refunds, the subscription ended, the customers, the files',
-        d.refunds?.length === 2 && d.storage_subscriptions?.length === 1 && d.storage_subscriptions[0].subscription === aSub.id && !!d.storage_subscriptions[0].ended_at && d.stripe_customers?.length === 2 && d.files_removed === 2 && d.notices?.length === 3 && d.notices.every((n) => n.status === 'sent'), JSON.stringify({ ...d, history: undefined }).slice(0, 400));
+      check('…with what it did: the refunds, the subscription ended and the one long over, the customers, the files',
+        d.refunds?.length === 2 && d.storage_subscriptions?.length === 2 && d.storage_subscriptions.every((x) => !!x.ended_at)
+        && [aSub.id, aOldSub.id].every((id) => d.storage_subscriptions.some((x) => x.subscription === id)) && d.stripe_customers?.length === 2 && d.files_removed === 2 && d.notices?.length === 3 && d.notices.every((n) => n.status === 'sent'), JSON.stringify({ ...d, history: undefined }).slice(0, 400));
       const h = d.history ?? {};
       check('…and what the account held: its phase history, check-ins, plans and what they stored',
         h.account?.phase === 'planning' && h.phase_events?.some((e) => e.note === `test ${stamp}: first plan paid`) && h.checkins?.length === 2
-        && h.plans?.[0]?.content?.items === 3 && h.payments_recorded?.length === 2 && h.recipients === 1 && h.legacy_guards?.named === 1, JSON.stringify(h).slice(0, 400));
+        && h.plans?.length === 2 && h.plans[0]?.content?.items === 3 && h.plans.every((p) => p.paid_at) && h.payments_recorded?.length === 2
+        && h.checkouts?.length === 3 && h.checkouts.filter((c) => c.status === 'paid').length === 2 && h.recipients === 1 && h.legacy_guards?.named === 1, JSON.stringify(h).slice(0, 400));
       const text = JSON.stringify(deleted ?? {});
       check('the record names nobody but the customer', !Object.values(NAMES).some((n) => text.includes(n)) && !text.includes(`recipient-${stamp}`) && !text.includes(`guard-${stamp}`));
       const sentEvents = await events(a.account.id, 'sent');
@@ -410,7 +484,7 @@ try {
     {
       const e = await signedInUser('e');
       const e1 = await customerFor(e);
-      const ePaid = await pay(e1, { accountId: e.account.id, plan: 'basic', amount: PRICE.basic });
+      const ePaid = await pay(e, e1);
       const s = senders();
       const r = await outcome(() => remove(e, { channels: s, now: () => new Date(Date.now() + 31 * DAY_MS) }));
       check('the account is deleted', !r.err && !(await accountRow(e.account.id)), String(r.err?.message));
@@ -423,7 +497,7 @@ try {
       const f = await signedInUser('f');
       const fFiles = await fill(f);
       const f1 = await customerFor(f);
-      const fPaid = await pay(f1, { accountId: f.account.id, plan: 'basic', amount: PRICE.basic });
+      const fPaid = await pay(f, f1, { planId: fFiles.planId });
       const fSub = await subscribe(f, f1);
       const down = senders({ email: async () => { throw new Error('test: provider is down'); } });
       let r = await outcome(() => remove(f, { channels: down }));
@@ -468,7 +542,7 @@ try {
       const h = await signedInUser('h');
       const hFiles = await fill(h);
       const h1 = await customerFor(h);
-      const hPaid = await pay(h1, { accountId: h.account.id, plan: 'basic', amount: PRICE.basic });
+      const hPaid = await pay(h, h1, { planId: hFiles.planId });
       const hSub = await subscribe(h, h1);
       const s = senders();
       let r = await outcome(() => deleteAccount(db, failing('refunds', 'create'), { accountId: h.account.id, user: h.user, channels: s, caller: CALLER, refundCaller: CALLER, isTest: true }));
@@ -494,9 +568,9 @@ try {
     console.log('\nA fault at the last step, after the Stripe customer is deleted');
     {
       const n = await signedInUser('n');
-      await fill(n);
+      const nFiles = await fill(n);
       const n1 = await customerFor(n);
-      const nPaid = await pay(n1, { accountId: n.account.id, plan: 'basic', amount: PRICE.basic });
+      const nPaid = await pay(n, n1, { planId: nFiles.planId });
       await subscribe(n, n1);
       // A database client whose one call, deleting the sign-in, fails.
       const broken = Object.create(db);
@@ -513,12 +587,35 @@ try {
         (await refundsOn(nPaid)).length === 1 && s.sent.length === 2 && (await events(n.account.id, 'account_deleted')).length === 1 && (await events(n.account.id, 'refund')).length === 1, `${s.sent.length} sent`);
     }
 
+    console.log('\nA payment form left open');
+    {
+      const o = await signedInUser('o');
+      const placed = await placePlan(db, { accountId: o.account.id, tier: 'basic', timeZone: 'America/Chicago' });
+      const opened = await openCheckout(db, stripe, {
+        accountId: o.account.id, userId: o.user.id, email: o.user.email, planIds: [placed.id], accepted: true, siteUrl: 'https://posterity.invalid',
+      });
+      const row = must(await db.from('checkouts').select('status, stripe_session_id, stripe_customer_id').eq('id', opened.checkoutId).single());
+      if (row.stripe_customer_id) customers.push(row.stripe_customer_id);
+      const before = await stripe.checkout.sessions.retrieve(row.stripe_session_id);
+      check('the account holds an open payment form for its plan and the storage fee', row.status === 'open' && before.status === 'open' && opened.total === PRICE.basic + STORAGE, `${row.status} ${before.status} ${opened.total}`);
+      const s = senders();
+      const r = await outcome(() => remove(o, { channels: s }));
+      check('the account is deleted', !r.err && !(await accountRow(o.account.id)) && !(await userExists(o.user.id)), String(r.err?.message));
+      const after = await stripe.checkout.sessions.retrieve(row.stripe_session_id);
+      check('…and its payment form is closed within Stripe, unpaid', after.status === 'expired' && after.payment_status === 'unpaid', `${after.status} ${after.payment_status}`);
+      const [deleted] = await events(o.account.id, 'account_deleted');
+      const kept = deleted?.detail.history?.checkouts ?? [];
+      check('…the record holding the form as closed, with nothing refunded',
+        kept.length === 1 && kept[0].status === 'expired' && kept[0].stripe_session_id === row.stripe_session_id && r.value?.refunds.length === 0 && s.sent.length === 1 && s.sent[0].key === DELETED_COPY, JSON.stringify(kept));
+      check('…and its Stripe customer gone', !!row.stripe_customer_id && await customerGone(row.stripe_customer_id));
+    }
+
     console.log('\nA refund on its own (what a plan\'s move to a lower tier will ask for)');
     {
       const i = await signedInUser('i');
       const i1 = await customerFor(i);
-      await pay(i1, { accountId: i.account.id, plan: 'premium', amount: PRICE.premium });
-      const [payment] = await planPayments(stripe, { accountId: i.account.id, customerIds: [i1.id] });
+      await pay(i, i1, { tier: 'premium' });
+      const [payment] = await planPayments(db, stripe, { accountId: i.account.id });
       const payer = { email: i.user.email, name: 'Deletion Test' };
       const ask = (amount) => outcome(() => issueRefund(db, stripe, { accountId: i.account.id, payment, amount, cause: 'test_downgrade', payer, caller: CALLER, isTest: true }));
       let r = await ask(PRICE.premium + 1);
@@ -531,7 +628,7 @@ try {
       check('…once, however often it is asked for', second.value?.refund === first.value?.refund && (await events(i.account.id, 'refund')).length === 1 && (await count('dispatch_messages', i.account.id)) === 1);
       const [queued] = must(await db.from('dispatch_messages').select('copy_key, destination, params, caller, status').eq('account_id', i.account.id));
       check('its notice is queued to whoever paid, with the amount and the plan', queued?.copy_key === REFUND_COPY && queued.destination === i.user.email && queued.params.amount === '$80.00' && queued.params.plan === 'Premium' && queued.status === 'queued', JSON.stringify(queued));
-      const [now] = await planPayments(stripe, { accountId: i.account.id, customerIds: [i1.id] });
+      const [now] = await planPayments(db, stripe, { accountId: i.account.id });
       check('what is left on the payment is what a later deletion would refund', refundOwed(now) === PRICE.premium - 8000, `${refundOwed(now)}`);
 
       // The database's rule, asked of it directly: the same record a second
@@ -615,7 +712,7 @@ try {
         const j = await signedInUser('j');
         const jFiles = await fill(j);
         const j1 = await customerFor(j);
-        const jPaid = await pay(j1, { accountId: j.account.id, plan: 'basic', amount: PRICE.basic });
+        const jPaid = await pay(j, j1, { planId: jFiles.planId });
         const jSub = await subscribe(j, j1);
         page = await signIn(j);
         let t = await text(page);

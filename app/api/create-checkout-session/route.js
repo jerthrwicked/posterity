@@ -1,11 +1,17 @@
 import { getStripe } from '../../../lib/posterity/stripe';
 import { createClient } from '../../../lib/supabase/server';
 import { createClient as createAdmin } from '@supabase/supabase-js';
-import { getPlan } from '../../../lib/posterity/plans';
+import { PLANS } from '../../../lib/posterity/plans';
 import { stripeCustomerFor } from '../../../lib/posterity/stripe-customer';
 
 
-// Create a Stripe Checkout session for the signed-in customer.
+// Create a Stripe Checkout session for the signed-in customer: the storage fee
+// bought on its own, from the pricing page.
+//
+// A plan is not bought here. It is placed on its year through Add a plan and
+// paid for from the cart (lib/posterity/checkout.js), which carries the plan,
+// its plan year, and everything that travels with it. This route accepts
+// Horizon alone and refuses every other choice as unknown_plan.
 //
 // This route used to take NO auth, accept the price id straight from the client
 // (so a caller could pay $9.99 for Legacy), always run mode:'payment' (so the
@@ -23,7 +29,7 @@ export async function POST(req) {
   //    server-side from the trusted catalog, so it can't be tampered with.
   let body = {};
   try { body = await req.json(); } catch { /* empty body → unknown_plan below */ }
-  const plan = getPlan(body?.plan);
+  const plan = body?.plan === PLANS.horizon.id ? PLANS.horizon : null;
   if (!plan) {
     return Response.json({ error: 'unknown_plan' }, { status: 400 });
   }
@@ -58,14 +64,12 @@ export async function POST(req) {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
   const session = await stripe.checkout.sessions.create({
-    mode: plan.mode, // 'subscription' for the recurring Horizon fee, 'payment' for one-time plans
+    mode: plan.mode, // 'subscription': the storage fee recurs each year
     line_items: [{ price: plan.priceId, quantity: 1 }],
     client_reference_id: account.id,
     customer,
     metadata,
-    ...(plan.mode === 'subscription'
-      ? { subscription_data: { metadata } }
-      : { payment_intent_data: { metadata } }),
+    subscription_data: { metadata },
     success_url: `${siteUrl}/dashboard?success=true`,
     cancel_url: `${siteUrl}/pricing?canceled=true`,
   });

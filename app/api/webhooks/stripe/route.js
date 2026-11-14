@@ -2,14 +2,17 @@ import Stripe from 'stripe';
 import { getStripe } from '../../../../lib/posterity/stripe';
 import { createClient } from '@supabase/supabase-js';
 import { applyPaymentSetupAsOpened, PaymentSetupRefused, PAYMENT_SETUP } from '../../../../lib/posterity/payment-setup';
+import { applyCheckoutAsOpened, CheckoutRefused, CART } from '../../../../lib/posterity/checkout';
+import { periodEnd, extendStorage, recordSubscription } from '../../../../lib/posterity/storage-subscriptions';
 
 // Workers have no synchronous HMAC; Web Crypto is async-only. The async verifier
 // works on Node as well, so this is safe on Vercel and on Cloudflare.
 const cryptoProvider = Stripe.createSubtleCryptoProvider();
 
 // Service-role client: the webhook runs with no user session, so it writes past
-// RLS. It is the ONLY thing that records money — the `subscriptions` table exists
-// for exactly this ("Written by the Stripe webhook", initial schema).
+// RLS. A storage subscription is recorded here and by the cart's checkout
+// (lib/posterity/storage-subscriptions.js); a plan payment is recorded by the
+// cart's checkout alone (lib/posterity/checkout.js), which this calls.
 function admin() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -75,27 +78,6 @@ export async function POST(req) {
   return Response.json({ received: true });
 }
 
-// Stripe's current API keeps the billing period on each subscription item, not
-// on the subscription itself, so the subscription-level field reads undefined.
-function periodEnd(sub) {
-  const end = sub.items?.data?.[0]?.current_period_end ?? sub.current_period_end;
-  return end ? new Date(end * 1000) : null;
-}
-
-// A paid storage year (Horizon or Grace Storage) keeps the account current
-// through the end of its billing period. Only an active subscription extends it,
-// and it only ever moves forward: a cancellation leaves the paid year standing.
-// storage_paid_through is a server-only column (guard_account_columns blocks the
-// customer's own token), and this is the server path that writes it.
-async function extendStorage(db, accountId, sub) {
-  const end = periodEnd(sub);
-  if (sub.status !== 'active' || !end) return;
-  const through = end.toISOString().slice(0, 10);
-  const acct = must(await db.from('accounts').select('storage_paid_through').eq('id', accountId).single());
-  if (acct.storage_paid_through && acct.storage_paid_through >= through) return;
-  must(await db.from('accounts').update({ storage_paid_through: through }).eq('id', accountId));
-}
-
 // The payment form opened from Settings to save a payment method
 // (lib/posterity/payment-setup.js). The customer's browser returning to
 // /api/payment-setup/return applies it too; whichever arrives second changes
@@ -114,75 +96,55 @@ async function onPaymentSetup(db, session) {
   }
 }
 
+// The cart's payment form (lib/posterity/checkout.js): plans paid for, each
+// with its inclusions, and the storage subscription where the storage fee was
+// not current. The customer's browser returning to /api/cart/return applies
+// it too; whichever arrives second changes nothing. A form that is refused
+// will be refused on every retry as well, so it is logged and acknowledged.
+// Anything else fails the event, and Stripe sends it again.
+async function onCart(db, session) {
+  try {
+    await applyCheckoutAsOpened(db, getStripe(), { sessionId: session.id });
+  } catch (err) {
+    if (!(err instanceof CheckoutRefused)) throw err;
+    console.log(`[stripe-webhook] cart checkout ${session.id} not applied: ${err.reason}`);
+  }
+}
+
 async function onCheckoutCompleted(db, session) {
   // A session that saves a payment method takes no payment. It is handled
-  // first and on its own, so it can never be recorded as a plan payment below
-  // or initiate the account.
+  // first and on its own, so it can never be recorded as a payment below.
   if (session.mode === 'setup') {
     await onPaymentSetup(db, session);
     return;
   }
 
-  const accountId = session.client_reference_id || session.metadata?.account_id;
-  if (!accountId) return;
-  const tier = session.metadata?.tier || null;
-  const priceId = session.metadata?.price_id || null;
-
-  // Horizon (recurring): record/refresh the subscription. Idempotent on the
-  // subscription id, so Stripe retries can't duplicate it.
-  if (session.mode === 'subscription' && session.subscription) {
-    const sub = await getStripe().subscriptions.retrieve(session.subscription);
-    const end = periodEnd(sub);
-    must(await db.from('subscriptions').upsert({
-      account_id: accountId,
-      stripe_customer_id: session.customer || null,
-      stripe_subscription_id: sub.id,
-      stripe_price_id: sub.items?.data?.[0]?.price?.id || priceId,
-      tier: tier || 'horizon',
-      status: sub.status,
-      current_period_end: end ? end.toISOString() : null,
-    }, { onConflict: 'stripe_subscription_id' }));
-    await extendStorage(db, accountId, sub);
+  // The cart's form carries its own record of what it was opened for.
+  if (session.metadata?.purpose === CART) {
+    await onCart(db, session);
     return;
   }
 
-  // Plan (one-time, paid up front): this is an INITIATE event — the account is
-  // now contractually funded. Record the paid plan and, if the account is still
-  // in Horizon, move it to Planning (the documented initiate transition).
-  //
-  // ⚠️ Jeremy — still open before enabling: WHICH plan_year a payment funds, and
-  // skipped-year storage fees, aren't derivable from a single price. Checkout
-  // sends a tier and no plan year, because no cart exists yet. Once it does, a
-  // payment belongs on its `plans` row (paid_at) and skipped years on
-  // `storage_fees`; until then it is recorded here. Retries no longer duplicate
-  // this insert: the stripe_events check in POST skips an event already handled.
-  must(await db.from('subscriptions').insert({
-    account_id: accountId,
-    stripe_customer_id: session.customer || null,
-    stripe_price_id: priceId,
-    tier,
-    status: 'paid',
-  }));
+  const accountId = session.client_reference_id || session.metadata?.account_id;
+  if (!accountId) return;
 
-  // The phase moves only if it is still Horizon at the moment of the update, so
-  // two payments landing together move it once and log it once.
-  const now = new Date().toISOString();
-  const moved = must(await db.from('accounts')
-    .update({ phase: 'planning', phase_entered_at: now })
-    .eq('id', accountId).eq('phase', 'horizon')
-    .select('initiated_at'));
-  if (moved.length) {
-    if (!moved[0].initiated_at) {
-      must(await db.from('accounts').update({ initiated_at: now }).eq('id', accountId).is('initiated_at', null));
-    }
-    // account_phase_events is the append-only history of every phase change.
-    must(await db.from('account_phase_events').insert({
-      account_id: accountId,
-      from_phase: 'horizon',
-      to_phase: 'planning',
-      note: `initiated by plan payment (${tier}, checkout ${session.id})`,
-    }));
+  // Storage bought alone (recurring): record/refresh the subscription.
+  // Idempotent on the subscription id, so Stripe retries can't duplicate it.
+  if (session.mode === 'subscription' && session.subscription) {
+    const sub = await getStripe().subscriptions.retrieve(session.subscription);
+    await recordSubscription(db, {
+      accountId,
+      customerId: session.customer,
+      sub,
+      tier: session.metadata?.tier,
+      priceId: session.metadata?.price_id,
+    });
+    return;
   }
+
+  // Every plan payment runs through the cart, so a one-time payment that is
+  // not the cart's is none of Posterity's making. Nothing is recorded for it.
+  console.log(`[stripe-webhook] checkout ${session.id} is not the cart's and opens no subscription: nothing recorded`);
 }
 
 async function onSubscriptionChange(db, sub) {
