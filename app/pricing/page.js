@@ -13,8 +13,8 @@ export default function Pricing() {
       {/* Header */}
       <section className="max-w-4xl mx-auto px-4 sm:px-8 pt-10 sm:pt-16 pb-8">
         <h1 className="text-[28px] md:text-4xl leading-[1.15] font-bold">Plans</h1>
-        <p className="mt-4 max-w-[42rem] text-[13px] md:text-[15px] leading-[1.7] text-gray-300">
-          <span className="serif-accent block text-[15px] md:text-lg leading-snug mb-2">Before you move forward on your legacy journey, you must first go back.</span>
+        <p className="mt-4 max-w-[42rem] text-[13px] md:text-[17px] leading-[1.7] text-gray-300">
+          <span className="serif-accent block text-[15px] md:text-xl leading-snug mb-2" style={{ color: "#c0a176" }}>Before you move forward on your legacy journey, you must first go back.</span>
           Back through the memories, friendships, love, and brilliance. Your creations and your accomplishments: All the uniqueness that made you-You. The little and big things that make life feel well-lived. Relive your past, so you can carry it into the future with Posterity. Select a plan and start building your legacy today.
         </p>
       </section>

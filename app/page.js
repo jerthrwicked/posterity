@@ -156,8 +156,8 @@ export default function Home() {
         <PlanCards />
         <div className="max-w-4xl mx-auto px-4 sm:px-8 pt-7 md:pt-9">
           <div className="w-10 h-px mx-auto mb-[22px]" style={{ background: "#93ab99" }} />
-          <p className="serif-accent max-w-[42rem] mx-auto text-center text-[13px] md:text-[17px] leading-[1.7]" style={{ color: "#c0a176" }}>
-            <span className="block text-[15px] md:text-xl leading-snug mb-2">With Posterity, you create a custom tailored legacy that will - on your terms - reach whatever goal or goals you design for it.</span>
+          <p className="serif-accent max-w-[42rem] mx-auto text-center text-[13px] md:text-[17px] leading-[1.7]">
+            <span className="block text-[15px] md:text-xl leading-snug mb-2" style={{ color: "#c0a176" }}>With Posterity, you create a custom tailored legacy that will - on your terms - reach whatever goal or goals you design for it.</span>
             Do you want your plans to slowly unfold an interconnected story, shared across 52 messages to 52 of your closest friends? Perhaps you want to let them know they all have a piece of your tale in a final Facebook post, and that they will need to work with one another to piece it all together. Maybe-in the multitude of comments that will likely ensue-they will not only reconnect with each other, but also rediscover the legacy you left in all of their lives. The only limit is your creativity, and as you journey back through your life to create your legacy, you are building an account that will journey forward. Your Posterity account can be a secret, a confession, a reminder, a remembrance, a photo album - it can solely be a way for your loved ones to relive the joy you&rsquo;ve shared together. Your legacy is whatever you want it to be, and it starts now.
           </p>
         </div>
