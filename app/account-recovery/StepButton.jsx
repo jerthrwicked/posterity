@@ -9,7 +9,7 @@ function Submit({ children, busy }) {
   const { pending } = useFormStatus()
   return (
     <button type="submit" disabled={pending}
-      className="w-full bg-white text-black py-3 rounded-lg font-semibold hover:bg-gray-200 transition disabled:opacity-50 cursor-pointer">
+      className="w-full bg-white text-black py-3 rounded-full font-semibold hover:bg-gray-200 transition disabled:opacity-50 cursor-pointer">
       {pending ? busy : children}
     </button>
   )

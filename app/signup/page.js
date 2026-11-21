@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { createClient } from '../../lib/supabase/client'
-import { Wordmark } from '../components/brand/Wordmark'
+import { AuthHead } from '../components/AuthHead'
 import { toE164 } from '../../lib/posterity/phone'
 import { WarningMark } from '../components/StatusMarks'
-import { AccountGlow } from '../components/Glow'
+import { WhiteGlow } from '../components/Glow'
 
 export default function Signup() {
   const [legalName, setLegalName] = useState('')
@@ -60,11 +60,8 @@ export default function Signup() {
     return (
       <main className="relative min-h-screen bg-black text-white flex items-center justify-center px-6">
         <div className="relative z-[1] w-full max-w-md text-center">
-          <a href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-            <Wordmark size="lg" withMark />
-          </a>
-          <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 mt-10 border border-[color:var(--card-edge)]">
-            <h1 className="text-2xl font-bold mb-3">Check your email</h1>
+          <AuthHead line="Check your email." />
+          <div>
             <p className="text-gray-400 leading-relaxed">
               We sent a confirmation link to <span className="text-white">{email}</span>. Open it and
               your account will be waiting.
@@ -77,7 +74,7 @@ export default function Signup() {
             </button>
           </p>
         </div>
-        <AccountGlow />
+        <WhiteGlow />
       </main>
     )
   }
@@ -85,14 +82,9 @@ export default function Signup() {
   return (
     <main className="relative min-h-screen bg-black text-white flex items-center justify-center px-6 py-16">
       <div className="relative z-[1] w-full max-w-md">
-        <div className="text-center mb-10">
-          <a href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-            <Wordmark size="lg" withMark />
-          </a>
-          <p className="text-gray-400 mt-2">Your legacy starts here</p>
-        </div>
+        <AuthHead line="Your legacy starts here." />
 
-        <div className="bg-[color:var(--card-ground)] posterity-frame border border-[color:var(--card-edge)] rounded-2xl p-8 flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
           <div>
             <label htmlFor="name" className="text-sm text-gray-400 mb-1 block">Legal name</label>
             <input
@@ -102,7 +94,7 @@ export default function Signup() {
               placeholder="Your full legal name"
               value={legalName}
               onChange={(e) => setLegalName(e.target.value)}
-              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
+              className="w-full bg-transparent border-0 border-b border-gray-600 rounded-none px-0 py-2.5 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
             />
           </div>
 
@@ -117,7 +109,7 @@ export default function Signup() {
               placeholder="Same as your legal name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
+              className="w-full bg-transparent border-0 border-b border-gray-600 rounded-none px-0 py-2.5 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
             />
           </div>
 
@@ -130,7 +122,7 @@ export default function Signup() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
+              className="w-full bg-transparent border-0 border-b border-gray-600 rounded-none px-0 py-2.5 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
             />
           </div>
 
@@ -145,7 +137,7 @@ export default function Signup() {
               placeholder="(504) 555-1234"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
+              className="w-full bg-transparent border-0 border-b border-gray-600 rounded-none px-0 py-2.5 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
             />
             <p className="text-xs text-[color:var(--text-quiet)] mt-1 leading-relaxed">
               A second way to reach you. Nothing is texted to you unless you turn texts on.
@@ -162,7 +154,7 @@ export default function Signup() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !loading && handleSignup()}
-              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
+              className="w-full bg-transparent border-0 border-b border-gray-600 rounded-none px-0 py-2.5 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
             />
           </div>
 
@@ -171,7 +163,7 @@ export default function Signup() {
           <button
             onClick={handleSignup}
             disabled={loading}
-            className="w-full bg-white text-black py-3 rounded-lg font-semibold hover:bg-gray-200 transition mt-2 disabled:opacity-50 cursor-pointer"
+            className="w-full bg-white text-black py-3 rounded-full font-semibold hover:bg-gray-200 transition mt-2 disabled:opacity-50 cursor-pointer"
           >
             {loading ? 'Creating your account...' : 'Create account'}
           </button>
@@ -186,7 +178,7 @@ export default function Signup() {
           <a href="/login" className="text-white underline hover:text-gray-200">Log in</a>
         </p>
       </div>
-      <AccountGlow />
+      <WhiteGlow />
     </main>
   )
 }

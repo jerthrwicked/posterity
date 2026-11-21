@@ -2,6 +2,7 @@ import { Caveat, Geist, Geist_Mono, Lora } from "next/font/google";
 import "./globals.css";
 import GlobalNav from "./components/GlobalNav";
 import TapRipple from "./components/TapRipple";
+import SiteEnd from "./components/SiteEnd";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -73,6 +74,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col bg-black text-white">
         <GlobalNav />
         {children}
+        <SiteEnd />
         <TapRipple />
       </body>
     </html>

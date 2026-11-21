@@ -13,6 +13,11 @@ export function AccountGlow() {
   )
 }
 
+// The homepage's white glow from the top, for the public pages (November 21, 2026). The account pages keep the phase glow.
+export function WhiteGlow() {
+  return <div aria-hidden="true" className="home-glow posterity-glow--breathe" />
+}
+
 export function BandPulse() {
   const ref = useRef(null)
   const [on, setOn] = useState(false)

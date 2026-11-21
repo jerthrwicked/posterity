@@ -30,7 +30,7 @@ export function NewPasswordForm({ email }) {
   }
 
   return (
-    <div className="bg-[color:var(--card-ground)] posterity-frame border border-[color:var(--card-edge)] rounded-2xl p-8 flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <p className="text-sm text-gray-400">
         Signed in as <span className="text-white">{email}</span>
       </p>
@@ -43,7 +43,7 @@ export function NewPasswordForm({ email }) {
           placeholder="At least 8 characters"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
+          className="w-full bg-transparent border-0 border-b border-gray-600 rounded-none px-0 py-2.5 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
         />
       </div>
       <div>
@@ -56,14 +56,14 @@ export function NewPasswordForm({ email }) {
           value={again}
           onChange={(e) => setAgain(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && !loading && handleSave()}
-          className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
+          className="w-full bg-transparent border-0 border-b border-gray-600 rounded-none px-0 py-2.5 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
         />
       </div>
       {error && <p className="text-sm text-center text-[color:var(--brand-rose)] inline-flex items-start justify-center gap-2"><WarningMark className="mt-0.5" />{error}</p>}
       <button
         onClick={handleSave}
         disabled={loading}
-        className="w-full bg-white text-black py-3 rounded-lg font-semibold hover:bg-gray-200 transition mt-2 disabled:opacity-50 cursor-pointer"
+        className="w-full bg-white text-black py-3 rounded-full font-semibold hover:bg-gray-200 transition mt-2 disabled:opacity-50 cursor-pointer"
       >
         {loading ? 'Saving...' : 'Save new password'}
       </button>
