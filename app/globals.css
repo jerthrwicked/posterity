@@ -179,16 +179,16 @@ button.navmenu__item { width: 100%; text-align: left; background: none; border: 
 
 /* ── The homepage's handwritten note (November 20, 2026): white paper with faint rules, in Caveat,
       with the seal pressed into its corner on a black disc. Larger from 1024px, beside the headline. ── */
-.home-note { position: relative; width: min(286px, calc(100% - 16px)); transform: rotate(-2.4deg); }
+.home-note { position: relative; width: min(248px, calc(100% - 16px)); transform: rotate(-2.4deg); }
 .home-note__paper {
-  background: var(--paper); color: var(--paper-ink); border-radius: 4px; padding: 26px 26px 36px; text-align: left;
-  font-family: var(--font-caveat), cursive; font-size: 25px; line-height: 31px;
-  background-image: repeating-linear-gradient(180deg, transparent 0 30px, #e6e6e6 30px 31px); background-position: 0 26px;
+  background: var(--paper); color: var(--paper-ink); border-radius: 4px; padding: 22px 22px 30px; text-align: left;
+  font-family: var(--font-caveat), cursive; font-size: 22px; line-height: 27px;
+  background-image: repeating-linear-gradient(180deg, transparent 0 26px, #e6e6e6 26px 27px); background-position: 0 22px;
   box-shadow: 0 30px 60px -28px rgba(255,255,255,0.14), 0 0 0 1px rgba(255,255,255,0.4);
 }
-.home-note__sign { text-align: right; padding-right: 46px; }
+.home-note__sign { text-align: right; padding-right: 40px; }
 .home-note__stamp {
-  position: absolute; right: -16px; bottom: -22px; width: 78px; height: 78px; border-radius: 50%; background: var(--black);
+  position: absolute; right: -14px; bottom: -19px; width: 66px; height: 66px; border-radius: 50%; background: var(--black);
   display: flex; align-items: center; justify-content: center; transform: rotate(9deg); box-shadow: 0 8px 20px rgba(0,0,0,0.55);
 }
 @media (min-width: 1024px) {
