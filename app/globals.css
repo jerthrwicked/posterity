@@ -103,27 +103,27 @@ button.navmenu__item { width: 100%; text-align: left; background: none; border: 
 .navmenu__item.is-current { color: #fff; }
 .navmenu__cta { padding: 0.65rem 0.9rem 0.9rem; border-top: 1px solid var(--border-subtle, #262626); }
 
-/* ── Phase vertical timeline (mobile ≤879px) ── */
-@media (max-width: 879px) {
-  .phases-timeline-item {
-    position: relative;
-    padding: 0 0 2.25rem 2rem;
-  }
-  .phases-timeline-item:last-child {
-    padding-bottom: 0;
-  }
-  /* Per-item segment: pip-center to pip-center, ends at last pip */
-  .phases-timeline-item:not(:last-child)::before {
-    content: '';
-    position: absolute;
-    left: 5px;
-    top: 0.5rem;
-    bottom: -0.5rem;
-    width: 2px;
-    background: #262626;
-    z-index: 0;
-  }
+/* ── The Six Phases (November 20, 2026): down one line below 1024px, across one line from 1024px.
+      The line runs through the six phase colors, and the Posterity circle ends it. ── */
+.phases-down { list-style: none; margin: 0; padding: 0; }
+.phases-down li { position: relative; padding: 0 0 22px 32px; }
+.phases-down li:last-child { padding-bottom: 0; }
+.phases-down li:not(:last-child)::before {
+  content: ""; position: absolute; left: 5px; top: 8px; bottom: -8px; width: 2px; opacity: 0.75;
+  background: linear-gradient(180deg, var(--from), var(--to));
 }
+.phases-down .phase-pip { position: absolute; left: 0; top: 5px; width: 12px; height: 12px; border-radius: 50%; }
+.phases-down .phase-end { position: absolute; left: -5px; top: 0; width: 22px; height: 22px; z-index: 1; }
+.phases-line { position: relative; list-style: none; margin: 48px 0 0; padding: 0; grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: 28px; }
+.phases-line::before {
+  content: ""; position: absolute; left: 7px; right: calc((100% - 140px) / 6 - 7px); top: 6px; height: 2px;
+  background: linear-gradient(90deg, rgba(147,171,153,0.4), rgba(161,176,149,0.4), rgba(161,167,135,0.4), rgba(177,172,133,0.4), rgba(182,163,122,0.4), rgba(192,161,118,0.4));
+}
+.phases-line li { position: relative; padding-top: 36px; }
+.phases-line .phase-pip { position: absolute; left: 0; top: 1px; width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 0 5px #070a08; }
+.phases-line .phase-end { position: absolute; left: -8px; top: -8px; width: 30px; height: 30px; box-shadow: 0 0 0 5px #070a08; }
+.phase-circle { display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #c0a176; color: #000000; }
+.phase-circle svg { margin-top: 1px; }
 
 /* ── The phase glow: the six phase colours, jade at the top down to gold ── */
 .posterity-glow-wrap { position: absolute; inset: 0 0 auto 0; height: 330px; overflow: hidden; pointer-events: none; z-index: 0; }
@@ -133,7 +133,10 @@ button.navmenu__item { width: 100%; text-align: left; background: none; border: 
   mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, #000 35%, transparent 100%);
 }
 .posterity-glow { position: absolute; inset: 0; }
-.posterity-pulse { position: absolute; left: 0; right: 0; top: 0; height: 60%; pointer-events: none; z-index: 0; }
+.posterity-pulse { position: absolute; left: 0; right: 0; top: 0; height: 330px; pointer-events: none; z-index: 0;
+  /* The Six Phases band's glow: the top 330px at two-thirds the strength of the account glow (November 16, 2026) */
+  background: linear-gradient(180deg, rgba(147,171,153,0.30) 0%, rgba(161,176,149,0.26) 15%, rgba(161,167,135,0.22) 30%, rgba(177,172,133,0.19) 45%, rgba(182,163,122,0.16) 60%, rgba(192,161,118,0.13) 75%, rgba(0,0,0,0) 100%);
+}
 .posterity-glow--breathe { animation: posterity-glow-in 3s cubic-bezier(0,0,0.2,1) both, posterity-breathe 6s ease-in-out 3s infinite; }
 .posterity-pulse--waiting { opacity: 0; }
 @keyframes posterity-glow-in { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: none; } }
@@ -141,6 +144,83 @@ button.navmenu__item { width: 100%; text-align: left; background: none; border: 
 @media (prefers-reduced-motion: reduce) {
   .posterity-glow--breathe { animation: none; }
   .posterity-pulse--waiting { opacity: 1; }
+}
+
+/* ── The homepage's first screen: a white glow from the top, and "Forever." in the six phase colours ── */
+.home-glow {
+  position: absolute; left: 0; right: 0; top: 0; height: 300px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.17) 0%, rgba(255,255,255,0.06) 55%, rgba(255,255,255,0) 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, #000 35%, transparent 100%);
+}
+@media (min-width: 768px) { .home-glow { height: 440px; } }
+.home-forever {
+  background: linear-gradient(90deg, #93ab99, #a1b095, #a1a787, #b1ac85, #b6a37a, #c0a176);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ── The homepage's closing: a white horizon light at half strength, rising from a sage line ── */
+.home-horizon {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 420px; pointer-events: none;
+  background: radial-gradient(ellipse 75% 100% at 50% 100%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.025) 50%, rgba(255,255,255,0) 78%);
+  animation: posterity-breathe 6s ease-in-out infinite;
+}
+.home-horizon-line {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, rgba(147,171,153,0), rgba(147,171,153,0.85), rgba(147,171,153,0));
+}
+@media (min-width: 768px) { .home-horizon { height: 520px; } }
+@media (prefers-reduced-motion: reduce) { .home-horizon { animation: none; } }
+
+/* ── The tap pulse (app/components/TapRipple.js): a soft circle in the button's own text colour ── */
+.tap-ripple { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; pointer-events: none; }
+.tap-ripple__dot { position: absolute; border-radius: 50%; background: currentColor; opacity: 0.18; transform: scale(0); animation: tap-ripple 0.55s ease-out forwards; }
+@keyframes tap-ripple { to { transform: scale(1); opacity: 0; } }
+
+/* ── The homepage's handwritten note (November 20, 2026): white paper with faint rules, in Caveat,
+      with the seal pressed into its corner on a black disc. Larger from 1024px, beside the headline. ── */
+.home-note { position: relative; width: min(286px, calc(100% - 16px)); transform: rotate(-2.4deg); }
+.home-note__paper {
+  background: var(--paper); color: var(--paper-ink); border-radius: 4px; padding: 26px 26px 36px; text-align: left;
+  font-family: var(--font-caveat), cursive; font-size: 25px; line-height: 31px;
+  background-image: repeating-linear-gradient(180deg, transparent 0 30px, #e6e6e6 30px 31px); background-position: 0 26px;
+  box-shadow: 0 30px 60px -28px rgba(255,255,255,0.14), 0 0 0 1px rgba(255,255,255,0.4);
+}
+.home-note__sign { text-align: right; padding-right: 46px; }
+.home-note__stamp {
+  position: absolute; right: -16px; bottom: -22px; width: 78px; height: 78px; border-radius: 50%; background: var(--black);
+  display: flex; align-items: center; justify-content: center; transform: rotate(9deg); box-shadow: 0 8px 20px rgba(0,0,0,0.55);
+}
+@media (min-width: 1024px) {
+  .home-note { width: 400px; transform: rotate(-2.6deg); }
+  .home-note__paper {
+    padding: 40px 44px 52px; font-size: 34px; line-height: 42px;
+    background-image: repeating-linear-gradient(180deg, transparent 0 41px, #e6e6e6 41px 42px); background-position: 0 40px;
+    box-shadow: 0 40px 80px -30px rgba(255,255,255,0.12), 0 0 0 1px rgba(255,255,255,0.4);
+  }
+  .home-note__sign { padding-right: 58px; }
+  .home-note__stamp { right: -30px; bottom: -34px; width: 104px; height: 104px; box-shadow: 0 10px 24px rgba(0,0,0,0.55); }
+}
+
+/* ── The homepage's explanation as a letter (November 20, 2026): Lora on white paper, five words in
+      Caveat, and the seal at the foot. It fits one phone screen at 13px. Larger from 768px. ── */
+.home-letter {
+  background: var(--paper); color: var(--paper-ink-2); border-radius: 4px; padding: 22px 20px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.35);
+  font-family: var(--font-lora), Georgia, serif; font-size: 13px; line-height: 1.55;
+}
+.home-letter p + p { margin-top: 9px; }
+.home-letter__open { font-style: italic; color: var(--paper-gold); font-size: 16px; line-height: 1.35; }
+.home-letter .home-letter__open + p { margin-top: 12px; }
+.home-letter__end { font-style: italic; color: var(--paper-ink); font-size: 14px; }
+.home-hand { font-family: var(--font-caveat), cursive; font-size: 1.4em; line-height: 1.05; color: var(--paper-sage); }
+@media (min-width: 768px) {
+  .home-letter { padding: 52px 64px 56px; font-size: 17px; line-height: 1.7; box-shadow: 0 50px 90px -40px rgba(255,255,255,0.10), 0 0 0 1px rgba(255,255,255,0.35); }
+  .home-letter p + p { margin-top: 16px; }
+  .home-letter__open { font-size: 24px; line-height: 1.4; }
+  .home-letter .home-letter__open + p { margin-top: 22px; }
+  .home-letter .home-letter__end { font-size: 19px; margin-top: 18px; }
+  .home-hand { font-size: 1.48em; }
 }
 
 /* ── The frame: a white hairline set four pixels outside every card that isn't a plan card ── */

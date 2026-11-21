@@ -1,6 +1,7 @@
-import { Geist, Geist_Mono, Lora } from "next/font/google";
+import { Caveat, Geist, Geist_Mono, Lora } from "next/font/google";
 import "./globals.css";
 import GlobalNav from "./components/GlobalNav";
+import TapRipple from "./components/TapRipple";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,6 +17,12 @@ const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],
   style: ["normal", "italic"],
+});
+
+// Handwriting, for the homepage's handwritten note and the five handwritten words of its letter only.
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin"],
 });
 
 export const metadata = {
@@ -52,7 +59,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${lora.variable} h-full antialiased bg-black`}
+      className={`${geistSans.variable} ${geistMono.variable} ${lora.variable} ${caveat.variable} h-full antialiased bg-black`}
     >
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -66,6 +73,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col bg-black text-white">
         <GlobalNav />
         {children}
+        <TapRipple />
       </body>
     </html>
   );

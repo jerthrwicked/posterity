@@ -7,10 +7,10 @@ import { WarningMark } from "./StatusMarks";
 // form. Basic, Premium and Legacy are plans: each button opens Add a plan,
 // where the plan is placed on its year, and the plan is paid for from the cart
 // within User Profiles. A visitor who is signed out signs in on the way.
-const ADD_A_PLAN = "/dashboard/add-plan";
+export const ADD_A_PLAN = "/dashboard/add-plan";
 
 // Shown beneath Horizon's button when its checkout fails to open. Awaits approved copy.
-const CHECKOUT_FAILED = "[Placeholder: Product surface copy — error messages: a checkout that fails to open]";
+export const CHECKOUT_FAILED = "[Placeholder: Product surface copy — error messages: a checkout that fails to open]";
 
 // A tier's delivery counts read from the catalog, in the specification's terms.
 function deliveryBullets(id) {
@@ -21,7 +21,7 @@ function deliveryBullets(id) {
   ];
 }
 
-const PLANS = [
+export const PLANS = [
   {
     id: "horizon",
     name: "Horizon",
