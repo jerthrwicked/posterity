@@ -65,21 +65,21 @@ export default function Home() {
       </section>
 
       {/* The note under the first screen, below 1024px */}
-      <div className="flex justify-center px-6 pt-[18px] pb-11 lg:hidden">
+      <div className="flex justify-center px-6 pt-[18px] pb-9 lg:hidden">
         <HandwrittenNote ringsId="seal-rings-note-phone" />
       </div>
 
       {/* The three points, each with its drawing: a white band below 1024px, and from 1024px
           one white card whose rows alternate sides */}
-      <section className="bg-[color:var(--paper)] px-6 py-9 text-[color:var(--paper-ink)] lg:bg-transparent lg:px-16 lg:pt-0 lg:pb-20">
+      <section className="bg-[color:var(--paper)] px-6 py-7 text-[color:var(--paper-ink)] lg:bg-transparent lg:px-16 lg:pt-0 lg:pb-20">
         <div className="mx-auto max-w-[640px] lg:max-w-[1052px] lg:rounded-2xl lg:bg-[color:var(--paper)] lg:px-[72px] min-[1700px]:max-w-[1152px]">
           {POINTS.map(({ title, Art, copy }, i) => (
             <div
               key={title}
-              className="grid gap-[5px] border-t border-[#e6e6e6] py-5 first:border-t-0 first:pt-0 last:pb-0 lg:grid-cols-2 lg:items-center lg:gap-x-24 lg:gap-y-0 lg:py-12 lg:first:pt-12 lg:last:pb-12"
+              className="grid gap-[5px] border-t border-[#e6e6e6] py-4 first:border-t-0 first:pt-0 last:pb-0 lg:grid-cols-2 lg:items-center lg:gap-x-24 lg:gap-y-0 lg:py-12 lg:first:pt-12 lg:last:pb-12"
             >
               <div className={`mb-3 flex justify-center lg:mb-0 ${i % 2 ? "lg:order-2" : ""}`}>
-                <Art className="h-auto w-full max-w-[270px] lg:w-auto lg:max-w-full" />
+                <Art className="h-auto w-full max-w-[210px] lg:w-auto lg:max-w-full" />
               </div>
               <div className="grid content-start gap-[5px] lg:gap-3.5">
                 <h3 className="text-[17px] font-bold leading-[1.25] lg:text-[32px] lg:leading-[1.15] lg:tracking-[-0.015em]">{title}</h3>
