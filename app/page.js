@@ -65,21 +65,21 @@ export default function Home() {
       </section>
 
       {/* The note under the first screen, below 1024px */}
-      <div className="flex justify-center px-6 pt-[18px] pb-9 lg:hidden">
+      <div className="flex justify-center px-6 pt-[18px] pb-8 lg:hidden">
         <HandwrittenNote ringsId="seal-rings-note-phone" />
       </div>
 
       {/* The three points, each with its drawing: a white band below 1024px, and from 1024px
           one white card whose rows alternate sides */}
-      <section className="bg-[color:var(--paper)] px-6 py-7 text-[color:var(--paper-ink)] lg:bg-transparent lg:px-16 lg:pt-0 lg:pb-20">
+      <section className="bg-[color:var(--paper)] px-6 py-[26px] text-[color:var(--paper-ink)] lg:bg-transparent lg:px-16 lg:pt-0 lg:pb-20">
         <div className="mx-auto max-w-[640px] lg:max-w-[1052px] lg:rounded-2xl lg:bg-[color:var(--paper)] lg:px-[72px] min-[1700px]:max-w-[1152px]">
           {POINTS.map(({ title, Art, copy }, i) => (
             <div
               key={title}
-              className="grid gap-[5px] border-t border-[#e6e6e6] py-4 first:border-t-0 first:pt-0 last:pb-0 lg:grid-cols-2 lg:items-center lg:gap-x-24 lg:gap-y-0 lg:py-12 lg:first:pt-12 lg:last:pb-12"
+              className="grid gap-[5px] border-t border-[#e6e6e6] py-3.5 first:border-t-0 first:pt-0 last:pb-0 lg:grid-cols-2 lg:items-center lg:gap-x-24 lg:gap-y-0 lg:py-12 lg:first:pt-12 lg:last:pb-12"
             >
               <div className={`mb-3 flex justify-center lg:mb-0 ${i % 2 ? "lg:order-2" : ""}`}>
-                <Art className="h-auto w-full max-w-[210px] lg:w-auto lg:max-w-full" />
+                <Art className="h-auto w-full max-w-[180px] lg:w-auto lg:max-w-full" />
               </div>
               <div className="grid content-start gap-[5px] lg:gap-3.5">
                 <h3 className="text-[17px] font-bold leading-[1.25] lg:text-[32px] lg:leading-[1.15] lg:tracking-[-0.015em]">{title}</h3>
@@ -90,7 +90,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Six Phases band. Below 1024px the phases run down one line; from 1024px they run across one line.
+      {/* Six Phases band. Below 1024px the phases run down one line, each name beside its words; from 1024px they run across one line.
           The line runs through the six phase colors and ends in the Posterity circle. */}
       <div
         style={{
@@ -102,9 +102,9 @@ export default function Home() {
         }}
       >
         <BandPulse />
-        <section className="relative mx-auto max-w-[60rem] px-6 py-12 lg:max-w-[1240px] lg:px-16 lg:py-[72px]">
-          <h2 className="text-[28px] md:text-4xl leading-[1.15] font-bold text-center mb-2">Six Phases. One Journey.</h2>
-          <p className="text-[color:var(--text-quiet)] text-[15px] md:text-lg text-center mb-[30px] lg:mb-0">Every Posterity account moves through six carefully designed phases.</p>
+        <section className="relative mx-auto max-w-[60rem] px-6 pt-9 pb-[38px] lg:max-w-[1240px] lg:px-16 lg:py-[72px]">
+          <h2 className="text-2xl md:text-4xl leading-[1.15] font-bold text-center mb-2">Six Phases. One Journey.</h2>
+          <p className="text-[color:var(--text-quiet)] text-[13.5px] md:text-lg text-center mb-[22px] lg:mb-0">Every Posterity account moves through six carefully designed phases.</p>
 
           <ol className="phases-down lg:hidden">
             {PHASES.map((phase, i) => (
@@ -114,11 +114,11 @@ export default function Home() {
                 ) : (
                   <span className="phase-pip" style={{ background: PHASE_HUES[i] }} />
                 )}
-                <div className="flex items-baseline gap-2">
-                  <p className="text-[11px] font-mono text-[color:var(--text-quiet)] tracking-wider">{String(i + 1).padStart(2, "0")}</p>
-                  <p className="font-semibold" style={{ fontSize: "17px", color: PHASE_HUES[i] }}>{phase.name}</p>
+                <div>
+                  <p className="text-[11px] leading-[1.2] tabular-nums tracking-wider text-[color:var(--text-quiet)]">{String(i + 1).padStart(2, "0")}</p>
+                  <p className="phase-name text-[15px] leading-[1.25] font-semibold" style={{ color: PHASE_HUES[i] }}>{phase.name}</p>
                 </div>
-                <p className="text-xs text-gray-400 leading-relaxed mt-1.5">{phase.copy}</p>
+                <p className="pt-px text-xs leading-[1.5] text-gray-400">{phase.copy}</p>
               </li>
             ))}
           </ol>
@@ -131,7 +131,7 @@ export default function Home() {
                 ) : (
                   <span className="phase-pip" style={{ background: PHASE_HUES[i] }} />
                 )}
-                <p className="mb-1.5 text-[11px] font-mono tracking-[0.12em] text-[color:var(--text-quiet)]">{String(i + 1).padStart(2, "0")}</p>
+                <p className="mb-1.5 text-[11px] tabular-nums tracking-[0.12em] text-[color:var(--text-quiet)]">{String(i + 1).padStart(2, "0")}</p>
                 <p className="text-[19px] font-semibold" style={{ color: PHASE_HUES[i] }}>{phase.name}</p>
                 <p className="mt-2 text-[13.5px] leading-[1.6] text-gray-400">{phase.copy}</p>
               </li>

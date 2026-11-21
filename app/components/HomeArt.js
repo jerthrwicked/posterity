@@ -114,7 +114,7 @@ export function HandwrittenNote({ ringsId }) {
         <p className="home-note__sign">&mdash; Mom</p>
       </div>
       <div className="home-note__stamp">
-        <Logomark form="primary" rings="phases" ringsId={ringsId} size={92} className="h-[54px] w-[54px] text-white lg:h-[92px] lg:w-[92px]" />
+        <Logomark form="primary" rings="phases" ringsId={ringsId} size={92} className="h-12 w-12 text-white lg:h-[92px] lg:w-[92px]" />
       </div>
     </figure>
   );

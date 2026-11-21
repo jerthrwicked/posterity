@@ -103,17 +103,21 @@ button.navmenu__item { width: 100%; text-align: left; background: none; border: 
 .navmenu__item.is-current { color: #fff; }
 .navmenu__cta { padding: 0.65rem 0.9rem 0.9rem; border-top: 1px solid var(--border-subtle, #262626); }
 
-/* ── The Six Phases (November 20, 2026): down one line below 1024px, across one line from 1024px.
+/* ── The Six Phases (November 20, 2026): down one line below 1024px with each name beside its words, across one line from 1024px.
       The line runs through the six phase colors, and the Posterity circle ends it. ── */
 .phases-down { list-style: none; margin: 0; padding: 0; }
-.phases-down li { position: relative; padding: 0 0 22px 32px; }
+.phases-down li { position: relative; display: grid; grid-template-columns: 84px minmax(0, 1fr); column-gap: 12px; padding: 0 0 16px 26px; }
 .phases-down li:last-child { padding-bottom: 0; }
 .phases-down li:not(:last-child)::before {
-  content: ""; position: absolute; left: 5px; top: 8px; bottom: -8px; width: 2px; opacity: 0.75;
+  content: ""; position: absolute; left: 4px; top: 6px; bottom: -6px; width: 2px; opacity: 0.75;
   background: linear-gradient(180deg, var(--from), var(--to));
 }
-.phases-down .phase-pip { position: absolute; left: 0; top: 5px; width: 12px; height: 12px; border-radius: 50%; }
-.phases-down .phase-end { position: absolute; left: -5px; top: 0; width: 22px; height: 22px; z-index: 1; }
+.phases-down .phase-pip { position: absolute; left: 0; top: 4px; width: 10px; height: 10px; border-radius: 50%; }
+.phases-down .phase-end { position: absolute; left: -5px; top: -1px; width: 20px; height: 20px; z-index: 1; }
+@media (max-width: 359px) {
+  .phases-down li { grid-template-columns: 70px minmax(0, 1fr); column-gap: 10px; padding-left: 22px; }
+  .phases-down .phase-name { font-size: 14px; }
+}
 .phases-line { position: relative; list-style: none; margin: 48px 0 0; padding: 0; grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: 28px; }
 .phases-line::before {
   content: ""; position: absolute; left: 7px; right: calc((100% - 140px) / 6 - 7px); top: 6px; height: 2px;
@@ -179,16 +183,16 @@ button.navmenu__item { width: 100%; text-align: left; background: none; border: 
 
 /* ── The homepage's handwritten note (November 20, 2026): white paper with faint rules, in Caveat,
       with the seal pressed into its corner on a black disc. Larger from 1024px, beside the headline. ── */
-.home-note { position: relative; width: min(248px, calc(100% - 16px)); transform: rotate(-2.4deg); }
+.home-note { position: relative; width: min(226px, calc(100% - 16px)); transform: rotate(-2.4deg); }
 .home-note__paper {
-  background: var(--paper); color: var(--paper-ink); border-radius: 4px; padding: 22px 22px 30px; text-align: left;
-  font-family: var(--font-caveat), cursive; font-size: 22px; line-height: 27px;
-  background-image: repeating-linear-gradient(180deg, transparent 0 26px, #e6e6e6 26px 27px); background-position: 0 22px;
+  background: var(--paper); color: var(--paper-ink); border-radius: 4px; padding: 20px 20px 28px; text-align: left;
+  font-family: var(--font-caveat), cursive; font-size: 20px; line-height: 25px;
+  background-image: repeating-linear-gradient(180deg, transparent 0 24px, #e6e6e6 24px 25px); background-position: 0 20px;
   box-shadow: 0 30px 60px -28px rgba(255,255,255,0.14), 0 0 0 1px rgba(255,255,255,0.4);
 }
-.home-note__sign { text-align: right; padding-right: 40px; }
+.home-note__sign { text-align: right; padding-right: 36px; }
 .home-note__stamp {
-  position: absolute; right: -14px; bottom: -19px; width: 66px; height: 66px; border-radius: 50%; background: var(--black);
+  position: absolute; right: -12px; bottom: -17px; width: 60px; height: 60px; border-radius: 50%; background: var(--black);
   display: flex; align-items: center; justify-content: center; transform: rotate(9deg); box-shadow: 0 8px 20px rgba(0,0,0,0.55);
 }
 @media (min-width: 1024px) {
@@ -203,20 +207,21 @@ button.navmenu__item { width: 100%; text-align: left; background: none; border: 
 }
 
 /* ── The homepage's explanation as a letter (November 20, 2026): Lora on white paper, five words in
-      Caveat, and the seal at the foot. It fits one phone screen at 13px. Larger from 768px. ── */
+      Caveat, indented paragraphs, the closing line at the right as a sign-off, and the seal at the foot.
+      It fits one phone screen at 13px. Larger from 768px. ── */
 .home-letter {
   background: var(--paper); color: var(--paper-ink-2); border-radius: 4px; padding: 22px 20px;
   box-shadow: 0 0 0 1px rgba(255,255,255,0.35);
   font-family: var(--font-lora), Georgia, serif; font-size: 13px; line-height: 1.55;
 }
-.home-letter p + p { margin-top: 9px; }
+.home-letter p + p { margin-top: 0; text-indent: 1.4em; }
 .home-letter__open { font-style: italic; color: var(--paper-gold); font-size: 16px; line-height: 1.35; }
-.home-letter .home-letter__open + p { margin-top: 12px; }
+.home-letter .home-letter__open + p { margin-top: 12px; text-indent: 0; }
 .home-letter__end { font-style: italic; color: var(--paper-ink); font-size: 14px; }
+.home-letter .home-letter__end { margin-top: 12px; padding-left: 24px; text-align: right; text-indent: 0; text-wrap: balance; }
 .home-hand { font-family: var(--font-caveat), cursive; font-size: 1.4em; line-height: 1.05; color: var(--paper-sage); }
 @media (min-width: 768px) {
   .home-letter { padding: 52px 64px 56px; font-size: 17px; line-height: 1.7; box-shadow: 0 50px 90px -40px rgba(255,255,255,0.10), 0 0 0 1px rgba(255,255,255,0.35); }
-  .home-letter p + p { margin-top: 16px; }
   .home-letter__open { font-size: 24px; line-height: 1.4; }
   .home-letter .home-letter__open + p { margin-top: 22px; }
   .home-letter .home-letter__end { font-size: 19px; margin-top: 18px; }
