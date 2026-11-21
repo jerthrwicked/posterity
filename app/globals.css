@@ -106,7 +106,7 @@ button.navmenu__item { width: 100%; text-align: left; background: none; border: 
 /* ── The Six Phases (November 20, 2026): down one line below 1024px with each name beside its words, across one line from 1024px.
       The line runs through the six phase colors, and the Posterity circle ends it. ── */
 .phases-down { list-style: none; margin: 0; padding: 0; }
-.phases-down li { position: relative; display: grid; grid-template-columns: 84px minmax(0, 1fr); column-gap: 12px; padding: 0 0 16px 26px; }
+.phases-down li { position: relative; display: grid; grid-template-columns: 72px minmax(0, 1fr); column-gap: 10px; padding: 0 0 10px 24px; }
 .phases-down li:last-child { padding-bottom: 0; }
 .phases-down li:not(:last-child)::before {
   content: ""; position: absolute; left: 4px; top: 6px; bottom: -6px; width: 2px; opacity: 0.75;
@@ -114,10 +114,6 @@ button.navmenu__item { width: 100%; text-align: left; background: none; border: 
 }
 .phases-down .phase-pip { position: absolute; left: 0; top: 4px; width: 10px; height: 10px; border-radius: 50%; }
 .phases-down .phase-end { position: absolute; left: -5px; top: -1px; width: 20px; height: 20px; z-index: 1; }
-@media (max-width: 359px) {
-  .phases-down li { grid-template-columns: 70px minmax(0, 1fr); column-gap: 10px; padding-left: 22px; }
-  .phases-down .phase-name { font-size: 14px; }
-}
 .phases-line { position: relative; list-style: none; margin: 48px 0 0; padding: 0; grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: 28px; }
 .phases-line::before {
   content: ""; position: absolute; left: 7px; right: calc((100% - 140px) / 6 - 7px); top: 6px; height: 2px;
@@ -163,15 +159,11 @@ button.navmenu__item { width: 100%; text-align: left; background: none; border: 
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 
-/* ── The homepage's closing: a white horizon light at half strength, rising from a sage line ── */
+/* ── The homepage's closing: a white horizon light at half strength, rising from the bottom of the page ── */
 .home-horizon {
   position: absolute; left: 0; right: 0; bottom: 0; height: 420px; pointer-events: none;
   background: radial-gradient(ellipse 75% 100% at 50% 100%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.025) 50%, rgba(255,255,255,0) 78%);
   animation: posterity-breathe 6s ease-in-out infinite;
-}
-.home-horizon-line {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 1px; pointer-events: none;
-  background: linear-gradient(90deg, rgba(147,171,153,0), rgba(147,171,153,0.85), rgba(147,171,153,0));
 }
 @media (min-width: 768px) { .home-horizon { height: 520px; } }
 @media (prefers-reduced-motion: reduce) { .home-horizon { animation: none; } }

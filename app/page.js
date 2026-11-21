@@ -35,19 +35,20 @@ function PosterityCircle({ className = "", swallow = "" }) {
 export default function Home() {
   return (
     <main className="bg-black text-white">
-      {/* First screen, only as tall as what it holds. Below 1024px: the headline, the seal and the line,
-          centered, with the note under it. From 1024px: the headline and the line on the left, and the
+      {/* First screen. Below 1024px it fills the phone's screen under the 93px menu bar: the headline at the top,
+          the two lines at the bottom and the seal centered between them, so the note starts after a scroll.
+          From 1024px it is only as tall as what it holds: the headline and the line on the left, and the
           note on the right with the seal as its stamp. A white glow falls from the top. */}
-      <section className="relative overflow-hidden px-6 pt-[60px] pb-[26px] text-center lg:px-16 lg:pt-[88px] lg:pb-24 lg:text-left">
+      <section className="relative flex min-h-[calc(100svh-93px)] flex-col overflow-hidden px-6 pt-[60px] pb-[26px] text-center lg:block lg:min-h-0 lg:px-16 lg:pt-[88px] lg:pb-24 lg:text-left">
         <div aria-hidden="true" className="home-glow posterity-glow--breathe" />
-        <div className="relative mx-auto flex max-w-[1052px] flex-col items-center lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-center lg:gap-[72px] min-[1700px]:max-w-[1152px]">
-          <div className="flex flex-col items-center lg:items-start">
+        <div className="relative mx-auto flex w-full max-w-[1052px] flex-1 flex-col items-center lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-center lg:gap-[72px] min-[1700px]:max-w-[1152px]">
+          <div className="flex flex-1 flex-col items-center lg:items-start">
             <h1 className="text-[clamp(2.75rem,16.5vw,3.75rem)] font-bold leading-[0.98] tracking-[-0.035em] lg:text-[length:clamp(80px,6.6vw,116px)] lg:leading-[0.96] lg:tracking-[-0.04em]">
               <span className="whitespace-nowrap">Your Voice.</span>
               <br />
               <span className="home-forever whitespace-nowrap">Forever.</span>
             </h1>
-            <div className="mt-9 mb-[34px] lg:hidden">
+            <div className="my-auto pt-9 pb-[34px] lg:hidden">
               <Logomark form="primary" rings="phases" ringsId="seal-rings-first-screen" size={120} className="text-white" />
             </div>
             {/* The line: in a white outline pill below 1024px, as plain text from 1024px */}
@@ -102,9 +103,9 @@ export default function Home() {
         }}
       >
         <BandPulse />
-        <section className="relative mx-auto max-w-[60rem] px-6 pt-9 pb-[38px] lg:max-w-[1240px] lg:px-16 lg:py-[72px]">
-          <h2 className="text-2xl md:text-4xl leading-[1.15] font-bold text-center mb-2">Six Phases. One Journey.</h2>
-          <p className="text-[color:var(--text-quiet)] text-[13.5px] md:text-lg text-center mb-[22px] lg:mb-0">Every Posterity account moves through six carefully designed phases.</p>
+        <section className="relative mx-auto max-w-[60rem] px-6 pt-7 pb-[30px] lg:max-w-[1240px] lg:px-16 lg:py-[72px]">
+          <h2 className="text-[22px] md:text-4xl leading-[1.15] font-bold text-center mb-2">Six Phases. One Journey.</h2>
+          <p className="text-[color:var(--text-quiet)] text-[12.5px] md:text-lg text-center mb-4 lg:mb-0">Every Posterity account moves through six carefully designed phases.</p>
 
           <ol className="phases-down lg:hidden">
             {PHASES.map((phase, i) => (
@@ -115,10 +116,10 @@ export default function Home() {
                   <span className="phase-pip" style={{ background: PHASE_HUES[i] }} />
                 )}
                 <div>
-                  <p className="text-[11px] leading-[1.2] tabular-nums tracking-wider text-[color:var(--text-quiet)]">{String(i + 1).padStart(2, "0")}</p>
-                  <p className="phase-name text-[15px] leading-[1.25] font-semibold" style={{ color: PHASE_HUES[i] }}>{phase.name}</p>
+                  <p className="text-[10px] leading-[1.2] tabular-nums tracking-wider text-[color:var(--text-quiet)]">{String(i + 1).padStart(2, "0")}</p>
+                  <p className="phase-name text-sm leading-[1.25] font-semibold" style={{ color: PHASE_HUES[i] }}>{phase.name}</p>
                 </div>
-                <p className="pt-px text-xs leading-[1.5] text-gray-400">{phase.copy}</p>
+                <p className="pt-px text-[11.5px] leading-[1.45] text-gray-400">{phase.copy}</p>
               </li>
             ))}
           </ol>
@@ -165,7 +166,6 @@ export default function Home() {
       {/* Closing: the line and the stacked lockup in a white horizon light. The page has no footer. */}
       <section className="relative overflow-hidden px-6 pt-11 pb-10 md:px-8 md:pt-[88px] md:pb-[72px] text-center">
         <div aria-hidden="true" className="home-horizon" />
-        <div aria-hidden="true" className="home-horizon-line" />
         <p className="serif-accent relative mx-auto max-w-[270px] md:max-w-[640px] text-[22px] md:text-[30px] leading-[1.4]" style={{ color: "#c0a176" }}>
           Say the things too important to leave unsaid
         </p>
