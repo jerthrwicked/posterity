@@ -36,10 +36,10 @@ export default function Home() {
   return (
     <main className="bg-black text-white">
       {/* First screen. Below 1024px it fills the phone's screen under the 93px menu bar, with the headline,
-          the seal and the two lines centered in it together, so the note starts after a scroll.
+          the seal and the two lines together at its foot on a phone and centered on a tablet, so the note starts just after a scroll.
           From 1024px it is only as tall as what it holds: the headline and the line on the left, and the
           note on the right with the seal as its stamp. A white glow falls from the top. */}
-      <section className="relative flex min-h-[calc(100svh-93px)] flex-col justify-center overflow-hidden px-6 pt-[60px] pb-[26px] text-center lg:block lg:min-h-0 lg:px-16 lg:pt-[88px] lg:pb-24 lg:text-left">
+      <section className="relative flex min-h-[calc(100svh-93px)] flex-col justify-end overflow-hidden md:justify-center px-6 pt-[60px] pb-[26px] text-center lg:block lg:min-h-0 lg:px-16 lg:pt-[88px] lg:pb-24 lg:text-left">
         <div aria-hidden="true" className="home-glow posterity-glow--breathe" />
         <div className="relative mx-auto flex w-full max-w-[1052px] flex-col items-center lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-center lg:gap-[72px] min-[1700px]:max-w-[1152px]">
           <div className="flex flex-col items-center lg:items-start">

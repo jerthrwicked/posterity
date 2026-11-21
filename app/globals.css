@@ -137,6 +137,10 @@ button.navmenu__item { width: 100%; text-align: left; background: none; border: 
   /* The Six Phases band's glow: the top 330px at two-thirds the strength of the account glow (November 16, 2026) */
   background: linear-gradient(180deg, rgba(147,171,153,0.30) 0%, rgba(161,176,149,0.26) 15%, rgba(161,167,135,0.22) 30%, rgba(177,172,133,0.19) 45%, rgba(182,163,122,0.16) 60%, rgba(192,161,118,0.13) 75%, rgba(0,0,0,0) 100%);
 }
+/* Below 1024px the glow is 190px tall and softer, and it fades out just inside the first phase (November 20, 2026) */
+@media (max-width: 1023px) {
+  .posterity-pulse { height: 190px; background: linear-gradient(180deg, rgba(147,171,153,0.18) 0%, rgba(161,176,149,0.15) 15%, rgba(161,167,135,0.13) 30%, rgba(177,172,133,0.11) 45%, rgba(182,163,122,0.09) 60%, rgba(192,161,118,0.07) 75%, rgba(0,0,0,0) 100%); }
+}
 .posterity-glow--breathe { animation: posterity-glow-in 3s cubic-bezier(0,0,0.2,1) both, posterity-breathe 6s ease-in-out 3s infinite; }
 .posterity-pulse--waiting { opacity: 0; }
 @keyframes posterity-glow-in { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: none; } }
@@ -199,23 +203,21 @@ button.navmenu__item { width: 100%; text-align: left; background: none; border: 
 }
 
 /* ── The homepage's explanation as a letter (November 20, 2026): Lora on white paper, five words in
-      Caveat, indented paragraphs, the closing line at the right as a sign-off, and the seal at the foot.
+      Caveat, the gold opening as its own paragraph at the text's size, the closing line centered, and the seal at the foot.
       It fits one phone screen at 13px. Larger from 768px. ── */
 .home-letter {
   background: var(--paper); color: var(--paper-ink-2); border-radius: 4px; padding: 22px 20px;
   box-shadow: 0 0 0 1px rgba(255,255,255,0.35);
   font-family: var(--font-lora), Georgia, serif; font-size: 13px; line-height: 1.55;
 }
-.home-letter p + p { margin-top: 0; text-indent: 1.4em; }
-.home-letter__open { font-style: italic; color: var(--paper-gold); font-size: 16px; line-height: 1.35; }
-.home-letter .home-letter__open + p { margin-top: 12px; text-indent: 0; }
+.home-letter p + p { margin-top: 9px; }
+.home-letter__open { font-style: italic; color: var(--paper-gold); }
 .home-letter__end { font-style: italic; color: var(--paper-ink); font-size: 14px; }
-.home-letter .home-letter__end { margin-top: 12px; padding-left: 24px; text-align: right; text-indent: 0; text-wrap: balance; }
+.home-letter .home-letter__end { margin-top: 12px; text-align: center; text-wrap: balance; }
 .home-hand { font-family: var(--font-caveat), cursive; font-size: 1.4em; line-height: 1.05; color: var(--paper-sage); }
 @media (min-width: 768px) {
   .home-letter { padding: 52px 64px 56px; font-size: 17px; line-height: 1.7; box-shadow: 0 50px 90px -40px rgba(255,255,255,0.10), 0 0 0 1px rgba(255,255,255,0.35); }
-  .home-letter__open { font-size: 24px; line-height: 1.4; }
-  .home-letter .home-letter__open + p { margin-top: 22px; }
+  .home-letter p + p { margin-top: 16px; }
   .home-letter .home-letter__end { font-size: 19px; margin-top: 18px; }
   .home-hand { font-size: 1.48em; }
 }
