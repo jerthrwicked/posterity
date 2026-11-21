@@ -163,6 +163,14 @@ button.navmenu__item { width: 100%; text-align: left; background: none; border: 
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 
+/* ── The phone's first screen on a screen too short to hold it (November 21, 2026). Below 648px of screen height, the space above the headline, the headline, the seal and the space around the seal shrink together, reaching 48px, 48px, 80px, and 26px above and 24px below at 553px, the height Safari shows on an iPhone SE, so the delivery line still ends 26px above the bottom of the screen. Taller phones, tablets and computers are unchanged. ── */
+@media (max-width: 767px) {
+  .home-first { --fit: clamp(0px, 648px - 100svh, 95px); padding-top: calc(60px - var(--fit) * 0.1263); }
+  .home-first__head { font-size: min(clamp(2.75rem, 16.5vw, 3.75rem), calc(60px - var(--fit) * 0.1263)); }
+  .home-first__seal { margin-top: calc(36px - var(--fit) * 0.1053); margin-bottom: calc(34px - var(--fit) * 0.1053); }
+  .home-first__seal svg { width: calc(120px - var(--fit) * 0.4211); height: calc(120px - var(--fit) * 0.4211); }
+}
+
 /* ── The homepage's closing: a white horizon light at half strength, rising from the bottom of the page ── */
 .home-horizon {
   position: absolute; left: 0; right: 0; bottom: 0; height: 420px; pointer-events: none;

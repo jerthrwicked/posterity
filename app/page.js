@@ -18,9 +18,9 @@ const PHASES = [
 // The three points under the first screen, each with its drawing. "Total Accountability" replaced
 // "Fully Automated. Fully Protected" on November 16, 2026, since its legacy fund left the specification.
 const POINTS = [
-  { title: "A Living Legacy", Art: LegacyCalendars, copy: "Build a custom delivery calendar of messages, videos, and memories. Your content reaches the people you choose, on the dates you set — long after you’re gone." },
-  { title: "On Your Terms", Art: PreviewSwitch, copy: "You build it. You preview it. You control it. Nothing moves until you’re ready — and when you are, your account begins its journey through six carefully designed phases." },
-  { title: "Total Accountability", Art: AuditShield, copy: "Posterity answers to you now, and to the Legacy Guards you name after you’re gone. Every payment, refund, and transfer carries a full audit trail." },
+  { title: "A Living Legacy", Art: LegacyCalendars, artWidth: "lg:w-[299px]", copy: "Build a custom delivery calendar of messages, videos, and memories. Your content reaches the people you choose, on the dates you set — long after you’re gone." },
+  { title: "On Your Terms", Art: PreviewSwitch, artWidth: "lg:w-[264px]", copy: "You build it. You preview it. You control it. Nothing moves until you’re ready — and when you are, your account begins its journey through six carefully designed phases." },
+  { title: "Total Accountability", Art: AuditShield, artWidth: "lg:w-[248px]", copy: "Posterity answers to you now, and to the Legacy Guards you name after you’re gone. Every payment, refund, and transfer carries a full audit trail." },
 ];
 
 // The Posterity phase ends the line as a gold circle with the swallow cut out of it in black.
@@ -35,20 +35,23 @@ function PosterityCircle({ className = "", swallow = "" }) {
 export default function Home() {
   return (
     <main className="bg-black text-white">
-      {/* First screen. Below 1024px it fills the phone's screen under the 93px menu bar, with the headline,
-          the seal and the two lines together at its foot on a phone and centered on a tablet, so the note starts just after a scroll.
+      {/* First screen. Below 1024px it fills the phone's screen under the 93px menu bar. On a phone the seal and the two lines sit at its foot,
+          so the note starts just after a scroll, and the headline rises up to 48px above them where the screen has room. A tablet keeps all four centered.
+          On a phone too short to hold them, the space above the headline, the headline, the seal and the space around it shrink together (.home-first in globals.css).
           From 1024px it is only as tall as what it holds: the headline and the line on the left, and the
           note on the right with the seal as its stamp. A white glow falls from the top. */}
-      <section className="relative flex min-h-[calc(100svh-93px)] flex-col justify-end overflow-hidden md:justify-center px-6 pt-[60px] pb-[26px] text-center lg:block lg:min-h-0 lg:px-16 lg:pt-[88px] lg:pb-24 lg:text-left">
+      <section className="home-first relative flex min-h-[calc(100svh-93px)] flex-col justify-end overflow-hidden md:justify-center px-6 pt-[60px] pb-[26px] text-center lg:block lg:min-h-0 lg:px-16 lg:pt-[88px] lg:pb-24 lg:text-left">
         <div aria-hidden="true" className="home-glow posterity-glow--breathe" />
-        <div className="relative mx-auto flex w-full max-w-[1052px] flex-col items-center lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-center lg:gap-[72px] min-[1700px]:max-w-[1152px]">
-          <div className="flex flex-col items-center lg:items-start">
-            <h1 className="text-[clamp(2.75rem,16.5vw,3.75rem)] font-bold leading-[0.98] tracking-[-0.035em] lg:text-[length:clamp(80px,6.6vw,116px)] lg:leading-[0.96] lg:tracking-[-0.04em]">
+        <div className="relative mx-auto flex w-full max-w-[1052px] flex-1 flex-col items-center md:flex-none lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-center lg:gap-[72px] min-[1700px]:max-w-[1152px]">
+          <div className="flex flex-1 flex-col items-center md:flex-none lg:items-start">
+            <div aria-hidden="true" className="flex-1 md:hidden" />
+            <h1 className="home-first__head text-[clamp(2.75rem,16.5vw,3.75rem)] font-bold leading-[0.98] tracking-[-0.035em] lg:text-[length:clamp(80px,6.6vw,116px)] lg:leading-[0.96] lg:tracking-[-0.04em]">
               <span className="whitespace-nowrap">Your Voice.</span>
               <br />
               <span className="home-forever whitespace-nowrap">Forever.</span>
             </h1>
-            <div className="mt-9 mb-[34px] lg:hidden">
+            <div aria-hidden="true" className="max-h-12 grow-[1000] basis-0 md:hidden" />
+            <div className="home-first__seal mt-9 mb-[34px] lg:hidden">
               <Logomark form="primary" rings="phases" ringsId="seal-rings-first-screen" size={120} className="text-white" />
             </div>
             {/* The line: in a white outline pill below 1024px, as plain text from 1024px */}
@@ -71,20 +74,20 @@ export default function Home() {
       </div>
 
       {/* The three points, each with its drawing: a white band below 1024px with each drawing beside its words, and from 1024px
-          one white card whose rows alternate sides */}
+          one white card, 880px wide, whose rows alternate sides */}
       <section className="bg-[color:var(--paper)] px-6 py-[26px] text-[color:var(--paper-ink)] lg:bg-transparent lg:px-16 lg:pt-0 lg:pb-20">
-        <div className="mx-auto max-w-[640px] lg:max-w-[1052px] lg:rounded-2xl lg:bg-[color:var(--paper)] lg:px-[72px] min-[1700px]:max-w-[1152px]">
-          {POINTS.map(({ title, Art, copy }, i) => (
+        <div className="mx-auto max-w-[640px] lg:max-w-[880px] lg:rounded-2xl lg:bg-[color:var(--paper)] lg:px-14">
+          {POINTS.map(({ title, Art, artWidth, copy }, i) => (
             <div
               key={title}
-              className="grid grid-cols-[100px_minmax(0,1fr)] items-center gap-x-4 border-t border-[#e6e6e6] py-3.5 first:border-t-0 first:pt-0 last:pb-0 lg:grid-cols-2 lg:items-center lg:gap-x-24 lg:gap-y-0 lg:py-12 lg:first:pt-12 lg:last:pb-12"
+              className="grid grid-cols-[100px_minmax(0,1fr)] items-center gap-x-4 border-t border-[#e6e6e6] py-3.5 first:border-t-0 first:pt-0 last:pb-0 lg:grid-cols-2 lg:items-center lg:gap-x-16 lg:gap-y-0 lg:py-9 lg:first:pt-9 lg:last:pb-9"
             >
               <div className={`flex justify-center ${i % 2 ? "lg:order-2" : ""}`}>
-                <Art className="h-auto w-full max-w-[100px] lg:w-auto lg:max-w-full" />
+                <Art className={`h-auto w-full max-w-[100px] lg:max-w-full ${artWidth}`} />
               </div>
               <div className="grid content-start gap-[5px] lg:gap-3.5">
-                <h3 className="text-base font-bold leading-[1.25] lg:text-[32px] lg:leading-[1.15] lg:tracking-[-0.015em]">{title}</h3>
-                <p className="text-[13px] leading-[1.5] text-[color:var(--paper-ink-3)] lg:max-w-[470px] lg:text-[17px] lg:leading-[1.65]">{copy}</p>
+                <h3 className="text-base font-bold leading-[1.25] lg:text-[28px] lg:leading-[1.15] lg:tracking-[-0.015em]">{title}</h3>
+                <p className="text-[13px] leading-[1.5] text-[color:var(--paper-ink-3)] lg:max-w-[420px] lg:text-base lg:leading-[1.65]">{copy}</p>
               </div>
             </div>
           ))}
@@ -151,9 +154,9 @@ export default function Home() {
       </section>
 
       {/* The product explanation, as a letter. Approved copy, from the specification's Brand Copy:
-          the words are exact, and only the paragraph breaks are new. It fits one phone screen. */}
+          the words are exact, and only the paragraph breaks are new. It fits one phone screen, and from 768px it is 620px wide, the shape of a letter-size sheet. */}
       <section className="px-3 py-[18px] md:px-16 md:pt-0 md:pb-20">
-        <article className="home-letter mx-auto max-w-[760px]">
+        <article className="home-letter mx-auto max-w-[620px]">
           <p className="home-letter__open">With Posterity, you create a custom tailored legacy that will - on your terms - reach whatever goal or goals you design for it.</p>
           <p>Do you want your plans to slowly unfold an interconnected story, shared across 52 messages to 52 of your closest friends? Perhaps you want to let them know they all have a piece of your tale in a final Facebook post, and that they will need to work with one another to piece it all together. Maybe-in the multitude of comments that will likely ensue-they will not only reconnect with each other, but also rediscover the legacy you left in all of their lives.</p>
           <p>The only limit is your creativity, and as you journey back through your life to create your legacy, you are building an account that will journey forward.</p>
