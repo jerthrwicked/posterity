@@ -7,7 +7,7 @@ import { requestRecoveryAction } from './actions'
 import { WarningMark } from '../components/StatusMarks'
 
 const input =
-  'w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition'
+  'w-full bg-transparent border-0 border-b border-gray-600 rounded-none px-0 py-2.5 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition'
 const label = 'text-sm text-gray-400 mb-1 block'
 const note = 'text-xs text-[color:var(--text-quiet)] mt-1 leading-relaxed'
 
@@ -15,7 +15,7 @@ function Submit() {
   const { pending } = useFormStatus()
   return (
     <button type="submit" disabled={pending}
-      className="w-full bg-white text-black py-3 rounded-lg font-semibold hover:bg-gray-200 transition mt-2 disabled:opacity-50 cursor-pointer">
+      className="w-full bg-white text-black py-3 rounded-full font-semibold hover:bg-gray-200 transition mt-2 disabled:opacity-50 cursor-pointer">
       {pending ? 'Sending...' : 'Send link'}
     </button>
   )

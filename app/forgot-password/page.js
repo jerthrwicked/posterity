@@ -3,11 +3,10 @@
 import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
-import Link from 'next/link'
-import { Wordmark } from '../components/brand/Wordmark'
+import { AuthHead } from '../components/AuthHead'
 import { requestRecoveryReset } from './actions'
 import { WarningMark } from '../components/StatusMarks'
-import { AccountGlow } from '../components/Glow'
+import { WhiteGlow } from '../components/Glow'
 
 // Password reset, from the sign-in page (Master Specification, Settings:
 // "Password change and reset"). The person gives the address they sign in
@@ -55,11 +54,8 @@ function ForgotPasswordForm() {
   if (sent) {
     return (
       <div className="relative z-[1] w-full max-w-md text-center">
-        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-          <Wordmark size="lg" withMark />
-        </Link>
-        <div className="bg-[color:var(--card-ground)] posterity-frame rounded-2xl p-8 mt-10 border border-[color:var(--card-edge)]">
-          <h1 className="text-2xl font-bold mb-3">Check your email</h1>
+        <AuthHead line="Check your email." />
+        <div>
           <p className="text-gray-400 leading-relaxed">
             If <span className="text-white">{email}</span> has a Posterity account, a reset link is on
             its way. It works for an hour.
@@ -74,13 +70,8 @@ function ForgotPasswordForm() {
 
   return (
     <div className="relative z-[1] w-full max-w-md">
-      <div className="text-center mb-10">
-        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-          <Wordmark size="lg" withMark />
-        </Link>
-        <p className="text-gray-400 mt-2">Reset your password</p>
-      </div>
-      <div className="bg-[color:var(--card-ground)] posterity-frame border border-[color:var(--card-edge)] rounded-2xl p-8 flex flex-col gap-4">
+      <AuthHead line="Reset your password." />
+      <div className="flex flex-col gap-4">
         <div>
           <label htmlFor="email" className="text-sm text-gray-400 mb-1 block">Email</label>
           <input
@@ -91,7 +82,7 @@ function ForgotPasswordForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !loading && handleRequest()}
-            className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
+            className="w-full bg-transparent border-0 border-b border-gray-600 rounded-none px-0 py-2.5 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
           />
           <p className="text-xs text-[color:var(--text-quiet)] mt-1 leading-relaxed">
             The address you sign in with. We&rsquo;ll send it a link to choose a new password.{' '}
@@ -102,7 +93,7 @@ function ForgotPasswordForm() {
         <button
           onClick={handleRequest}
           disabled={loading}
-          className="w-full bg-white text-black py-3 rounded-lg font-semibold hover:bg-gray-200 transition mt-2 disabled:opacity-50 cursor-pointer"
+          className="w-full bg-white text-black py-3 rounded-full font-semibold hover:bg-gray-200 transition mt-2 disabled:opacity-50 cursor-pointer"
         >
           {loading ? 'Sending...' : 'Send reset link'}
         </button>
@@ -121,7 +112,7 @@ export default function ForgotPassword() {
       <Suspense fallback={null}>
         <ForgotPasswordForm />
       </Suspense>
-      <AccountGlow />
+      <WhiteGlow />
     </main>
   )
 }

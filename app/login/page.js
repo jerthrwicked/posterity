@@ -4,9 +4,9 @@ import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
 import { safeNext } from '../../lib/auth/next-address'
-import { Wordmark } from '../components/brand/Wordmark'
+import { AuthHead } from '../components/AuthHead'
 import { WarningMark } from '../components/StatusMarks'
-import { AccountGlow } from '../components/Glow'
+import { WhiteGlow } from '../components/Glow'
 
 function LoginForm() {
   const searchParams = useSearchParams()
@@ -39,13 +39,8 @@ function LoginForm() {
 
   return (
     <div className="relative z-[1] w-full max-w-md">
-      <div className="text-center mb-10">
-        <a href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-          <Wordmark size="lg" withMark />
-        </a>
-        <p className="text-gray-400 mt-2">Welcome back</p>
-      </div>
-      <div className="bg-[color:var(--card-ground)] posterity-frame border border-[color:var(--card-edge)] rounded-2xl p-8 flex flex-col gap-4">
+      <AuthHead line="Welcome back." />
+      <div className="flex flex-col gap-4">
         <div>
           <label htmlFor="email" className="text-sm text-gray-400 mb-1 block">Email</label>
           <input
@@ -55,7 +50,7 @@ function LoginForm() {
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
+            className="w-full bg-transparent border-0 border-b border-gray-600 rounded-none px-0 py-2.5 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
           />
         </div>
         <div>
@@ -68,7 +63,7 @@ function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !loading && handleLogin()}
-            className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
+            className="w-full bg-transparent border-0 border-b border-gray-600 rounded-none px-0 py-2.5 text-white placeholder:text-[color:var(--text-quiet)] focus:outline-none focus:border-white transition"
           />
         </div>
         <p className="text-right text-xs -mt-2">
@@ -84,7 +79,7 @@ function LoginForm() {
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full bg-white text-black py-3 rounded-lg font-semibold hover:bg-gray-200 transition mt-2 disabled:opacity-50 cursor-pointer"
+          className="w-full bg-white text-black py-3 rounded-full font-semibold hover:bg-gray-200 transition mt-2 disabled:opacity-50 cursor-pointer"
         >
           {loading ? 'Logging in...' : 'Log In'}
         </button>
@@ -103,7 +98,7 @@ export default function Login() {
       <Suspense fallback={null}>
         <LoginForm />
       </Suspense>
-      <AccountGlow />
+      <WhiteGlow />
     </main>
   )
 }

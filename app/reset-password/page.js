@@ -1,10 +1,9 @@
 // Posterity — set a new password · Walker Brown
 import { redirect } from 'next/navigation'
 import { createClient } from '../../lib/supabase/server'
-import Link from 'next/link'
-import { Wordmark } from '../components/brand/Wordmark'
+import { AuthHead } from '../components/AuthHead'
 import { NewPasswordForm } from './NewPasswordForm'
-import { AccountGlow } from '../components/Glow'
+import { WhiteGlow } from '../components/Glow'
 
 // The page a password reset link opens. The link has already given the person
 // a session (through /auth/confirm or /auth/callback), so this page is reached
@@ -19,15 +18,10 @@ export default async function ResetPassword() {
   return (
     <main className="relative min-h-screen bg-black text-white flex items-center justify-center px-6">
       <div className="relative z-[1] w-full max-w-md">
-        <div className="text-center mb-10">
-          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-            <Wordmark size="lg" withMark />
-          </Link>
-          <p className="text-gray-400 mt-2">Choose a new password</p>
-        </div>
+        <AuthHead line="Choose a new password." />
         <NewPasswordForm email={user.email} />
       </div>
-      <AccountGlow />
+      <WhiteGlow />
     </main>
   )
 }

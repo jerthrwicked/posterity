@@ -36,21 +36,21 @@ export default function Home() {
   return (
     <main className="bg-black text-white">
       {/* First screen. Below 1024px it fills the phone's screen under the 93px menu bar. On a phone the seal and the two lines sit at its foot,
-          so the note starts just after a scroll, and the headline rises up to 48px above them where the screen has room. A tablet keeps all four centered.
+          so the note starts just after a scroll. A third of the screen's spare room, up to 32px, goes between the headline and the seal, and the rest above the headline. On a tablet the first screen is only as tall as what it holds, so the note follows 39px below the delivery line, as on a phone.
           On a phone too short to hold them, the space above the headline, the headline, the seal and the space around it shrink together (.home-first in globals.css).
           From 1024px it is only as tall as what it holds: the headline and the line on the left, and the
           note on the right with the seal as its stamp. A white glow falls from the top. */}
-      <section className="home-first relative flex min-h-[calc(100svh-93px)] flex-col justify-end overflow-hidden md:justify-center px-6 pt-[60px] pb-[26px] text-center lg:block lg:min-h-0 lg:px-16 lg:pt-[88px] lg:pb-24 lg:text-left">
+      <section className="home-first relative flex min-h-[calc(100svh-93px)] flex-col justify-end overflow-hidden md:min-h-0 md:pt-[88px] px-6 pt-[60px] pb-[26px] text-center lg:block lg:min-h-0 lg:px-16 lg:pt-[88px] lg:pb-24 lg:text-left">
         <div aria-hidden="true" className="home-glow posterity-glow--breathe" />
         <div className="relative mx-auto flex w-full max-w-[1052px] flex-1 flex-col items-center md:flex-none lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-center lg:gap-[72px] min-[1700px]:max-w-[1152px]">
           <div className="flex flex-1 flex-col items-center md:flex-none lg:items-start">
-            <div aria-hidden="true" className="flex-1 md:hidden" />
+            <div aria-hidden="true" className="grow-[2] basis-0 md:hidden" />
             <h1 className="home-first__head text-[clamp(2.75rem,16.5vw,3.75rem)] font-bold leading-[0.98] tracking-[-0.035em] lg:text-[length:clamp(80px,6.6vw,116px)] lg:leading-[0.96] lg:tracking-[-0.04em]">
               <span className="whitespace-nowrap">Your Voice.</span>
               <br />
               <span className="home-forever whitespace-nowrap">Forever.</span>
             </h1>
-            <div aria-hidden="true" className="max-h-12 grow-[1000] basis-0 md:hidden" />
+            <div aria-hidden="true" className="max-h-8 grow basis-0 md:hidden" />
             <div className="home-first__seal mt-9 mb-[34px] lg:hidden">
               <Logomark form="primary" rings="phases" ringsId="seal-rings-first-screen" size={120} className="text-white" />
             </div>
@@ -166,10 +166,11 @@ export default function Home() {
         </article>
       </section>
 
-      {/* Closing: the line and the stacked lockup in a white horizon light. The page has no footer. */}
-      <section className="relative overflow-hidden px-6 pt-11 pb-10 md:px-8 md:pt-[88px] md:pb-[72px] text-center">
+      {/* Closing: the line and the stacked lockup in a white horizon light. The line is set small and close above the logo, so it
+          reads as the logo's line rather than the letter's (November 21, 2026). The page has no footer. */}
+      <section className="relative overflow-hidden px-6 pt-16 pb-10 md:px-8 md:pt-28 md:pb-[72px] text-center">
         <div aria-hidden="true" className="home-horizon" />
-        <p className="serif-accent relative mx-auto max-w-[270px] md:max-w-[640px] text-[22px] md:text-[30px] leading-[1.4]" style={{ color: "#c0a176" }}>
+        <p className="serif-accent relative mx-auto max-w-[240px] md:max-w-[520px] text-[18px] md:text-[24px] leading-[1.4]" style={{ color: "#c0a176" }}>
           Say the things too important to leave unsaid
         </p>
         {/* eslint-disable-next-line @next/next/no-img-element -- a fixed brand file, as on the Legacy page */}
@@ -178,7 +179,7 @@ export default function Home() {
           alt="Posterity"
           width={1333}
           height={1107}
-          className="relative mx-auto mt-9 md:mt-11 h-auto w-[160px] md:w-[206px]"
+          className="relative mx-auto mt-4 md:mt-5 h-auto w-[160px] md:w-[206px]"
         />
       </section>
     </main>
