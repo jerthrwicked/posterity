@@ -35,20 +35,20 @@ function PosterityCircle({ className = "", swallow = "" }) {
 export default function Home() {
   return (
     <main className="bg-black text-white">
-      {/* First screen. Below 1024px it fills the phone's screen under the 93px menu bar: the headline at the top,
-          the two lines at the bottom and the seal centered between them, so the note starts after a scroll.
+      {/* First screen. Below 1024px it fills the phone's screen under the 93px menu bar, with the headline,
+          the seal and the two lines centered in it together, so the note starts after a scroll.
           From 1024px it is only as tall as what it holds: the headline and the line on the left, and the
           note on the right with the seal as its stamp. A white glow falls from the top. */}
-      <section className="relative flex min-h-[calc(100svh-93px)] flex-col overflow-hidden px-6 pt-[60px] pb-[26px] text-center lg:block lg:min-h-0 lg:px-16 lg:pt-[88px] lg:pb-24 lg:text-left">
+      <section className="relative flex min-h-[calc(100svh-93px)] flex-col justify-center overflow-hidden px-6 pt-[60px] pb-[26px] text-center lg:block lg:min-h-0 lg:px-16 lg:pt-[88px] lg:pb-24 lg:text-left">
         <div aria-hidden="true" className="home-glow posterity-glow--breathe" />
-        <div className="relative mx-auto flex w-full max-w-[1052px] flex-1 flex-col items-center lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-center lg:gap-[72px] min-[1700px]:max-w-[1152px]">
-          <div className="flex flex-1 flex-col items-center lg:items-start">
+        <div className="relative mx-auto flex w-full max-w-[1052px] flex-col items-center lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-center lg:gap-[72px] min-[1700px]:max-w-[1152px]">
+          <div className="flex flex-col items-center lg:items-start">
             <h1 className="text-[clamp(2.75rem,16.5vw,3.75rem)] font-bold leading-[0.98] tracking-[-0.035em] lg:text-[length:clamp(80px,6.6vw,116px)] lg:leading-[0.96] lg:tracking-[-0.04em]">
               <span className="whitespace-nowrap">Your Voice.</span>
               <br />
               <span className="home-forever whitespace-nowrap">Forever.</span>
             </h1>
-            <div className="my-auto pt-9 pb-[34px] lg:hidden">
+            <div className="mt-9 mb-[34px] lg:hidden">
               <Logomark form="primary" rings="phases" ringsId="seal-rings-first-screen" size={120} className="text-white" />
             </div>
             {/* The line: in a white outline pill below 1024px, as plain text from 1024px */}
@@ -70,21 +70,21 @@ export default function Home() {
         <HandwrittenNote ringsId="seal-rings-note-phone" />
       </div>
 
-      {/* The three points, each with its drawing: a white band below 1024px, and from 1024px
+      {/* The three points, each with its drawing: a white band below 1024px with each drawing beside its words, and from 1024px
           one white card whose rows alternate sides */}
       <section className="bg-[color:var(--paper)] px-6 py-[26px] text-[color:var(--paper-ink)] lg:bg-transparent lg:px-16 lg:pt-0 lg:pb-20">
         <div className="mx-auto max-w-[640px] lg:max-w-[1052px] lg:rounded-2xl lg:bg-[color:var(--paper)] lg:px-[72px] min-[1700px]:max-w-[1152px]">
           {POINTS.map(({ title, Art, copy }, i) => (
             <div
               key={title}
-              className="grid gap-[5px] border-t border-[#e6e6e6] py-3.5 first:border-t-0 first:pt-0 last:pb-0 lg:grid-cols-2 lg:items-center lg:gap-x-24 lg:gap-y-0 lg:py-12 lg:first:pt-12 lg:last:pb-12"
+              className="grid grid-cols-[100px_minmax(0,1fr)] items-center gap-x-4 border-t border-[#e6e6e6] py-3.5 first:border-t-0 first:pt-0 last:pb-0 lg:grid-cols-2 lg:items-center lg:gap-x-24 lg:gap-y-0 lg:py-12 lg:first:pt-12 lg:last:pb-12"
             >
-              <div className={`mb-3 flex justify-center lg:mb-0 ${i % 2 ? "lg:order-2" : ""}`}>
-                <Art className="h-auto w-full max-w-[180px] lg:w-auto lg:max-w-full" />
+              <div className={`flex justify-center ${i % 2 ? "lg:order-2" : ""}`}>
+                <Art className="h-auto w-full max-w-[100px] lg:w-auto lg:max-w-full" />
               </div>
               <div className="grid content-start gap-[5px] lg:gap-3.5">
-                <h3 className="text-[17px] font-bold leading-[1.25] lg:text-[32px] lg:leading-[1.15] lg:tracking-[-0.015em]">{title}</h3>
-                <p className="text-[13.5px] leading-[1.6] text-[color:var(--paper-ink-3)] lg:max-w-[470px] lg:text-[17px] lg:leading-[1.65]">{copy}</p>
+                <h3 className="text-base font-bold leading-[1.25] lg:text-[32px] lg:leading-[1.15] lg:tracking-[-0.015em]">{title}</h3>
+                <p className="text-[13px] leading-[1.5] text-[color:var(--paper-ink-3)] lg:max-w-[470px] lg:text-[17px] lg:leading-[1.65]">{copy}</p>
               </div>
             </div>
           ))}
@@ -105,7 +105,7 @@ export default function Home() {
         <BandPulse />
         <section className="relative mx-auto max-w-[60rem] px-6 pt-7 pb-[30px] lg:max-w-[1240px] lg:px-16 lg:py-[72px]">
           <h2 className="text-[22px] md:text-4xl leading-[1.15] font-bold text-center mb-2">Six Phases. One Journey.</h2>
-          <p className="text-[color:var(--text-quiet)] text-[12.5px] md:text-lg text-center mb-4 lg:mb-0">Every Posterity account moves through six carefully designed phases.</p>
+          <p className="serif-accent mx-auto mb-4 max-w-[300px] text-center text-[14.5px] leading-[1.45] md:max-w-none md:text-xl lg:mb-0" style={{ color: "#c0a176" }}>Every Posterity account moves through six carefully designed phases.</p>
 
           <ol className="phases-down lg:hidden">
             {PHASES.map((phase, i) => (
